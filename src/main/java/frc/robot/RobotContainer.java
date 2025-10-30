@@ -33,7 +33,8 @@
     import frc.lib.drive.PIDToPoseCommand;
     import frc.lib.util.FieldLayout.Level;
     import frc.lib.drive.DriveMaintainingHeading.DriveHeadingState;
-    import frc.robot.subsystems.drive.Drive;
+import frc.robot.controlboard.ControlBoard;
+import frc.robot.subsystems.drive.Drive;
     import frc.robot.subsystems.drive.DriveConstants;
     import frc.robot.subsystems.drive.TunerConstants;
     import frc.robot.subsystems.superstructure.Superstructure;
@@ -41,6 +42,10 @@
     @Logged
     public class RobotContainer {
         private final Drive drive = new Drive();
+        private final Superstructure superstructure = new Superstructure();
+
+        private final ControlBoard controlBoard = ControlBoard.getInstance();
+
         private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
         private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -54,9 +59,8 @@
         private final SendableChooser<DriveHeadingState> headingStateChooser = new SendableChooser<>();
         private DriveHeadingState headingState = DriveHeadingState.NO_HEADING;
 
-        Superstructure superstructure = new Superstructure();
         public RobotContainer() {
-            configureBindings();
+            controlBoard.configureBindings(drive, superstructure);
             configureHeadingStateChooser();
         }
         
