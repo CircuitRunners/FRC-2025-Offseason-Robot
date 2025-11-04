@@ -1,28 +1,19 @@
 package frc.robot.subsystems.endeffector;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.signals.InvertedValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
-import frc.lib.io.MotorIOTalonFX;
-import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
-import frc.lib.io.MotorIOTalonFXSim;
-import frc.lib.sim.RollerSim;
+import frc.lib.io.MotorIOSparkMax;
+import frc.lib.io.MotorIOSparkMax.MotorIOSparkMaxConfig;
 import frc.lib.sim.RollerSim.RollerSimConstants;
 import frc.robot.Ports;
-import frc.robot.Robot;
+
+import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 public class EndEffectorConstants {
-	private static final double kCoralRollerGearing = (7.5 / 1.0);
-	private static final double kAlgaeRollerGearing = (6.0 / 1.0);
+	private static final double kCoralRollerGearing = (25.0 / 1.0);
 
-	public static final Voltage kAlgaeHoldVoltage = Units.Volts.of(1.0);
-	public static final Voltage kAlgaeReefIntakeVoltage = Units.Volts.of(12.0);
-	public static final Voltage kAlgaeGroundIntakeVoltage = Units.Volts.of(12.0);
-	public static final Voltage kNetAlgaeOuttakeVoltage = Units.Volts.of(-9.0);
 	public static final Voltage kProcessorAlgaeOuttakeVoltage = Units.Volts.of(-3.0);
 	public static final Voltage kSpitVoltage = Units.Volts.of(-3.0);
 
@@ -38,37 +29,25 @@ public class EndEffectorConstants {
 
 	public static final Voltage kStationIntakeVoltage = Units.Volts.of(12.0);
 
-	public static final Current kAlgaeStatorCurrentThreshold = Units.Amps.of(70.0);
 	public static final Current kCoralStatorCurrentThreshold = Units.Amps.of(60.0);
 
-	private static final TalonFXConfiguration getFXConfig() {
-		TalonFXConfiguration config = new TalonFXConfiguration();
+	public static final MotorIOSparkMaxConfig getIOConfig() {
+		MotorIOSparkMaxConfig config = new MotorIOSparkMaxConfig();
+		config.mainID = Ports.END_EFFECTOR_MAIN.id; // CAN ID for main roller motor
+		config.followerIDs = new int[] { Ports.END_EFFECTOR_FOLLOWER.id }; // optional follower motor
+		config.followerOpposeMain = new boolean[] { true }; // set to true if the follower must spin opposite
+		config.motorType = MotorType.kBrushless; // NEO motor type
+		config.inverted = false;
+		config.brakeMode = true;
 
-		config.Voltage.PeakForwardVoltage = 12.0;
-		config.Voltage.PeakReverseVoltage = -12.0;
+		config.positionConversionFactor = 1.0 / kCoralRollerGearing;
+		config.velocityConversionFactor = 1.0 / kCoralRollerGearing;
+		config.kP = 0.045;
+		config.kI = 0.0;
+		config.kD = 0.0;
 
-		config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-		config.CurrentLimits.StatorCurrentLimit = 80.0;
-
-		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
-		config.CurrentLimits.SupplyCurrentLimit = 60.0;
-		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
-		config.CurrentLimits.SupplyCurrentLowerTime = 1.0;
-
-		config.Feedback.SensorToMechanismRatio = kCoralRollerGearing;
-
-		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-		config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
-		return config;
-	}
-
-	public static final MotorIOTalonFXConfig getIOConfig() {
-		MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
-		config.mainBus = Ports.END_EFFECTOR.bus;
-		config.mainID = Ports.END_EFFECTOR.id;
-		config.mainConfig = getFXConfig();
+		config.unit = Units.Rotations;
 		config.time = Units.Seconds;
-		config.unit = Units.Degrees;
 		return config;
 	}
 
@@ -76,16 +55,11 @@ public class EndEffectorConstants {
 		RollerSimConstants constants = new RollerSimConstants();
 		constants.gearing = kCoralRollerGearing;
 		constants.momentOfInertia = 0.000000001;
-		constants.motor = new DCMotor(
-				12, 4.05, 275, 1.4, edu.wpi.first.math.util.Units.rotationsPerMinuteToRadiansPerSecond(7530), 1);
+		constants.motor = DCMotor.getNeo550(1);
 		return constants;
 	}
 
-	public static final MotorIOTalonFX getMotorIO() {
-		if (Robot.isReal()) {
-			return new MotorIOTalonFX(getIOConfig());
-		} else {
-			return new MotorIOTalonFXSim(getIOConfig(), new RollerSim(getSimConstants()));
-		}
+	public static final MotorIOSparkMax getMotorIO() {
+		return new MotorIOSparkMax(getIOConfig());
 	}
 }

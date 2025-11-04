@@ -50,7 +50,7 @@ public class MotorIOSparkMax extends MotorIO {
             followerCfg.follow(main, config.followerOpposeMain[i]);
             followerCfg.idleMode(config.brakeMode ? IdleMode.kBrake : IdleMode.kCoast);
 
-            followers[i].configure(followerCfg, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+            followers[i].configure(followerCfg, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
         }
     }
 
@@ -132,7 +132,6 @@ public class MotorIOSparkMax extends MotorIO {
     @Override
     public void useSoftLimits(boolean enable) {
         SparkMaxConfig cfg = new SparkMaxConfig();
-        // Assuming SparkMaxConfig has a public field softLimit of type SoftLimitConfig
         cfg.softLimit.forwardSoftLimitEnabled(enable);
         cfg.softLimit.reverseSoftLimitEnabled(enable);
 
