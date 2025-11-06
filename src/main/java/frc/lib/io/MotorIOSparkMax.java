@@ -149,13 +149,25 @@ public class MotorIOSparkMax extends MotorIO {
         public int mainID = -1;
         public int[] followerIDs = new int[0];
         public boolean[] followerOpposeMain = new boolean[0];
+    
         public MotorType motorType = MotorType.kBrushless;
         public boolean inverted = false;
         public boolean brakeMode = true;
+    
         public double positionConversionFactor = 1.0;
         public double velocityConversionFactor = 1.0;
-        public double kP = 0.0, kI = 0.0, kD = 0.0;
+    
+        public double kP = 0.0;
+        public double kI = 0.0;
+        public double kD = 0.0;
+    
+        public boolean forwardSoftLimitEnabled = false;
+        public double forwardSoftLimitThreshold = 0.0;
+        public boolean reverseSoftLimitEnabled = false;
+        public double reverseSoftLimitThreshold = 0.0;
+    
         public AngleUnit unit = Units.Rotations;
         public TimeUnit time = Units.Seconds;
     }
+    
 }

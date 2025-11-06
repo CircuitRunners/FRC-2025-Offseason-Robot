@@ -5,26 +5,13 @@ package frc.robot;
  * Do NOT use ports 0 through 7.
  */
 public enum Ports {
-	ALGAE_DEPLOY(8, "canivore1"),
-	ALGAE_ROLLERS(9, "rio"),
-	CORAL_DEPLOY(10, "canivore1"),
-	CORAL_ROLLERS(11, "rio"),
-	CORAL_INDEXER(12, "canivore1"),
-	END_EFFECTOR_MAIN(13, "canivore1"),
-	END_EFFECTOR_FOLLOWER(17, "canivore1"),
-	ELEVATOR_MAIN(14, "canivore1"),
-	ELEVATOR_FOLLOWER(15, "canivore1"),
-	PIVOT(16, "canivore1"),
-	//CLIMBER(17, "canivore1"),
-	CLIMBER_ROLLERS(18, "canivore1"),
-	CANDLE(21, "canivore1"),
+	END_EFFECTOR_MAIN(24, "canivore1"),
+	END_EFFECTOR_FOLLOWER(25, "canivore1"),
+	ELEVATOR_MAIN(21, "canivore1"),
+	ELEVATOR_FOLLOWER(22, "canivore1"),
+	PIVOT(23, "canivore1"),
 
-	END_EFFECTOR_CORAL_BREAMBREAK(RobotConstants.isComp ? 1 : 8, "RioDigitalIn"),
-	END_EFFECTOR_ALGAE_BEAMBREAK(RobotConstants.isComp ? 0 : 7, "RioDigitalIn"),
-	INDEXER_BEAMBREAK(RobotConstants.isComp ? 8 : 6, "RioDigitalIn"),
-
-	ENCODER_41T(4, "canivore1"),
-	ENCODER_39T(5, "canivore1"),
+	END_EFFECTOR_CORAL_BREAMBREAK(2, "RioDigitalIn"),
 
 	PHYSICAL_BUTTON(9, "RioDigitalIn");
 

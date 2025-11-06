@@ -31,8 +31,6 @@ public class EndEffector extends MotorSubsystem<MotorIOSparkMax> {
 	public static final Setpoint STATION_INTAKE =
 			Setpoint.withVoltageSetpoint(EndEffectorConstants.kStationIntakeVoltage);
 
-	public static final EndEffector mInstance = new EndEffector();
-
 	private EndEffector() {
 		super(EndEffectorConstants.getMotorIO(), "End Effector");
 	}
