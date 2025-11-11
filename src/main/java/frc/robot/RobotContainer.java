@@ -33,18 +33,24 @@
     import frc.lib.drive.PIDToPoseCommand;
     import frc.lib.util.FieldLayout.Level;
     import frc.lib.drive.DriveMaintainingHeading.DriveHeadingState;
-import frc.robot.controlboard.ControlBoard;
-import frc.robot.subsystems.drive.Drive;
+    //import frc.robot.controlboard.ControlBoard;
+    import frc.robot.subsystems.drive.Drive;
     import frc.robot.subsystems.drive.DriveConstants;
     import frc.robot.subsystems.drive.TunerConstants;
-    import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.endeffector.EndEffector;
+import frc.robot.subsystems.pivot.Pivot;
+import frc.robot.subsystems.superstructure.Superstructure;
 
     @Logged
     public class RobotContainer {
         private final Drive drive = new Drive();
-        private final Superstructure superstructure = new Superstructure();
+        private final Elevator elevator = new Elevator();
+        private final EndEffector endEffector = new EndEffector();
+        private final Pivot pivot = new Pivot(elevator);
+        private final Superstructure superstructure = new Superstructure(drive, elevator, endEffector, pivot);
 
-        private final ControlBoard controlBoard = ControlBoard.getInstance();
+        //private final ControlBoard controlBoard = ControlBoard.getInstance();
 
         private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
         private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -60,8 +66,9 @@ import frc.robot.subsystems.drive.Drive;
         private DriveHeadingState headingState = DriveHeadingState.NO_HEADING;
 
         public RobotContainer() {
-            controlBoard.configureBindings(drive, superstructure);
+            //controlBoard.configureBindings(drive, superstructure);
             configureHeadingStateChooser();
+            configureBindings();
         }
         
         //configures heading state chooser
@@ -73,6 +80,11 @@ import frc.robot.subsystems.drive.Drive;
             SmartDashboard.putData("Heading State Selector", headingStateChooser);
         }
         private void configureBindings() {
+            joystick.x().whileTrue(followTrajectoryTest);
+            joystick.a().whileTrue(pidToPoseTest);
+            drive.setDefaultCommand(
+                driveCommand
+            );
             // Note that X is defined as forward according to WPILib convention,
             // and Y is defined as to the left according to WPILib convention.
             // drive.getDrivetrain().setDefaultCommand(
@@ -84,18 +96,12 @@ import frc.robot.subsystems.drive.Drive;
             //     )
             // );
 
-            joystick.x().whileTrue(followTrajectoryTest);
-            joystick.a().whileTrue(pidToPoseTest);
-            drive.setDefaultCommand(
-                driveCommand
-            );
-
             // Idle while the robot is disabled. This ensures the configured
             // neutral mode is applied to the drive motors while disabled.
-            final var idle = new SwerveRequest.Idle();
-            RobotModeTriggers.disabled().whileTrue(
-                drive.getDrivetrain().applyRequest(() -> idle).ignoringDisable(true)
-            );
+            // final var idle = new SwerveRequest.Idle();
+            // RobotModeTriggers.disabled().whileTrue(
+            //     drive.getDrivetrain().applyRequest(() -> idle).ignoringDisable(true)
+            //);
 
             // Run SysId routines when holding back/start and X/Y.
             // Note that each routine should be run exactly once in a single log.
@@ -142,7 +148,7 @@ import frc.robot.subsystems.drive.Drive;
 
 
         private final DriveMaintainingHeading driveCommand = 
-        (new DriveMaintainingHeading(drive, this, () -> joystick.getLeftY(), () -> joystick.getLeftX(), () -> joystick.getRightX()));
+            new DriveMaintainingHeading(drive, this, () -> joystick.getLeftY(), () -> joystick.getLeftX(), () -> joystick.getRightX());
 
         private final Command syncedPIDToPoseTest =
             new FollowSyncedPIDToPose(drive, superstructure, new Pose2d(5.0, 2.8, Rotation2d.fromDegrees(270)), Level.NET);

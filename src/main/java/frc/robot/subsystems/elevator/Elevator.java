@@ -48,9 +48,7 @@ public class Elevator extends ServoMotorSubsystem<MotorIOSparkMax> {
 	public static final Setpoint CORAL_STATION =
 			Setpoint.withMotionMagicSetpoint(ElevatorConstants.converter.toAngle(ElevatorConstants.kStationIntake));
 
-	public static final Elevator mInstance = new Elevator();
-
-	private Elevator() {
+	public Elevator() {
 		super(
 				ElevatorConstants.getMotorIO(),
 				"Elevator",

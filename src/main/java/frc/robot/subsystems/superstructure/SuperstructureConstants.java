@@ -1,12 +1,62 @@
 package frc.robot.subsystems.superstructure;
 
+import java.util.function.BooleanSupplier;
+
+import com.ctre.phoenix6.configs.CANrangeConfiguration;
+
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib.io.BeamBreakIO;
+import frc.lib.io.BeamBreakIOCANRange;
+import frc.lib.io.BeamBreakIOSim;
 import frc.lib.util.FieldLayout.Level;
+import frc.robot.Ports;
+import frc.robot.Robot;
+import frc.robot.controlboard.ControlBoardConstants;
+import frc.robot.subsystems.endeffector.EndEffector;
 
 public class SuperstructureConstants {
+	public static final CANrangeConfiguration CANRangeConfig = new CANrangeConfiguration();
+	public static class BeamBreakConstants {
+		public static BeamBreakIO getEndEffectorCoralBeamBreak() {
+			if (Robot.isReal()) {
+				try {
+					return new BeamBreakIOCANRange(
+							Ports.END_EFFECTOR_CORAL_BREAMBREAK,
+							SuperstructureConstants.CANRangeConfig,
+							SuperstructureConstants.kEndEffectorCoralDebounce,
+							"Coral End Effector Break",
+							2500);
+				} catch (Exception e) {
+					SmartDashboard.putString("End Effector Beam Break", "Failed");
+					return new BeamBreakIOSim(
+							() -> false, SuperstructureConstants.kEndEffectorCoralDebounce, "Coral End Effector Break");
+				}
+			} else {
+				return new BeamBreakIOSim(
+						ControlBoardConstants.mOperatorController.povDownRight().or(() -> Robot.isSimulation()),
+						SuperstructureConstants.kEndEffectorCoralDebounce,
+						"Coral End Effector Break");
+			}
+		}
+
+		public static BeamBreakIO getEndEffectorVelocityDip(EndEffector endeffector) {
+			if (Robot.isReal()) {
+				return new BeamBreakIOSim(
+						() -> endeffector.getVelocity().abs(Units.DegreesPerSecond)
+								< kEndEffectorVelocityDip.in(Units.DegreesPerSecond),
+						Units.Seconds.of(0.05),
+						"End Effector Velocity Dip");
+			} else {
+				return new BeamBreakIOSim(() -> true, Units.Seconds.of(0.05), "End Effector Velocity Dip");
+			}
+		}
+	}
+
 	public static final Angle kReefHeadingGenerationDeadband = Units.Degrees.of(0.0);
 	public static final Angle kProcessorAlgaeHeadingGenerationDeadband = Units.Degrees.of(0.0);
 	public static final Angle kL1HeadingGenerationDeadband = Units.Degrees.of(0.0);
@@ -54,6 +104,9 @@ public class SuperstructureConstants {
 	public static final Distance kL3CoralOffsetFactor = Units.Centimeters.of(30.25);
 	public static final Distance kL2CoralOffsetFactor = Units.Centimeters.of(30.25);
 	public static final Distance kL1CoralOffsetFactor = Units.Centimeters.of(60.0);
+
+	public static final Time kEndEffectorCoralDebounce = Units.Seconds.of(0.04);
+	public static final AngularVelocity kEndEffectorVelocityDip = Units.DegreesPerSecond.of(2000);
 
     public static Distance getAutoAlignScoringDistanceEpsilon(Level level) {
 		return switch (level) {

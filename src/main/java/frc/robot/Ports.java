@@ -11,7 +11,7 @@ public enum Ports {
 	ELEVATOR_FOLLOWER(22, "canivore1"),
 	PIVOT(23, "canivore1"),
 
-	END_EFFECTOR_CORAL_BREAMBREAK(2, "RioDigitalIn"),
+	END_EFFECTOR_CORAL_BREAMBREAK(2, "canivore1"),
 
 	PHYSICAL_BUTTON(9, "RioDigitalIn");
 

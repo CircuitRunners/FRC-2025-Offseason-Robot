@@ -10,9 +10,6 @@ public class EndEffector extends MotorSubsystem<MotorIOSparkMax> {
 
 	public static final Setpoint SPIT = Setpoint.withVoltageSetpoint(EndEffectorConstants.kSpitVoltage);
 
-	public static final Setpoint PROCESSOR_ALGAE_SCORE =
-			Setpoint.withVoltageSetpoint(EndEffectorConstants.kProcessorAlgaeOuttakeVoltage);
-
 	public static final Setpoint CORAL_FEED = Setpoint.withVoltageSetpoint(EndEffectorConstants.kCoralIntakeVoltage);
 	public static final Setpoint CORAL_HOLD = Setpoint.withVoltageSetpoint(EndEffectorConstants.kCoralHoldVoltage);
 
@@ -31,7 +28,7 @@ public class EndEffector extends MotorSubsystem<MotorIOSparkMax> {
 	public static final Setpoint STATION_INTAKE =
 			Setpoint.withVoltageSetpoint(EndEffectorConstants.kStationIntakeVoltage);
 
-	private EndEffector() {
+	public EndEffector() {
 		super(EndEffectorConstants.getMotorIO(), "End Effector");
 	}
 

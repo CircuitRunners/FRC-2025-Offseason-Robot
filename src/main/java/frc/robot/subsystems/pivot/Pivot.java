@@ -22,6 +22,7 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.elevator.ElevatorConstants;
 
 public class Pivot extends ServoMotorSubsystem<MotorIOSparkMax> {
+	private Elevator elevator;
 	public static final Setpoint CORAL_INTAKE = Setpoint.withMotionMagicSetpoint(PivotConstants.kCoralIntake);
 	public static final Setpoint REEF_INTAKE = Setpoint.withMotionMagicSetpoint(PivotConstants.kReefIntake);
 	public static final Setpoint REEF_PREP = Setpoint.withMotionMagicSetpoint(PivotConstants.kReefPrep);
@@ -42,12 +43,13 @@ public class Pivot extends ServoMotorSubsystem<MotorIOSparkMax> {
 	private Debouncer resetDebouncer = new Debouncer(0.1, DebounceType.kRising);
 	private boolean lastShouldReset = false;
 
-	public Pivot() {
+	public Pivot(Elevator elevator) {
 		super(
 				PivotConstants.getMotorIO(),
 				"Pivot",
 				Units.Degrees.of(2.0));
 			setCurrentPosition(PivotConstants.kCoralIntake);
+			this.elevator = elevator;
 		}
 
 	public static final StructPublisher<Pose3d> publisher = NetworkTableInstance.getDefault()
@@ -63,7 +65,7 @@ public class Pivot extends ServoMotorSubsystem<MotorIOSparkMax> {
 					new Translation3d(
 							BaseUnits.DistanceUnit.zero(),
 							BaseUnits.DistanceUnit.zero(),
-							ElevatorConstants.converter.toDistance(Elevator.mInstance.getPosition())),
+							ElevatorConstants.converter.toDistance(elevator.getPosition())),
 					new Rotation3d(BaseUnits.AngleUnit.zero(), getPosition(), BaseUnits.AngleUnit.zero()))));
 		} catch (Exception e) {
 			// TODO: handle exception

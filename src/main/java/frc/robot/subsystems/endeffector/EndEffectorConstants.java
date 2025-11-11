@@ -14,7 +14,6 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 public class EndEffectorConstants {
 	private static final double kCoralRollerGearing = (5.0 / 1.0);
 
-	public static final Voltage kProcessorAlgaeOuttakeVoltage = Units.Volts.of(-3.0);
 	public static final Voltage kSpitVoltage = Units.Volts.of(-3.0);
 
 	public static final Voltage kCoralHoldVoltage = Units.Volts.of(1.0);

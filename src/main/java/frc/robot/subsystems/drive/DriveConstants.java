@@ -136,7 +136,7 @@ public class DriveConstants {
 			LinearVelocity velocity =
 					Units.MetersPerSecond.of(translationController.calculate(deltaTranslation.getNorm()));
 			Rotation2d velocityDirection = deltaTranslation.getAngle();
-			if (RobotConstants.isRedAlliance) velocityDirection = velocityDirection.plus(Rotation2d.k180deg);
+			//if (RobotConstants.isRedAlliance) velocityDirection = velocityDirection.plus(Rotation2d.k180deg);
 
 			headingController.setSetpoint(Units.Radians.of(
 							MathUtil.angleModulus(targetPose.getRotation().getRadians()))
