@@ -8,6 +8,7 @@ import java.util.Map;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import choreo.trajectory.SwerveSample;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.MathHelpers;
@@ -55,6 +57,14 @@ public class Drive extends SubsystemBase {
         drivetrain.registerTelemetry(telemetry::telemeterize);
     }
 
+    /**
+     * Returns the {@link CommandSwerveDrivetrain} managed by this subsystem.
+     * @return The instance of the drivetrain controller.
+     */
+    public CommandSwerveDrivetrain getDrivetrain() {
+        return drivetrain;
+    }
+
     @Override
     /**
      * Periodic method that updates the drivetrain state and outputs telemetry to dashboard.
@@ -73,12 +83,12 @@ public class Drive extends SubsystemBase {
         SmartDashboard.putData("Elastic Field 2D", elasticPose);
     }
 
-    /**
-     * Returns the {@link CommandSwerveDrivetrain} managed by this subsystem.
-     * @return The instance of the drivetrain controller.
+     /**
+     * Returns the current drivetrain state.
+     * @return the most recent {@link SwerveDriveState}.
      */
-    public CommandSwerveDrivetrain getDrivetrain() {
-        return drivetrain;
+    public SwerveDriveState getState() {
+        return drivetrain.getState();
     }
 
     /**
@@ -92,15 +102,6 @@ public class Drive extends SubsystemBase {
     public Rotation2d getRotation() {
         return getState().RawHeading;
     }
-
-    /**
-     * Returns the current drivetrain state.
-     * @return the most recent {@link SwerveDriveState}.
-     */
-    public SwerveDriveState getState() {
-        return drivetrain.getState();
-    }
-
 
     public static boolean onOpponentSide(boolean isRedAlliance, Pose2d pose) {
         return (isRedAlliance
@@ -143,7 +144,12 @@ public class Drive extends SubsystemBase {
         // .withVelocityY(speeds.vyMetersPerSecond)
       .withRotationalRate(speeds.omegaRadiansPerSecond)
     );
-  }
+    }
+
+    public void followChoreoTrajectory(SwerveSample sample) {
+		getDrivetrain().setControl(
+				DriveConstants.getPIDToPoseRequestUpdater(this, sample.getPose()).apply(DriveConstants.PIDToPoseRequest));
+	}
 
     /**
      * Resets the drivetrain's odometry to a specific pose.
@@ -152,6 +158,10 @@ public class Drive extends SubsystemBase {
     public void resetPose(Pose2d pose) {
         getDrivetrain().resetPose(pose);
     }
+
+    public Command resetPoseCmd(Pose2d pose) {
+		return Commands.runOnce(() -> resetPose(pose));
+	}
 
     /**
      * Stops all the swerve module motors
