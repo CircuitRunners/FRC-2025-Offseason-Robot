@@ -119,8 +119,7 @@ public class RobotContainer {
         return shotCalculator;
     }
 
-    
-
+    public static SendableChooser<Boolean> autoDelay = new SendableChooser<>();
     private AutoModeSelector mAutoModeSelector;
     private static String mPreviousAutoName;
     public AutoModeSelector getAutoModeSelector() {
@@ -167,6 +166,11 @@ public class RobotContainer {
         new InstantCommand(() -> disableAutoSpinup = !disableAutoSpinup));
 
         HubShiftUtil.setAllianceWinOverride(() -> autoWinOverride);
+        autoDelay.setDefaultOption("NO DELAY", false);
+        autoDelay.addOption("YES DELAY", true);
+
+        SmartDashboard.putData("Auto Delay", autoDelay);
+
         
         // HubShiftUtil.setAllianceWinOverride(
         // () -> {

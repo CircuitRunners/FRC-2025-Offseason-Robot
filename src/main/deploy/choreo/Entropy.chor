@@ -14,8 +14,8 @@
    "intakeLength":{
     "dimension":"Length",
     "var":{
-     "exp":"2.4 m",
-     "val":2.4
+     "exp":"2.1 m",
+     "val":2.1
     }
    },
    "intakeLength2":{
@@ -52,76 +52,55 @@
      "exp":"1.6 m / s",
      "val":1.6
     }
+   },
+   "riskyOffset":{
+    "dimension":"Length",
+    "var":{
+     "exp":"0.35 m",
+     "val":0.35
+    }
    }
   },
   "poses":{
    "intakeBeginLeft":{
     "x":{
-     "exp":"intakeBeginRight.x",
+     "exp":"8.127134323120117 m",
      "val":8.127134323120117
     },
     "y":{
-     "exp":"fieldY - intakeBeginRight.y",
-     "val":7.131751531600953
+     "exp":"fieldY - 1.237248468399048 m",
+     "val":6.831751531600953
     },
     "heading":{
-     "exp":"-intakeBeginRight.heading",
+     "exp":"-2 rad",
      "val":-2.0
     }
    },
    "intakeBeginLeft2":{
     "x":{
-     "exp":"intakeBeginRight2.x",
-     "val":7.043540287017822
-    },
-    "y":{
-     "exp":"fieldY - intakeBeginRight2.y",
-     "val":7.445150310039521
-    },
-    "heading":{
-     "exp":"-intakeBeginRight2.heading",
-     "val":-1.7607846474334776
-    }
-   },
-   "intakeBeginRight":{
-    "x":{
-     "exp":"8.127134323120117 m",
-     "val":8.127134323120117
-    },
-    "y":{
-     "exp":"0.9372484683990479 m",
-     "val":0.937248468399048
-    },
-    "heading":{
-     "exp":"2 rad",
-     "val":2.0
-    }
-   },
-   "intakeBeginRight2":{
-    "x":{
      "exp":"7.043540287017822 m",
      "val":7.043540287017822
     },
     "y":{
-     "exp":"0.6238496899604797 m",
-     "val":0.6238496899604797
+     "exp":"fieldY - 0.6238496899604797 m",
+     "val":7.445150310039521
     },
     "heading":{
-     "exp":"1.7607846474334776 rad",
-     "val":1.7607846474334776
+     "exp":"-1.7607846474334776 rad",
+     "val":-1.7607846474334776
     }
    },
    "intakeEndLeft":{
     "x":{
-     "exp":"intakeEndRight.x",
+     "exp":"intakeBeginLeft.x",
      "val":8.127134323120117
     },
     "y":{
-     "exp":"fieldY - intakeEndRight.y",
+     "exp":"intakeBeginLeft.y - intakeLength",
      "val":4.731751531600953
     },
     "heading":{
-     "exp":"180 deg - intakeEndRight.heading - PI rad",
+     "exp":"intakeBeginLeft.heading",
      "val":-2.0
     }
    },
@@ -139,144 +118,88 @@
      "val":-1.7607846474334776
     }
    },
-   "intakeEndRight":{
+   "intakeEndLeftRisky":{
     "x":{
-     "exp":"intakeBeginRight.x",
+     "exp":"intakeBeginLeft.x",
      "val":8.127134323120117
     },
     "y":{
-     "exp":"intakeBeginRight.y + intakeLength",
-     "val":3.337248468399048
+     "exp":"intakeBeginLeft.y - riskyOffset",
+     "val":6.4817515316009535
     },
     "heading":{
-     "exp":"intakeBeginRight.heading",
-     "val":2.0
+     "exp":"intakeBeginLeft.heading",
+     "val":-2.0
     }
    },
-   "intakeEndRight2":{
+   "leftIntakeIntermediate":{
     "x":{
-     "exp":"intakeBeginRight2.x",
-     "val":7.043540287017822
+     "exp":"6.968055248260498 m",
+     "val":6.968055248260498
     },
     "y":{
-     "exp":"intakeBeginRight2.y + intakeLength2",
-     "val":3.1238496899604797
-    },
-    "heading":{
-     "exp":"intakeBeginRight2.heading",
-     "val":1.7607846474334776
-    }
-   },
-   "leftIntermediate":{
-    "x":{
-     "exp":"rightIntermediate.x",
-     "val":6.818950080871582
-    },
-    "y":{
-     "exp":"fieldY - rightIntermediate.y",
-     "val":7.463620320796967
-    },
-    "heading":{
-     "exp":"rightIntermediate.heading",
-     "val":0.0
-    }
-   },
-   "leftIntermediate2":{
-    "x":{
-     "exp":"rightIntermediate2.x",
-     "val":6.146090030670166
-    },
-    "y":{
-     "exp":"fieldY - rightIntermediate2.y",
-     "val":7.523110264778138
-    },
-    "heading":{
-     "exp":"-rightIntermediate2.heading",
-     "val":-1.7607846474334776
-    }
-   },
-   "leftShoot":{
-    "x":{
-     "exp":"rightShoot.x",
-     "val":3.9356820583343506
-    },
-    "y":{
-     "exp":"fieldY - rightShoot.y",
-     "val":7.510966056823731
-    },
-    "heading":{
-     "exp":"-rightShoot.heading",
-     "val":-1.371850369090507
-    }
-   },
-   "leftStart":{
-    "x":{
-     "exp":"rightStart.x",
-     "val":4.344310760498047
-    },
-    "y":{
-     "exp":"fieldY - rightStart.y",
-     "val":7.620463544368745
-    },
-    "heading":{
-     "exp":"rightStart.heading - PI rad",
-     "val":-1.5697538925044106
-    }
-   },
-   "rightIntermediate":{
-    "x":{
-     "exp":"6.818950080871582 m",
-     "val":6.818950080871582
-    },
-    "y":{
-     "exp":"0.6053796792030334 m",
-     "val":0.6053796792030334
+     "exp":"7.553381443023682 m",
+     "val":7.553381443023682
     },
     "heading":{
      "exp":"0 rad",
      "val":0.0
     }
    },
-   "rightIntermediate2":{
+   "leftIntermediate":{
+    "x":{
+     "exp":"6.818950080871582 m",
+     "val":6.818950080871582
+    },
+    "y":{
+     "exp":"fieldY - 0.6053796792030334 m",
+     "val":7.463620320796967
+    },
+    "heading":{
+     "exp":"0 rad",
+     "val":0.0
+    }
+   },
+   "leftIntermediate2":{
     "x":{
      "exp":"6.146090030670166 m",
      "val":6.146090030670166
     },
     "y":{
-     "exp":"0.5458897352218628 m",
-     "val":0.5458897352218628
+     "exp":"fieldY - 0.5458897352218628 m",
+     "val":7.523110264778138
     },
     "heading":{
-     "exp":"intakeBeginRight2.heading",
-     "val":1.7607846474334776
+     "exp":"0 rad",
+     "val":0.0
     }
    },
-   "rightShoot":{
+   "leftShoot":{
     "x":{
      "exp":"3.9356820583343506 m",
      "val":3.9356820583343506
     },
     "y":{
-     "exp":"0.55803394317627 m",
-     "val":0.55803394317627
+     "exp":"fieldY - 0.55803394317627 m",
+     "val":7.510966056823731
     },
     "heading":{
-     "exp":"1.371850369090507 rad",
-     "val":1.371850369090507
+     "exp":"-1.371850369090507 rad",
+     "val":-1.371850369090507
     }
    },
-   "rightStart":{
+   "leftStart":{
     "x":{
-     "exp":"4.344310760498047 m",
-     "val":4.344310760498047
+     "exp":"4.404310760498047 m",
+     "val":4.404310760498047
     },
     "y":{
-     "exp":"0.4485364556312561 m",
-     "val":0.4485364556312561
+     "exp":"fieldY - 0.4485364556312561 m",
+     "val":7.620463544368745
     },
     "heading":{
-     "exp":"1.5718387610853826 rad",
-     "val":1.5718387610853826
+     "exp":"-1.5718387610853826 rad",
+     "val":-1.5718387610853826
     }
    }
   }
@@ -303,8 +226,8 @@
    }
   },
   "mass":{
-   "exp":"141.4 lbs",
-   "val":64.137961118
+   "exp":"145 lbs",
+   "val":65.77089365
   },
   "inertia":{
    "exp":"7.7 kg m ^ 2",

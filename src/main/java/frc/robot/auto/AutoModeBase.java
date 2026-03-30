@@ -137,7 +137,7 @@ public class AutoModeBase {
 
 	public void prepRoutine(Command... sequence) {
 		routine.active()
-				.onTrue(Commands.sequence(sequence)
+				.onTrue(Commands.sequence(superstructure.getAutoWaitCommand(), Commands.sequence(sequence))
 						.withName("Auto Routine Sequential Command Group"));
 	}
 

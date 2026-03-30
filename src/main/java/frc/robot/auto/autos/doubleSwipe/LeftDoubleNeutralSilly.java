@@ -1,4 +1,4 @@
-package frc.robot.auto.autos;
+package frc.robot.auto.autos.doubleSwipe;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -31,7 +31,7 @@ public class LeftDoubleNeutralSilly extends AutoModeBase {
 
 		AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake");
 
-        AutoTrajectory sillyStuff = trajectory("sillystuff");
+        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly");
 
 		Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
@@ -52,7 +52,7 @@ public class LeftDoubleNeutralSilly extends AutoModeBase {
 			drive.stopDrivetrain(),
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
 			Commands.deadline(
-				cmdWithAccuracy(sillyStuff),
+				cmdWithAccuracy(leftShootToSilly),
 				Commands.sequence(
 					superstructure.deployIntake(),
 					superstructure.runIntakeIfDeployed(),
