@@ -47,6 +47,8 @@ import frc.lib.util.HubShiftUtil;
 import frc.lib.util.TunableNumber;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
+import frc.robot.RobotContainer;
+import frc.robot.auto.AutoConstants;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.controlboard.ControlBoardConstants;
 import frc.robot.shooting.ShotCalculator;
@@ -112,7 +114,7 @@ public class Superstructure extends SubsystemBase {
     public Setpoint shooterSetpoint = Shooter.STOP;
     public Rotation2d headingSetpoint = new Rotation2d();
 
-    public AngularVelocity shooterIncrement = Units.RPM.of(25.0);
+    public AngularVelocity shooterIncrement = Units.RPM.of(50.0);
 
     @Override
     public void periodic() {
@@ -415,6 +417,13 @@ public class Superstructure extends SubsystemBase {
           && drive.getRotation().getMeasure().isNear(
             headingSetpoint.getMeasure(), 
             passing ? DriveConstants.driveYawPassToleranceDeg : DriveConstants.driveYawLaunchToleranceDeg);
+    }
+    
+    public Command getAutoWaitCommand() {
+      return Commands.defer( () ->
+        Commands.waitSeconds(RobotContainer.autoDelay.getSelected() ? AutoConstants.delayTime : 0.0),
+        Set.of(this)
+      );
     }
 
     // public Command climb() {

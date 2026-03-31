@@ -9,12 +9,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
-import frc.robot.auto.autos.LeftDoubleNeutralSilly;
-import frc.robot.auto.autos.RightDoubleNeutralSilly;
 import frc.robot.auto.autos.centerPreload.CenterPreload;
-// import frc.robot.auto.autos.centerPreload.CenterPreload;
+import frc.robot.auto.autos.disruption.LeftFullDisruption;
+import frc.robot.auto.autos.disruption.RightFullDisruption;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutral;
+import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutralRisky;
+import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutralSilly;
+import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutralStraight;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutral;
+import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralRisky;
+import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralSilly;
+import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralStraight;
 import frc.robot.auto.autos.singleSwipe.LeftNeutralClimb;
 import frc.robot.auto.autos.singleSwipe.RightNeutralClimb;
 import frc.robot.subsystems.drive.Drive;
@@ -26,17 +31,24 @@ public class AutoModeSelector {
 	
 
 	public AutoModeSelector(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		mAutoChooser.addRoutine("Left Neutral Cycle", () -> new LeftNeutralClimb(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("Right Neutral Cycle", () -> new RightNeutralClimb(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
-		// mAutoChooser.addRoutine("Center Preload + Right Climb", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("Left Double Neutral", () -> new LeftDoubleNeutral(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("Right Double Neutral", () -> new RightDoubleNeutral(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("right silly", () -> new RightDoubleNeutralSilly(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("left silly", () -> new LeftDoubleNeutralSilly(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] Close Single Neutral", () -> new LeftNeutralClimb(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] Silly", () -> new LeftDoubleNeutralSilly(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] Double Neutral Linear", () -> new LeftDoubleNeutral(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] Risky", () -> new LeftDoubleNeutralRisky(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] Straight, Not Angled", () -> new LeftDoubleNeutralStraight(drive, superstructure, factory).getRoutine());
 
 
-		
+		mAutoChooser.addRoutine("[RIGHT] Close Single Neutral", () -> new RightNeutralClimb(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Silly", () -> new RightDoubleNeutralSilly(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Double Neutral Linear", () -> new RightDoubleNeutral(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Risky", () -> new RightDoubleNeutralRisky(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Straight, Not Angles", () -> new RightDoubleNeutralStraight(drive, superstructure, factory).getRoutine());
+
+		mAutoChooser.addRoutine("[CENTER] Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
+
+		mAutoChooser.addRoutine("[LEFT] Disruption", () -> new LeftFullDisruption(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Disruption", () -> new RightFullDisruption(drive, superstructure, factory).getRoutine());
+
 
 		//
 		useObjectDetections.setDefaultOption("no :(", false);

@@ -25,6 +25,7 @@ public class AutoConstants {
 	public static enum AutoEndBehavior {
 	}
 	public static double shootAllFuelTime = 4;
+	public static double delayTime = 4.0;
 
 	public static TrajectoryConfig intakeConfig = new TrajectoryConfig(DriveConstants.kIntakeMaxSpeed, DriveConstants.kMaxAcceleration)
 		.setEndVelocity(DriveConstants.kIntakeMaxSpeed);

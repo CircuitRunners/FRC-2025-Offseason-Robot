@@ -17,51 +17,50 @@ import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
+import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
 
-public class RightDoubleNeutral extends AutoModeBase {
+public class LeftDoubleNeutralRisky extends AutoModeBase {
 
-	public RightDoubleNeutral(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		super(drive, superstructure, factory, "Right Double Neutral");
+	public LeftDoubleNeutralRisky(Drive drive, Superstructure superstructure, AutoFactory factory) {
+		super(drive, superstructure, factory, "Left Risky");
 
-		AutoTrajectory rightIntakeToShoot = trajectoryMirroredLeftRight("leftIntakeToShoot");
-		AutoTrajectory rightIntakeToShoot2 = trajectoryMirroredLeftRight("leftIntakeToShoot2");
+        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShootRisky");
+
+		AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntakeRisky");
+
+        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly");
+
+		Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
 
-		AutoTrajectory rightTrenchToNeutralIntake = trajectoryMirroredLeftRight("leftTrenchToNeutralIntake");
-		AutoTrajectory rightShootToNeutralIntake = trajectoryMirroredLeftRight("leftShootToNeutralIntake");
-
-
-		Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
-
-		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.RIGHT);
+		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.left);
 
 
 		prepRoutine(
-			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
+            AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
 			Commands.deadline(
-				rightTrenchToNeutralIntake.cmd(),
+				leftTrenchToNeutralIntake.cmd(),
 				Commands.sequence(
 					superstructure.deployIntake(),
 					superstructure.runIntakeIfDeployed()
 				)
 			),
-			cmdWithAccuracy(rightIntakeToShoot),
+			cmdWithAccuracy(leftIntakeToShoot).alongWith(superstructure.shooterIdleSpinup()),
 			drive.stopDrivetrain(),
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
-			
 			Commands.deadline(
-				rightShootToNeutralIntake.cmd(),
+				cmdWithAccuracy(leftShootToSilly),
 				Commands.sequence(
-					superstructure.runIntakeIfDeployed()
-				)
-			),
-			cmdWithAccuracy(rightIntakeToShoot2),
-			drive.stopDrivetrain(),
-			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime)
-			
+					superstructure.deployIntake(),
+					superstructure.runIntakeIfDeployed(),
+                    superstructure.idleIntake()
+				)),
+                drive.stopDrivetrain(),
+			    superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
+                superstructure.deployIntake()
 		);
 
 

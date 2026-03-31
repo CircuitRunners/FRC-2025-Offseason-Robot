@@ -93,7 +93,7 @@ public class ShotCalculator {
     // Passing targets
     private static final Distance hubPassLine =
         FieldLayout.center.getMeasureY();
-    private static final Distance xPassTarget = Units.Inches.of(37);
+    private static final Distance xPassTarget = Units.Inches.of(67);
     private static final Distance yPassTarget = Units.Inches.of(65);
     // Boxes of bad
     // Under tower

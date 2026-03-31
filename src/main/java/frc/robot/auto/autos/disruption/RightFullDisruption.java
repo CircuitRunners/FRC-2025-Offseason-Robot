@@ -1,4 +1,4 @@
-package frc.robot.auto.autos.singleSwipe;
+package frc.robot.auto.autos.disruption;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -21,33 +21,44 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
 
-public class RightNeutralClimb extends AutoModeBase {
+public class RightFullDisruption extends AutoModeBase {
 
-	public RightNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		super(drive, superstructure, factory, "Right Neutral Cycle + Climb");
+	public RightFullDisruption(Drive drive, Superstructure superstructure, AutoFactory factory) {
+		super(drive, superstructure, factory, "Right Double Neutral");
 
-		AutoTrajectory rightIntakeToShoot = trajectoryMirroredLeftRight("leftIntakeToShootClose");
+		AutoTrajectory disruption = trajectoryMirroredLeftRight("disruption");
+		AutoTrajectory disruptionReturn = trajectoryMirroredLeftRight("disruptionReturn");
 
-		AutoTrajectory rightTrenchToNeutralIntake = trajectoryMirroredLeftRight("leftTrenchToNeutralIntakeClose");
+        AutoTrajectory rightShootToSilly = trajectoryMirroredLeftRight("leftShootToSilly");
 
-		Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
+
+		Pose2d startPose = disruption.getInitialPose().get();
 
 		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.RIGHT);
 
 
 		prepRoutine(
 			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
+			disruption.cmd(),
 			Commands.deadline(
-				rightTrenchToNeutralIntake.cmd(),
+				cmdWithAccuracy(disruptionReturn),
 				Commands.sequence(
-					superstructure.deployIntake(),
 					superstructure.runIntakeIfDeployed()
 				)
 			),
-			cmdWithAccuracy(rightIntakeToShoot).alongWith(superstructure.shooterIdleSpinup()),
 			drive.stopDrivetrain(),
-			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime)
+			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
 			
+			Commands.deadline(
+				cmdWithAccuracy(rightShootToSilly),
+				Commands.sequence(
+					superstructure.deployIntake(),
+					superstructure.runIntakeIfDeployed(),
+                    superstructure.idleIntake()
+				)),
+                drive.stopDrivetrain(),
+			    superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
+                superstructure.deployIntake()
 		);
 
 

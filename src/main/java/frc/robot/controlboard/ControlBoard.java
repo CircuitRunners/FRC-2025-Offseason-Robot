@@ -29,6 +29,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
+import frc.robot.subsystems.intakeDeploy.IntakeDeployConstants;
 import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.shooter.Shooter;
@@ -202,34 +203,49 @@ public class ControlBoard {
 
 
 	private void debugControls() {
-		operator.leftTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(1))).alongWith(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(2))))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()).alongWith(intakeRollers.setpointCommand(IntakeRollers.IDLE)));
-		operator.rightTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-1)))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()));
 
-		operator.leftBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
-		operator.rightBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-11)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.leftTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(2)))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.rightTrigger().onTrue(intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-2)))).onFalse(intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()));
 
-		operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
-		//operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.back().onTrue(Commands.runOnce(() ->intakeDeploy.setCurrentPosition(IntakeDeployConstants.kDeployPosition)));
 
-		// operator.povUp().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
-		// operator.povDown().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.start().onTrue(Commands.runOnce(() -> intakeDeploy.useSoftLimits(false)));
 
-		operator.x().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(4)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
-		operator.b().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
+		operator.rightBumper().onTrue(
+			Commands.sequence(
+			Commands.runOnce(() -> intakeDeploy.useSoftLimits(false)),
+			intakeDeploy.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-2)))))
+			.onFalse(
+				Commands.sequence(
+				intakeDeploy.setpointCommand(Setpoint.withNeutralSetpoint()),
+				Commands.waitSeconds(1),
+				Commands.runOnce(() -> intakeDeploy.setCurrentPosition(IntakeDeployConstants.kDeployPosition))));
 
-		operator.a().onTrue(kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(kicker.setpointCommand(Setpoint.withNeutralSetpoint()));
-		operator.y().onTrue(kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(kicker.setpointCommand(Setpoint.withNeutralSetpoint()));
+		// operator.leftBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
+		// operator.rightBumper().onTrue(intakeRollers.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-11)))).onFalse(intakeRollers.setpointCommand(Setpoint.withNeutralSetpoint()));
 
-		operator.start().onTrue(hood.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(1)))).onFalse(hood.setpointCommand(Setpoint.withNeutralSetpoint()));
-		operator.back().onTrue(hood.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-1)))).onFalse(hood.setpointCommand(Setpoint.withNeutralSetpoint()));
+		// operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
+		// //operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
 
-		operator.leftStick().onTrue(superstructure.zero());
+		// // operator.povUp().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
+		// // operator.povDown().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
 
-		operator.povLeft().onTrue(
-			conveyor.setpointCommand(Conveyor.FEED_FORWARD)
-			.alongWith(kicker.setpointCommand(Kicker.FEED_FORWARD).alongWith(intakeRollers.Pulse()))
-		).onFalse(conveyor.setpointCommand(Conveyor.IDLE)
-			.alongWith(kicker.setpointCommand(Kicker.IDLE)).alongWith(intakeRollers.setpointCommand(IntakeRollers.IDLE)));
+		// operator.x().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(4)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
+		// operator.b().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		// operator.a().onTrue(kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(kicker.setpointCommand(Setpoint.withNeutralSetpoint()));
+		// operator.y().onTrue(kicker.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(kicker.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		// operator.start().onTrue(hood.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(1)))).onFalse(hood.setpointCommand(Setpoint.withNeutralSetpoint()));
+		// operator.back().onTrue(hood.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-1)))).onFalse(hood.setpointCommand(Setpoint.withNeutralSetpoint()));
+
+		// operator.leftStick().onTrue(superstructure.zero());
+
+		// operator.povLeft().onTrue(
+		// 	conveyor.setpointCommand(Conveyor.FEED_FORWARD)
+		// 	.alongWith(kicker.setpointCommand(Kicker.FEED_FORWARD).alongWith(intakeRollers.Pulse()))
+		// ).onFalse(conveyor.setpointCommand(Conveyor.IDLE)
+		// 	.alongWith(kicker.setpointCommand(Kicker.IDLE)).alongWith(intakeRollers.setpointCommand(IntakeRollers.IDLE)));
 	}
 
 	public Command rumbleCommand(Time duration) {

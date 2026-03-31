@@ -44,10 +44,12 @@ public class VisionConstants {
   //         new Rotation3d(0.0, Units.degreesToRadians(-20.0), Units.degreesToRadians(180.0)));
 
   public static Transform3d robotToCamera0 = new Transform3d(Units.inchesToMeters(-2.5), Units.inchesToMeters(-10.068), Units.inchesToMeters(21.082),
-    new Rotation3d(0, Math.toRadians(-23.5), Math.toRadians(5)));
-  public static Transform3d robotToCamera1 = new Transform3d(Units.inchesToMeters(-9.053), Units.inchesToMeters(-12.194), Units.inchesToMeters(11.700),
+    new Rotation3d(0.0, Math.toRadians(-23.5), Math.toRadians(6)));
+  public static Transform3d robotToCamera1 = new Transform3d(Units.inchesToMeters(-12.194), Units.inchesToMeters(-9.053), Units.inchesToMeters(11.700),
     new Rotation3d(0, Math.toRadians(-20.0), Math.toRadians(180)));
 
+
+    
 
   public static double maxAmbiguity = 0.3;
   public static double maxZError = 0.75;
