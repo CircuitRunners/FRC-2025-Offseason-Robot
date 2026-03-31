@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BooleanSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -34,6 +35,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.drive.FollowNonstopTrajectory;
 import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
@@ -46,6 +48,7 @@ import frc.lib.util.TunableNumber;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
 import frc.robot.controlboard.ControlBoard;
+import frc.robot.controlboard.ControlBoardConstants;
 import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.climber.ClimberConstants;
@@ -192,7 +195,7 @@ public class Superstructure extends SubsystemBase {
     public Command waitUntilSafeToShoot() {
       return Commands.waitUntil(() -> (shooter.spunUp() || Robot.isSimulation())
       && hood.nearPositionSetpoint()
-      && (!headingLockToggle || drive.getRotation().getMeasure().isNear(headingSetpoint.getMeasure(), Units.Degrees.of(5.0)) || RobotState.isAutonomous()));
+      && (!headingLockToggle || RobotState.isAutonomous()));
     }
 
     public Command shoot() {
@@ -406,6 +409,14 @@ public class Superstructure extends SubsystemBase {
       );
     }
 
+    public boolean atShotGoal() {
+      var passing = ShotCalculator.getInstance(drive).getParameters().passing();
+      return DriverStation.isEnabled()
+          && drive.getRotation().getMeasure().isNear(
+            headingSetpoint.getMeasure(), 
+            passing ? DriveConstants.driveYawPassToleranceDeg : DriveConstants.driveYawLaunchToleranceDeg);
+    }
+
     // public Command climb() {
     //   return Commands.defer(
     //       () -> {
@@ -602,7 +613,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean shouldHeadingLock() {
-      return (headingLockToggle && (state == State.SHOOTING || state == State.SHOOTINTAKE) && state != State.INTAKING  /*&& (!nearTrench|| state == State.SHOOTING). && (visionValid() || Robot.isSimulation())*/);
+      return (headingLockToggle && ControlBoardConstants.mDriverController.x().getAsBoolean()  /*&& (!nearTrench|| state == State.SHOOTING). && (visionValid() || Robot.isSimulation())*/);
     }
 
     public void setPathFollowing(boolean isFollowing) {

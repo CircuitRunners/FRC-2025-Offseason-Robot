@@ -1,10 +1,13 @@
 package frc.robot.controlboard;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
@@ -18,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.HubShiftUtil;
+import frc.robot.Robot;
 import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -131,6 +135,14 @@ public class ControlBoard {
 	public void driverControls() {
 		Superstructure s = superstructure;
 
+		Trigger inLaunchingTolerance = 
+          new Trigger(
+            () ->
+                (shooter.spunUp() || Robot.isSimulation())
+                && hood.nearPositionSetpoint()
+                && (!s.headingLockToggle || s.atShotGoal() || RobotState.isAutonomous()
+          ));
+
 		// INTAKING ###############################################################################
 
 		driver.rightBumper().whileTrue(s.shakeIntake()).onFalse(
@@ -153,7 +165,11 @@ public class ControlBoard {
 
 		driver.leftTrigger(0.1).and(driver.x()).whileTrue(s.shootAndIntake());
 
- 		driver.x().and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean()).and(driver.leftTrigger(0.1).negate()).whileTrue(s.shootWhenReadyTeleop());
+ 		driver.x()
+		.and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean())
+		.and(driver.leftTrigger(0.1).negate())
+		.and(inLaunchingTolerance).debounce(0.1, DebounceType.kFalling)
+		.whileTrue(s.shootWhenReadyTeleop());
 
 		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)), Units.Degrees.of(13.0)));
 

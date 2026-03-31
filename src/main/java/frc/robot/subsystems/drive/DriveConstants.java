@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -42,6 +43,9 @@ public class DriveConstants {
 
     public static final Translation2d kTranslation2dZero = new Translation2d(0.0, 0.0);
     public static final Rotation2d kRotation2dZero = new Rotation2d();
+
+	public static final Angle driveYawPassToleranceDeg = Units.Degrees.of(10.0);
+	public static final Angle driveYawLaunchToleranceDeg = Units.Degrees.of(15.0);
 
 
     public static final SynchronousPIDF mAutoAlignHeadingController = getAutoAlignHeadingController();
