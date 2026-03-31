@@ -139,9 +139,7 @@ public class ControlBoard {
 		Trigger inLaunchingTolerance = 
           new Trigger(
             () ->
-                (shooter.spunUp() || Robot.isSimulation())
-                && hood.nearPositionSetpoint()
-                && (!s.headingLockToggle || s.atShotGoal() || RobotState.isAutonomous()
+                (!s.headingLockToggle || s.atShotGoal() || RobotState.isAutonomous()
           ));
 
 		// INTAKING ###############################################################################

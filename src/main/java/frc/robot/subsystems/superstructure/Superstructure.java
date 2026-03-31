@@ -220,8 +220,7 @@ public class Superstructure extends SubsystemBase {
                           : State.SHOOTING;
               }),
               waitUntilSafeToShoot(),
-              kicker.setpointCommand(Kicker.FEED_FORWARD),
-              Commands.waitTime(Units.Milliseconds.of(150)),
+              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
               conveyor.setpointCommand(Conveyor.FEED_FORWARD),
               intakeRollers.Pulse(),
               Commands.waitUntil(() -> false))
@@ -233,12 +232,11 @@ public class Superstructure extends SubsystemBase {
           maintainHeadingEpsilon = 0.25;
           state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
       });
-}
+  }
 
-    public Command agitate() {
-      return Commands.sequence(conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
-      Commands.waitSeconds(0.2),
-      conveyor.setpointCommand(Conveyor.FEED_FORWARD));
+    public Command turnToHubAuto() {
+      return Commands.defer(() ->
+      new PIDToPoseCommand(drive, this, new Pose2d(drive.getPose().getTranslation(), ShotCalculator.getInstance(drive).getParameters().heading()), Units.Inches.of(6.0), Units.Degrees.of(10)), Set.of(drive));
     }
 
     public Command idleIntake() {
@@ -418,7 +416,7 @@ public class Superstructure extends SubsystemBase {
             headingSetpoint.getMeasure(), 
             passing ? DriveConstants.driveYawPassToleranceDeg : DriveConstants.driveYawLaunchToleranceDeg);
     }
-    
+
     public Command getAutoWaitCommand() {
       return Commands.defer( () ->
         Commands.waitSeconds(RobotContainer.autoDelay.getSelected() ? AutoConstants.delayTime : 0.0),
