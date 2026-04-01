@@ -180,7 +180,7 @@ public class SimulationObjectDetectionCameraIO extends ObjectDetectionCameraIO {
             )
             );
         }
-        ObjectPoseEstimator.field.getObject("Fuel").setPoses(poses);
+        // ObjectPoseEstimator.field.getObject("Fuel").setPoses(poses);
     }
     private Pose3d[] mapSimulatedGamePieceListToPoseArray(ArrayList<Pair<SimulatedGamePiece, Rotation3d>> gamePieces) {
         final Pose3d[] poses = new Pose3d[gamePieces.size()];

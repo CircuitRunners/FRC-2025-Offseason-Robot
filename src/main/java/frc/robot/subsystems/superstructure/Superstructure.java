@@ -568,18 +568,7 @@ public class Superstructure extends SubsystemBase {
     //   ).withName("Climb Sequence");
     // }
     
-    public Command collectFuel(Pose2d pses) {
-      return Commands.defer(() -> {
-        objectPoseEstimator.updateSingleTrajectory(pses);
-        return new FollowNonstopTrajectory(objectPoseEstimator.singleTrajectory, drive);
-      },
-      Collections.singleton(drive) 
-      );
-    }
-
-    public void updateSide(ObjectPoseEstimator.INTAKE_SIDE i) {
-      objectPoseEstimator.updateIntakeSide(i);
-    }
+    
 
     public static enum State {
       TUCK,

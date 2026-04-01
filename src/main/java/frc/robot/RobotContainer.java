@@ -78,25 +78,25 @@ public class RobotContainer {
     private final Drive drive = new Drive();
     private final Hood hood = new Hood();
     private final Vision vision = new Vision(
-        drive.getDrivetrain().getVisionConsumer(),
-        (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-        (RobotBase.isSimulation())
-        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        drive.getDrivetrain().getVisionConsumer()
+        // (RobotBase.isSimulation())
+        // ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        // : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        // (RobotBase.isSimulation())
+        // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
-    public final ObjectPoseEstimator objectDetector = null;
-    // new ObjectPoseEstimator(
-    //     drive,
-    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
-    //     new ObjectDetectionCamera(
-    //         drive,
-    //         "ObjectDetection",
-    //         ObjectDetectionConstants.cameraTransform
-    //     )
-    // );
+    public final ObjectPoseEstimator objectDetector = 
+    new ObjectPoseEstimator(
+        drive,
+        ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
+        SimulatedGamePieceConstants.GamePieceType.FUEL,
+        new ObjectDetectionCamera(
+            drive,
+            "ObjectDetection",
+            ObjectDetectionConstants.cameraTransform
+        )
+    );
 
     private final Shooter shooter = new Shooter();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();

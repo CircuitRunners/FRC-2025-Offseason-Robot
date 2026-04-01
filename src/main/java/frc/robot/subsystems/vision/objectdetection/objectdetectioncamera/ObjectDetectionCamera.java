@@ -111,7 +111,7 @@ public class ObjectDetectionCamera extends SubsystemBase {
     }
 
     private ObjectDetectionCameraIO generateIO(String hostname, Transform3d cameraTransform) {
-        if (RobotBase.isSimulation() || AutoModeSelector.useObjectDetections.getSelected() == false)
+        if (RobotBase.isSimulation())
             return new SimulationObjectDetectionCameraIO(drive, hostname, cameraTransform);
         return new PhotonObjectDetectionCameraIO(hostname);
     }
