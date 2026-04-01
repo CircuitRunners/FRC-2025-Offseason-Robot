@@ -1,8 +1,11 @@
 package frc.robot.subsystems.conveyor;
 
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.bases.MotorSubsystem;
 import frc.lib.io.MotorIOTalonFX;
 import frc.robot.subsystems.intakeRollers.IntakeRollerConstants;
@@ -18,6 +21,12 @@ public class Conveyor extends MotorSubsystem<MotorIOTalonFX>{
     private boolean pulseIn = true;
     private final Timer pulseTimer = new Timer();
     public boolean isPulsing = false;
+
+    public Trigger canPulse =
+        new Trigger(
+            () ->
+            getStatorCurrent().lte(Units.Amps.of(40))
+        );
     
     public Conveyor() {
         super(ConveyorConstants.getMotorIO(), "Conveyor");
@@ -43,7 +52,7 @@ public class Conveyor extends MotorSubsystem<MotorIOTalonFX>{
         super.periodic();
 
         if (isPulsing) {
-            if (pulseTimer.hasElapsed(pulseIn ? IntakeRollerConstants.pulseInTime : IntakeRollerConstants.pulseOutTime)) {
+            if (canPulse.debounce(0.5, DebounceType.kRising).getAsBoolean()) {
                 startPulse(!pulseIn);
             }
         }
