@@ -100,7 +100,8 @@ public class SimulationObjectDetectionCameraIO extends ObjectDetectionCameraIO {
         
         final ArrayList<Pair<SimulatedGamePiece, Rotation3d>> visibleObjects = new ArrayList<>();
         for (SimulatedGamePiece currentObject : gamePiecesOnField) {
-            final Rotation3d cameraAngleToObject = calculateCameraAngleToObject(currentObject.getPosition(), cameraPose);
+            final Rotation3d cameraAngleToObject =
+                    calculateCameraAngleToObject(getDetectionPoint(currentObject), cameraPose);
 
             if (isObjectWithinFOV(cameraAngleToObject))
                 visibleObjects.add(new Pair<>(currentObject, cameraAngleToObject));
@@ -119,6 +120,11 @@ public class SimulationObjectDetectionCameraIO extends ObjectDetectionCameraIO {
         final Rotation3d differenceAsAngle = getAngle(difference);
 
         return differenceAsAngle.minus(cameraPose.getRotation());
+    }
+
+    private Translation3d getDetectionPoint(SimulatedGamePiece gamePiece) {
+        final Translation3d objectPosition = gamePiece.getPosition();
+        return new Translation3d(objectPosition.getX(), objectPosition.getY(), 0.0);
     }
 
     private Rotation3d getAngle(Translation3d translation) {

@@ -51,6 +51,8 @@ public class ObjectPoseEstimator extends SubsystemBase {
     private final SimulatedGamePieceConstants.GamePieceType gamePieceType;
     private final ObjectDetectionCamera camera;
     private final Drive drive;
+    private final FuelPathFinder fuelPathFinder;
+    private final TrajectoryConfig fuelPathTrajectoryConfig;
 
     Field2d objectField = new Field2d();
 
@@ -73,6 +75,8 @@ public class ObjectPoseEstimator extends SubsystemBase {
         this.deletionThresholdSeconds = deletionThresholdSeconds;
         this.gamePieceType = gamePieceType;
         this.camera = camera;
+        this.fuelPathFinder = new FuelPathFinder();
+        this.fuelPathTrajectoryConfig = new TrajectoryConfig(DriveConstants.kIntakeMaxSpeed, DriveConstants.kMaxAcceleration);
         this.objectPositionsToDetectionTimestamp = new HashMap<>();
         if (RobotBase.isSimulation()) SimulatedGamePieceConstants.initializeFuel();
         SmartDashboard.putData("objectdetection", objectField);       
@@ -87,6 +91,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         updateTrackedObjectsPositions();
         removeOldObjects();
         objectField.getObject("Fuel").setPoses(getObjectsPosesOnField());
+        objectField.getObject("Trajectory").setTrajectory(getFuelCollectionTrajectory());
         try {
             removeIntakedFuel();
         } catch(Exception e) {}
@@ -116,6 +121,25 @@ public class ObjectPoseEstimator extends SubsystemBase {
 
         return objectPoses;
     }
+
+    public FuelPathFinder.FuelPathPlan getFuelCollectionPathPlan() {
+        final Pose2d robotPose = drive.getPose();
+        if (robotPose == null) {
+            return FuelPathFinder.FuelPathPlan.empty();
+        }
+
+        // final int remainingCapacity = Math.max(0, IntakeRollerConstants.fuelLimit - IntakeRollerConstants.numberOfFuel);
+        return fuelPathFinder.findPath(robotPose, getObjectsOnField(), IntakeRollerConstants.fuelLimit);
+    }
+
+    public ArrayList<Pose2d> getFuelCollectionPathPoses() {
+        return new ArrayList<>(getFuelCollectionPathPlan().pathPoses());
+    }
+
+    public Trajectory getFuelCollectionTrajectory() {
+        return fuelPathFinder.buildTrajectory(drive.getPose(), getFuelCollectionPathPlan(), fuelPathTrajectoryConfig);
+    }
+
     /**
      * Removes the closest object to the robot from the list of objects in the pose estimator.
      */
@@ -275,6 +299,21 @@ public class ObjectPoseEstimator extends SubsystemBase {
     private boolean hasObjectExpired(double timestamp) {
         return Timer.getTimestamp() - timestamp > deletionThresholdSeconds;
     }
+
+/*
+       ------------------
+      /  ___         ___ \
+     /  |   |   |   |   | \
+    /   |___|   |   |___|  \
+   /    |  \    |   |       \
+  |     |   \   |   |        |
+  |                          |
+  |        Here Lies         |
+  |      fsh() & tsh()       |
+  | Gone but never forgotten |
+  |        🥀 🥀 🥀         |
+  ----------------------------
+*/
 
     public static enum INTAKE_SIDE {
         LEFT,

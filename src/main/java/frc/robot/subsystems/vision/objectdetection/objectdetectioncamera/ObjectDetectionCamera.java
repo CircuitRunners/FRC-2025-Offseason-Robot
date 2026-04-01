@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.MathHelpers;
@@ -98,16 +99,19 @@ public class ObjectDetectionCamera extends SubsystemBase {
         final Pose2d robotPoseAtResultTimestamp = drive.getPose();
         if (robotPoseAtResultTimestamp == null)
             return new Translation2d();
-        final Transform3d robotCenterToCamera = cameraTransform;
-        final Pose3d cameraPose = new Pose3d(robotPoseAtResultTimestamp).plus(robotCenterToCamera);
-        final Pose3d objectRotationStart = cameraPose.plus(new Transform3d(0, 0, 0, objectRotation));
+        final Pose3d cameraPose = new Pose3d(robotPoseAtResultTimestamp).plus(cameraTransform);
+        final Rotation3d fieldRelativeObjectRotation =
+                objectRotation.rotateBy(cameraPose.getRotation());
+        final Translation3d rayDirection = new Translation3d(1.0, fieldRelativeObjectRotation);
 
-        final double cameraZ = cameraPose.getTranslation().getZ();
-        final double objectPitchSin = Math.sin(objectRotationStart.getRotation().getY());
-        final double xTransform = cameraZ / objectPitchSin;
-        final Transform3d objectRotationStartToGround = new Transform3d(xTransform, 0, 0, new Rotation3d());
+        if (Math.abs(rayDirection.getZ()) < 1e-6)
+            return cameraPose.getTranslation().toTranslation2d();
 
-        return objectRotationStart.transformBy(objectRotationStartToGround).getTranslation().toTranslation2d();
+        final double distanceToGround = -cameraPose.getZ() / rayDirection.getZ();
+        final Translation3d objectPosition =
+                cameraPose.getTranslation().plus(rayDirection.times(distanceToGround));
+
+        return objectPosition.toTranslation2d();
     }
 
     private ObjectDetectionCameraIO generateIO(String hostname, Transform3d cameraTransform) {

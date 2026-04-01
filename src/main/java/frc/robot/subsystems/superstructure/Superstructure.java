@@ -394,6 +394,30 @@ public class Superstructure extends SubsystemBase {
             .withName("End Intaking");
     }
 
+    public Command collectVisibleFuel() {
+      return Commands.defer(
+          () -> {
+            List<Pose2d> fuelPath = objectPoseEstimator.getFuelCollectionPathPoses();
+            if (fuelPath.isEmpty()) {
+              return Commands.none();
+            }
+
+            return new PIDToPosesCommand(
+                    drive,
+                    this,
+                    fuelPath,
+                    DriveConstants.getObjectDetectionTranslationController(),
+                    DriveConstants.getObjectDetectionHeadingController())
+                .deadlineFor(runIntakeIfDeployed());
+          },
+          Set.of(drive, intakeDeploy, intakeRollers, conveyor, kicker));
+    }
+
+    public Command collectFuelTrajectory() {
+      Trajectory t = objectPoseEstimator.getFuelCollectionTrajectory();
+      return new FollowNonstopTrajectory(t, drive);
+    }
+
     public Command tuck() {
       return Commands.sequence(
           intakeDeploy.setpointCommand(IntakeDeploy.STOW).onlyIf(() -> state != State.SHOOTING && state != State.SHOOTINTAKE),
