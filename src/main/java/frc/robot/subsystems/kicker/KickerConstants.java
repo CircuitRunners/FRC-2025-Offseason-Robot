@@ -44,9 +44,9 @@ public class KickerConstants {
         config.CurrentLimits.StatorCurrentLimit = 120.0;
 
 		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();	
-		config.CurrentLimits.SupplyCurrentLimit = 80.0;
+		config.CurrentLimits.SupplyCurrentLimit = 100.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
-		config.CurrentLimits.SupplyCurrentLowerTime = 0.3;
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.5;
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 800;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -800;
@@ -68,6 +68,10 @@ public class KickerConstants {
 		config.unit = Units.Rotations;
 		config.mainID = Ports.KICKER.id;
 		config.mainBus = Ports.KICKER.bus;
+		config.followerConfig = getFXConfig();
+		config.followerIDs = new int[] {Ports.KICKER_FOLLOWER.id};
+		config.followerMotorAlignment = new MotorAlignmentValue[] {MotorAlignmentValue.Opposed};
+		config.followerBuses = new CANBus[] {Ports.KICKER_FOLLOWER.bus};
 		return config;
 	}
 

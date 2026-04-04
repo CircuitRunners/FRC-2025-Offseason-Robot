@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.RobotDriveBase;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -114,7 +115,8 @@ public class Superstructure extends SubsystemBase {
     public Setpoint shooterSetpoint = Shooter.STOP;
     public Rotation2d headingSetpoint = new Rotation2d();
 
-    public AngularVelocity shooterIncrement = Units.RPM.of(50.0);
+
+    public AngularVelocity shooterIncrement = Units.RPM.of(25.0);
 
     @Override
     public void periodic() {
@@ -138,7 +140,7 @@ public class Superstructure extends SubsystemBase {
       nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
       if (true /*&& !nearTrench*/) {
         hoodSetpoint = 
-            Setpoint.withMotionMagicSetpoint(
+            Setpoint.withPositionSetpoint(
               Units.Degrees.of(
               ShotCalculator.getInstance(drive)
               .getParameters()
@@ -197,7 +199,7 @@ public class Superstructure extends SubsystemBase {
     public Command waitUntilSafeToShoot() {
       return Commands.waitUntil(() -> (shooter.spunUp() || Robot.isSimulation())
       && hood.nearPositionSetpoint()
-      && (!headingLockToggle || RobotState.isAutonomous()));
+      && (!headingLockToggle || atShotGoal() || RobotState.isAutonomous()));
     }
 
     public Command shoot() {
@@ -250,6 +252,42 @@ public class Superstructure extends SubsystemBase {
         conveyor.setpointCommand(Conveyor.JUGGLE));
     }
 
+    public Command unjam() {
+      return Commands.sequence(
+        kicker.setpointCommand(Kicker.VELOCITY_BACKWARD),
+        conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+        Commands.waitSeconds(0.2),
+        kicker.setpointCommand(Kicker.IDLE),
+        conveyor.setpointCommand(Conveyor.IDLE)
+      );
+    }
+
+    public Command rampUpConveyorAndKicker() {
+      return Commands.defer(() -> {
+        final double feedRampSeconds = 0.15;
+        final Timer timer = new Timer();
+        final double rampSeconds = Math.max(feedRampSeconds, 0.02);
+
+        return Commands.run(() -> {
+
+          double rampPercent = Math.min(timer.get() / rampSeconds, 1.0);
+
+          conveyor.applySetpoint(
+              Setpoint.withVoltageSetpoint(Units.Volts.of(Conveyor.FEED_FORWARD.baseUnits * rampPercent)));
+          kicker.applySetpoint(
+              Setpoint.withVoltageSetpoint(Units.Volts.of(Kicker.FEED_FORWARD.baseUnits * rampPercent)));
+        }, conveyor, kicker)
+        .beforeStarting(timer::restart)
+        .withTimeout(rampSeconds)
+        .finallyDo(() -> timer.stop())
+        .andThen(
+            Commands.parallel(
+                conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+                kicker.setpointCommand(Kicker.VELOCITY_FORWARD)));
+      }, Set.of(conveyor, kicker)).withName("Ramp Up Conveyor + Kicker");
+    }
+
+
     public Command shootWhenReadyTeleop() {
       return Commands.sequence(
           Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
@@ -263,9 +301,8 @@ public class Superstructure extends SubsystemBase {
                           : State.SHOOTING;
               }),
               waitUntilSafeToShoot(),
-              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
-              conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-              intakeRollers.Pulse(),
+              rampUpConveyorAndKicker().alongWith(
+              intakeRollers.Pulse()),
               Commands.waitUntil(() -> false))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
@@ -394,28 +431,36 @@ public class Superstructure extends SubsystemBase {
             .withName("End Intaking");
     }
 
-    public Command collectVisibleFuel() {
-      return Commands.defer(
-          () -> {
-            List<Pose2d> fuelPath = objectPoseEstimator.getFuelCollectionPathPoses();
-            if (fuelPath.isEmpty()) {
-              return Commands.none();
-            }
+    // public Command collectVisibleFuel() {
+    //   return Commands.defer(
+    //       () -> {
+    //         List<Pose2d> fuelPath = objectPoseEstimator.getFuelCollectionPathPoses();
+    //         if (fuelPath.isEmpty()) {
+    //           return Commands.none();
+    //         }
 
-            return new PIDToPosesCommand(
-                    drive,
-                    this,
-                    fuelPath,
-                    DriveConstants.getObjectDetectionTranslationController(),
-                    DriveConstants.getObjectDetectionHeadingController())
-                .deadlineFor(runIntakeIfDeployed());
-          },
-          Set.of(drive, intakeDeploy, intakeRollers, conveyor, kicker));
+    //         return new PIDToPosesCommand(
+    //                 drive,
+    //                 this,
+    //                 fuelPath,
+    //                 DriveConstants.getObjectDetectionTranslationController(),
+    //                 DriveConstants.getObjectDetectionHeadingController())
+    //             .deadlineFor(runIntakeIfDeployed());
+    //       },
+    //       Set.of(drive, intakeDeploy, intakeRollers, conveyor, kicker));
+    // }
+
+    
+    
+    public Command collectFuelTrajectory() {
+      return Commands.defer(() -> {
+        return new FollowNonstopTrajectory(objectPoseEstimator.getFuelCollectionTrajectory(), drive);
+      }, Set.of(drive)
+      );
     }
 
-    public Command collectFuelTrajectory() {
-      Trajectory t = objectPoseEstimator.getFuelCollectionTrajectory();
-      return new FollowNonstopTrajectory(t, drive);
+    public void updateSide(ObjectPoseEstimator.INTAKE_SIDE i) {
+      objectPoseEstimator.changeIntakeSide(i);
     }
 
     public Command tuck() {

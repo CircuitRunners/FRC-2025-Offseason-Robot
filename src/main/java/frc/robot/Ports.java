@@ -15,8 +15,9 @@ public enum Ports {
 	INTAKE_ROLLERS(12, RobotConstants.superstructureBus),
 	KICKER(13, RobotConstants.superstructureBus),
 	CONVEYOR(14, RobotConstants.superstructureBus),
-	CLIMBER(15, RobotConstants.superstructureBus),
+	KICKER_FOLLOWER(15, RobotConstants.superstructureBus),
 	INTAKE_ROLLERS_FOLLOWER(16, RobotConstants.superstructureBus),
+	CLIMBER(17, RobotConstants.superstructureBus),
 
 	PHYSICAL_BUTTON(20, new CANBus("rio"));
 

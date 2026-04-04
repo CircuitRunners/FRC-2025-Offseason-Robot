@@ -53,6 +53,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
     private final Drive drive;
     private final FuelPathFinder fuelPathFinder;
     private final TrajectoryConfig fuelPathTrajectoryConfig;
+    public ObjectPoseEstimator.INTAKE_SIDE side = ObjectPoseEstimator.INTAKE_SIDE.RIGHT;
 
     Field2d objectField = new Field2d();
 
@@ -92,6 +93,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         removeOldObjects();
         objectField.getObject("Fuel").setPoses(getObjectsPosesOnField());
         objectField.getObject("Trajectory").setTrajectory(getFuelCollectionTrajectory());
+        objectField.setRobotPose(drive.getPose());
         try {
             removeIntakedFuel();
         } catch(Exception e) {}
@@ -108,6 +110,16 @@ public class ObjectPoseEstimator extends SubsystemBase {
         return new ArrayList<>(objectPositionsToDetectionTimestamp.keySet());
     }
 
+    public ArrayList<Translation2d> getObjectsOnFieldQuadrant() {
+        Rectangle2d rect = (side == INTAKE_SIDE.LEFT ? FieldLayout.leftNeutralZone : FieldLayout.rightNeutralZone);
+        ArrayList<Translation2d> translations = new ArrayList<>();
+        for (Translation2d t : getObjectsOnField()) {
+            if (rect.contains(t)) {
+                translations.add(t);
+            }
+        } 
+        return translations;
+    }
     /**
      * Returns the position of all known objects on the field as poses with zero rotation.
      * 
@@ -115,11 +127,15 @@ public class ObjectPoseEstimator extends SubsystemBase {
      */
     public ArrayList<Pose2d> getObjectsPosesOnField() {
         ArrayList<Pose2d> objectPoses = new ArrayList<>();
-        for (Translation2d t: getObjectsOnField()) {
+        for (Translation2d t: getObjectsOnFieldQuadrant()) {
             objectPoses.add(MathHelpers.pose2dFromTranslation(t));
         }
 
         return objectPoses;
+    }
+
+    public void changeIntakeSide(INTAKE_SIDE i) {
+        side = i;
     }
 
     public FuelPathFinder.FuelPathPlan getFuelCollectionPathPlan() {
@@ -129,7 +145,7 @@ public class ObjectPoseEstimator extends SubsystemBase {
         }
 
         // final int remainingCapacity = Math.max(0, IntakeRollerConstants.fuelLimit - IntakeRollerConstants.numberOfFuel);
-        return fuelPathFinder.findPath(robotPose, getObjectsOnField(), IntakeRollerConstants.fuelLimit);
+        return fuelPathFinder.findPath(robotPose, getObjectsOnFieldQuadrant(), IntakeRollerConstants.fuelLimit);
     }
 
     public ArrayList<Pose2d> getFuelCollectionPathPoses() {

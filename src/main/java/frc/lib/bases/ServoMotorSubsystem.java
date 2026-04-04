@@ -202,10 +202,10 @@ public class ServoMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<IO> 
 	public void initSendable(SendableBuilder builder) {
 		super.initSendable(builder);
 		io.initSendable(builder);
-		// if (isHomingSubsystem) {
-		// 	builder.addBooleanProperty("Homing", () -> mHoming, null);
-		// 	builder.addBooleanProperty("Needs to Home", () -> mNeedsToHome, null);
-		// }
+		if (isHomingSubsystem) {
+			builder.addBooleanProperty("Homing", () -> mHoming, null);
+			builder.addBooleanProperty("Needs to Home", () -> mNeedsToHome, null);
+		}
 	}
 
 	/**

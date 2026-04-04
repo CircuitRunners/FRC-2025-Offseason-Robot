@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
@@ -237,7 +238,7 @@ public class MotorIOTalonFX extends MotorIO {
 
 	public static class ControlRequestGetter {
 		public ControlRequest getVoltageRequest(Voltage voltage) {
-			return new VoltageOut(voltage.in(Units.Volts)).withEnableFOC(true); // foc true might be dangerous cuz limp mode
+			return new VoltageOut(voltage.in(Units.Volts)).withEnableFOC(true);
 		}
 
 		public ControlRequest getDutyCycleRequest(Dimensionless percent) {
@@ -253,7 +254,7 @@ public class MotorIOTalonFX extends MotorIO {
 		}
 
 		public ControlRequest getPositionRequest(Angle mechanismPosition) {
-			return new PositionTorqueCurrentFOC(mechanismPosition).withSlot(2);
+			return new MotionMagicTorqueCurrentFOC(mechanismPosition).withSlot(2);
 		}
 	}
 }

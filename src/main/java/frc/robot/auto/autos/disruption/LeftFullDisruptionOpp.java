@@ -1,4 +1,4 @@
-package frc.robot.auto.autos.doubleSwipe;
+package frc.robot.auto.autos.disruption;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -17,40 +17,38 @@ import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
-import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
 import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
 
-public class LeftDoubleNeutralSilly extends AutoModeBase {
+public class LeftFullDisruptionOpp extends AutoModeBase {
 
-	public LeftDoubleNeutralSilly(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		super(drive, superstructure, factory, "silly left");
+	public LeftFullDisruptionOpp(Drive drive, Superstructure superstructure, AutoFactory factory) {
+		super(drive, superstructure, factory, "Right Double Neutral");
 
-        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
+		AutoTrajectory disruption = trajectory("disruption");
+		AutoTrajectory disruptionReturn = trajectory("disruptionReturnOpposite");
 
-		AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake");
-
-        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly");
-
-		Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
+        AutoTrajectory leftShootToSilly = trajectoryMirroredLeftRight("leftShootToSilly");
 
 
-		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.left);
+		Pose2d startPose = disruption.getInitialPose().get();
+
+		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.RIGHT);
 
 
 		prepRoutine(
-            AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
+			AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
+			disruption.cmd(),
 			Commands.deadline(
-				leftTrenchToNeutralIntake.cmd(),
+				cmdWithAccuracy(disruptionReturn),
 				Commands.sequence(
-					superstructure.deployIntake(),
 					superstructure.runIntakeIfDeployed()
 				)
 			),
-			cmdWithAccuracy(leftIntakeToShoot).alongWith(superstructure.shooterIdleSpinup()),
 			drive.stopDrivetrain(),
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
+			
 			Commands.deadline(
 				cmdWithAccuracy(leftShootToSilly),
 				Commands.sequence(
@@ -60,14 +58,7 @@ public class LeftDoubleNeutralSilly extends AutoModeBase {
 				)),
                 drive.stopDrivetrain(),
 			    superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
-                superstructure.deployIntake(),
-				Commands.deadline(
-				cmdWithAccuracy(leftShootToSilly),
-				Commands.sequence(
-					superstructure.deployIntake(),
-					superstructure.runIntakeIfDeployed(),
-                    superstructure.idleIntake()
-				))
+                superstructure.deployIntake()
 		);
 
 

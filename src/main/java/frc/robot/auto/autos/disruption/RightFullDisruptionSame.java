@@ -21,15 +21,15 @@ import frc.robot.subsystems.superstructure.Superstructure;
 import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.auto.AutoModeBase;
 
-public class LeftFullDisruption extends AutoModeBase {
+public class RightFullDisruptionSame extends AutoModeBase {
 
-	public LeftFullDisruption(Drive drive, Superstructure superstructure, AutoFactory factory) {
+	public RightFullDisruptionSame(Drive drive, Superstructure superstructure, AutoFactory factory) {
 		super(drive, superstructure, factory, "Right Double Neutral");
 
-		AutoTrajectory disruption = trajectory("disruption");
-		AutoTrajectory disruptionReturn = trajectory("disruptionReturn");
+		AutoTrajectory disruption = trajectoryMirroredLeftRight("disruption");
+		AutoTrajectory disruptionReturn = trajectoryMirroredLeftRight("disruptionReturnSame");
 
-        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly");
+        AutoTrajectory rightShootToSilly = trajectoryMirroredLeftRight("leftShootToSilly");
 
 
 		Pose2d startPose = disruption.getInitialPose().get();
@@ -50,7 +50,7 @@ public class LeftFullDisruption extends AutoModeBase {
 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
 			
 			Commands.deadline(
-				cmdWithAccuracy(leftShootToSilly),
+				cmdWithAccuracy(rightShootToSilly),
 				Commands.sequence(
 					superstructure.deployIntake(),
 					superstructure.runIntakeIfDeployed(),

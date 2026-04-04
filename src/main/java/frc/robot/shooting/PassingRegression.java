@@ -6,10 +6,10 @@ public class PassingRegression {
                         // @x --> distance from target (in meters)
                         // @y --> hood angle (in degrees)
 
-                        { 5.46, 30.0 },
-                        { 6.62, 30.0 },
-                        { 7.8,  30.0 },
-                        { 17.16, 30.0}
+                        { 5.46, 38.0 },
+                        { 6.62, 38.0 },
+                        { 7.8,  38.0 },
+                        { 17.16, 38.0}
         };
 
         public static double[][] kPassingFlywheelManualRPM = {

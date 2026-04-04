@@ -10,8 +10,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.auto.autos.centerPreload.CenterPreload;
-import frc.robot.auto.autos.disruption.LeftFullDisruption;
-import frc.robot.auto.autos.disruption.RightFullDisruption;
+import frc.robot.auto.autos.disruption.LeftFullDisruptionOpp;
+import frc.robot.auto.autos.disruption.LeftFullDisruptionSame;
+import frc.robot.auto.autos.disruption.RightFullDisruptionOpp;
+import frc.robot.auto.autos.disruption.RightFullDisruptionSame;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutral;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutralRisky;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutralSilly;
@@ -22,6 +24,10 @@ import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralSilly;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralStraight;
 import frc.robot.auto.autos.singleSwipe.LeftNeutralClimb;
 import frc.robot.auto.autos.singleSwipe.RightNeutralClimb;
+import frc.robot.auto.autos.superSilly.LeftFakeout;
+// import frc.robot.auto.autos.singleSwipe.RightObjectDetect;
+// import frc.robot.auto.autos.singleSwipe.LeftObjectDetect;
+
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 public class AutoModeSelector {
@@ -46,8 +52,15 @@ public class AutoModeSelector {
 
 		mAutoChooser.addRoutine("[CENTER] Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
 
-		mAutoChooser.addRoutine("[LEFT] Disruption", () -> new LeftFullDisruption(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("[RIGHT] Disruption", () -> new RightFullDisruption(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] Same Disruption", () -> new LeftFullDisruptionSame(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Same Disruption", () -> new RightFullDisruptionSame(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] Opposite Disruption", () -> new LeftFullDisruptionOpp(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Opposite Disruption", () -> new RightFullDisruptionOpp(drive, superstructure, factory).getRoutine());
+		// mAutoChooser.addRoutine("[LEFT] Object Detect", () -> new LeftObjectDetect(drive, superstructure, factory).getRoutine());
+		// mAutoChooser.addRoutine("[RIGHT] Object Detect", () -> new RightObjectDetect(drive, superstructure, factory).getRoutine());
+
+		mAutoChooser.addRoutine("[LEFT] Fakeout", () -> new LeftFakeout(drive, superstructure, factory).getRoutine());
+
 
 
 		//

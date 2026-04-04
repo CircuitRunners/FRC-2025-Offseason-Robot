@@ -22,10 +22,10 @@ public class HoodConstants {
     public static final double kGearing = (25.0 / 12.0) * (181.0 / 10.0);
 
     public static final Angle kKitbotPosition = Units.Degrees.of(0.0);
-    public static final Angle kMaxAngle = Units.Degrees.of(36.14);
-    public static final Angle kMinAngle = Units.Degrees.of(11.8);
+    public static final Angle kMaxAngle = Units.Degrees.of(43.3);
+    public static final Angle kMinAngle = Units.Degrees.of(20.0); // 8.2 higher
 
-    public static final Angle kEpsilonThreshold = Units.Degrees.of(0.5);
+    public static final Angle kEpsilonThreshold = Units.Degrees.of(3.0);
 	
 	public static final Time retractTime = Units.Seconds.of(0.1);
 
@@ -36,10 +36,18 @@ public class HoodConstants {
         config.Slot0.kS = 0.33;
         config.Slot0.kG = 0.3;
 
+		config.Slot2.kP = 1000.0;
+		config.Slot2.kD = 110.0;
+		config.Slot2.kG = 7.5;
+		config.Slot2.kS = 3.0;
+
+		config.Slot2.GravityType = GravityTypeValue.Elevator_Static;
+		config.Slot2.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 		config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-		config.MotionMagic.MotionMagicCruiseVelocity = 1.0;
+		config.MotionMagic.MotionMagicCruiseVelocity = 2.0;
 		config.MotionMagic.MotionMagicAcceleration = 15.0;
 
 		config.Voltage.PeakForwardVoltage = 12.0;

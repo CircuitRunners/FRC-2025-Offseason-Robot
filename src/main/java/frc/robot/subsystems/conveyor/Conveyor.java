@@ -52,8 +52,10 @@ public class Conveyor extends MotorSubsystem<MotorIOTalonFX>{
         super.periodic();
 
         if (isPulsing) {
-            if (canPulse.debounce(0.5, DebounceType.kRising).getAsBoolean()) {
-                startPulse(!pulseIn);
+            if (pulseTimer.hasElapsed(pulseIn ? IntakeRollerConstants.pulseInTime : IntakeRollerConstants.pulseOutTime)) {
+                if (canPulse.debounce(0.5, DebounceType.kRising).getAsBoolean()) {
+                    startPulse(!pulseIn);
+                }
             }
         }
     }
