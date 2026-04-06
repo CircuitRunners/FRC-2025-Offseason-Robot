@@ -91,8 +91,9 @@ public class ObjectPoseEstimator extends SubsystemBase {
     public void periodic() {
         updateTrackedObjectsPositions();
         removeOldObjects();
-        objectField.getObject("Fuel").setPoses(getObjectsPosesOnField());
-        objectField.getObject("Trajectory").setTrajectory(getFuelCollectionTrajectory());
+        objectField.getObject("Fuel").setPoses(getSimulatedObjectsPosesOnField());
+        // objectField.getObject("Trajectory").setTrajectory(getFuelCollectionTrajectory());
+        
         objectField.setRobotPose(drive.getPose());
         try {
             removeIntakedFuel();
@@ -120,6 +121,26 @@ public class ObjectPoseEstimator extends SubsystemBase {
         } 
         return translations;
     }
+
+    public ArrayList<Translation2d> getSimulatedObjectsOnFieldQuadrant() {
+        Rectangle2d rect = (side == INTAKE_SIDE.LEFT ? FieldLayout.leftNeutralZone : FieldLayout.rightNeutralZone);
+        ArrayList<Translation2d> translations = new ArrayList<>();
+        for (Pose2d t : SimulatedGamePiece.getPiecesAsPoses()) {
+            if (rect.contains(t.getTranslation())) {
+                translations.add(t.getTranslation());
+            }
+        } 
+        return translations;
+    }
+
+    public ArrayList<Pose2d> getSimulatedObjectsPosesOnField() {
+        ArrayList<Pose2d> objectPoses = new ArrayList<>();
+        for (Translation2d t: getSimulatedObjectsOnFieldQuadrant()) {
+            objectPoses.add(MathHelpers.pose2dFromTranslation(t));
+        }
+
+        return objectPoses;
+    }
     /**
      * Returns the position of all known objects on the field as poses with zero rotation.
      * 
@@ -138,23 +159,6 @@ public class ObjectPoseEstimator extends SubsystemBase {
         side = i;
     }
 
-    public FuelPathFinder.FuelPathPlan getFuelCollectionPathPlan() {
-        final Pose2d robotPose = drive.getPose();
-        if (robotPose == null) {
-            return FuelPathFinder.FuelPathPlan.empty();
-        }
-
-        // final int remainingCapacity = Math.max(0, IntakeRollerConstants.fuelLimit - IntakeRollerConstants.numberOfFuel);
-        return fuelPathFinder.findPath(robotPose, getObjectsOnFieldQuadrant(), IntakeRollerConstants.fuelLimit);
-    }
-
-    public ArrayList<Pose2d> getFuelCollectionPathPoses() {
-        return new ArrayList<>(getFuelCollectionPathPlan().pathPoses());
-    }
-
-    public Trajectory getFuelCollectionTrajectory() {
-        return fuelPathFinder.buildTrajectory(drive.getPose(), getFuelCollectionPathPlan(), fuelPathTrajectoryConfig);
-    }
 
     /**
      * Removes the closest object to the robot from the list of objects in the pose estimator.
