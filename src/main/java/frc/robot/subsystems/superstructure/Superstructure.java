@@ -116,17 +116,20 @@ public class Superstructure extends SubsystemBase {
     public Rotation2d headingSetpoint = new Rotation2d();
 
 
-    public AngularVelocity shooterIncrement = Units.RPM.of(25.0);
+    public AngularVelocity shooterIncrement = Units.RPM.of(0.0);
 
     @Override
     public void periodic() {
+        boolean shootingState = isShootingState();
+        shooter.setShootingGains(shootingState);
+        kicker.setShootingGains(shootingState);
         updateShooterSetpoint();
         updateHoodSetpoint();
         updateHeadingSetpoint();
     }
 
     public void updateShooterSetpoint() {
-      //shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1800.0, true).get()).in(Units.RotationsPerSecond)));
+      //shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1625.0, true).get()).in(Units.RotationsPerSecond)));
         shooterSetpoint = 
             Setpoint.withVelocitySetpoint(
               Units.RotationsPerSecond.of((Units.RPM.of(
@@ -136,7 +139,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void updateHoodSetpoint() {
-    //hoodSetpoint = Setpoint.withMotionMagicSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 11.8, true).get()));
+    //hoodSetpoint = Setpoint.withPositionSetpoint(Units.Degrees.of(new TunableNumber("Hood Angle", 20.0, true).get()));
       nearTrench = FieldLayout.nearTrench(drive.getPose(), drive.getFieldRelativeChassisSpeeds());
       if (true /*&& !nearTrench*/) {
         hoodSetpoint = 
@@ -223,9 +226,10 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
               kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
-              conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-              intakeRollers.Pulse(),
-              Commands.waitUntil(() -> false))
+              Commands.parallel(
+                conveyor.feedForwardOrPulseOnLowCurrent(),
+                intakeRollers.Pulse(),
+                Commands.waitUntil(() -> false)))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
@@ -306,10 +310,10 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
               Commands.parallel(
-                conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+                conveyor.feedForwardOrPulseOnLowCurrent(),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
-                intakeRollers.Pulse()),
-              Commands.waitUntil(() -> false))
+                intakeRollers.Pulse(),
+                Commands.waitUntil(() -> false)))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
@@ -334,9 +338,10 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
               kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
-              conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-              intakeRollers.Pulse(),
-              Commands.waitUntil(() -> false))
+              Commands.parallel(
+                conveyor.feedForwardOrPulseOnLowCurrent(),
+                intakeRollers.Pulse(),
+                Commands.waitUntil(() -> false)))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
@@ -362,8 +367,9 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
               kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
-              conveyor.setpointCommand(Conveyor.FEED_FORWARD),
-              Commands.waitUntil(() -> false))
+              Commands.parallel(
+                conveyor.feedForwardOrPulseOnLowCurrent(),
+                Commands.waitUntil(() -> false)))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
@@ -683,6 +689,18 @@ public class Superstructure extends SubsystemBase {
   
     public State getState() {
       return state;
+    }
+
+    public boolean isShootingState() {
+      return state == State.SHOOTING || state == State.SHOOTINTAKE;
+    }
+
+    public boolean isConveyorCurrentLowForPulse() {
+      return conveyor.isStatorCurrentLowForPulse();
+    }
+
+    public boolean isConveyorCurrentLowForWiggle() {
+      return conveyor.isStatorCurrentLowForWiggle();
     }
 
     public boolean shouldHeadingLock() {

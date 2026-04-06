@@ -8,6 +8,8 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Voltage;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
@@ -23,9 +25,14 @@ public class ConveyorConstants {
     public static final Voltage kFeedForwardVoltage = Volts.of(-12.0);
     public static final Voltage kFeedBackwardVoltage = Volts.of(4.0);
 	public static final Voltage kJuggleVoltage = Volts.of(-4);
+    public static final Voltage kPulseInVoltage = kFeedForwardVoltage;
+    public static final Voltage kPulseOutVoltage = kFeedBackwardVoltage;
+    public static final Current kPulseCurrentThreshold = Units.Amps.of(30.0);
+    public static final Current kWiggleCurrentThreshold = Units.Amps.of(40.0);
+    public static final double kCurrentDebounceSeconds = 0.5;
 
 	public static final double pulseOutTime = 0.20;
-	public static final double pulseInTime = 3.00;
+	public static final double pulseInTime = 0.80;
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();

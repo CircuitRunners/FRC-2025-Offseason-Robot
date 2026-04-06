@@ -46,6 +46,9 @@ public class DriveConstants {
 
 	public static final Angle driveYawPassToleranceDeg = Units.Degrees.of(10.0);
 	public static final Angle driveYawLaunchToleranceDeg = Units.Degrees.of(15.0);
+    public static final double kWiggleAmplitudeDeg = 3.0;
+    public static final double kWiggleFrequencyHz = 3.0;
+    public static final double kWiggleMaxSpeed = 0.5;
 
 
     public static final SynchronousPIDF mAutoAlignHeadingController = getAutoAlignHeadingController();

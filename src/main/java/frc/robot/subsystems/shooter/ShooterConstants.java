@@ -26,22 +26,47 @@ public class ShooterConstants {
     public static final double kGearing = 1.0 / 1.0;
     public static Transform2d robotToShooter = new Transform2d(Units.Inches.of(-6.881), Units.Inches.of(0), Rotation2d.kZero);
 
+	public record VelocityGains(double kP, double kI, double kD, double kS, double kV, double kA) {}
+
+	public static final VelocityGains kNotShootingVelocityGains = new VelocityGains(
+			10.5,
+			0.0,
+			0.0,
+			5.25,
+			0.04,
+			0.0);
+
+	public static final VelocityGains kShootingVelocityGains = new VelocityGains(
+			13,
+			0.0,
+			0.0,
+			5.25,
+			0.04,
+			0.0);
+
 	public static final AngularVelocity kIdleSpinup = Units.RotationsPerSecond.of((Units.RPM.of(1500).in(Units.RotationsPerSecond)));
 
     public static final AngularVelocity kJuggleVelocity = Units.RotationsPerSecond.of(6.0);
 
     public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(1.0);
 
+	public static void applyVelocityGains(TalonFXConfiguration config, VelocityGains gains) {
+		config.Slot1.kP = gains.kP();
+		config.Slot1.kI = gains.kI();
+		config.Slot1.kD = gains.kD();
+		config.Slot1.kS = gains.kS();
+		config.Slot1.kV = gains.kV();
+		config.Slot1.kA = gains.kA();
+	}
+
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = 5.25;
-		config.Slot1.kV = 0.04;
-        config.Slot1.kP = 10.5;
+		applyVelocityGains(config, kNotShootingVelocityGains);
 
-        config.CurrentLimits.StatorCurrentLimitEnable = false;//Robot.isReal();
+        config.CurrentLimits.StatorCurrentLimitEnable = false; //Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 120.0;
 
-		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();	
+		config.CurrentLimits.SupplyCurrentLimitEnable = false; //Robot.isReal();	
 		config.CurrentLimits.SupplyCurrentLimit = 80.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
 		config.CurrentLimits.SupplyCurrentLowerTime = 0.3;

@@ -25,6 +25,24 @@ import frc.robot.Robot;
 public class KickerConstants {
     private static final double kGearing = (18.0 / 18.0);
 
+	public record VelocityGains(double kP, double kI, double kD, double kS, double kV, double kA) {}
+
+	public static final VelocityGains kNotShootingVelocityGains = new VelocityGains(
+			7.0,
+			0.0,
+			0.0,
+			5.7,
+			0.09,
+			0.0);
+
+	public static final VelocityGains kShootingVelocityGains = new VelocityGains(
+			9.0,
+			0.0,
+			0.0,
+			5.7,
+			0.09,
+			0.0);
+
     public static final Voltage kFeedForwardVoltage = Volts.of(9.0);
     public static final Voltage kFeedBackwardVoltage = Volts.of(-2.0);
 	public static final Voltage kJuggleVoltage = Volts.of(-2);
@@ -34,16 +52,23 @@ public class KickerConstants {
 
 	public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(2.0);
 
+	public static void applyVelocityGains(TalonFXConfiguration config, VelocityGains gains) {
+		config.Slot1.kP = gains.kP();
+		config.Slot1.kI = gains.kI();
+		config.Slot1.kD = gains.kD();
+		config.Slot1.kS = gains.kS();
+		config.Slot1.kV = gains.kV();
+		config.Slot1.kA = gains.kA();
+	}
+
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = 5.7;
-		config.Slot1.kV = 0.09;
-        config.Slot1.kP = 7.0;
+		applyVelocityGains(config, kNotShootingVelocityGains);
 
         config.CurrentLimits.StatorCurrentLimitEnable = false;//Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 120.0;
 
-		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();	
+		config.CurrentLimits.SupplyCurrentLimitEnable = false;	
 		config.CurrentLimits.SupplyCurrentLimit = 100.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
 		config.CurrentLimits.SupplyCurrentLowerTime = 0.5;
