@@ -18,9 +18,9 @@ public class PassingRegression {
                         // @x --> distance from target (in meters)
                         // @y --> shooter velocity (in rpm)
                         { 5.46, 2000.0 },
-                        { 6.62, 2200.0 },
+                        { 6.62, 2250.0 },
                         { 7.8,  2400.0 },
-                        { 17.16,3700.0 }
+                        { 17.16,4000.0 }
         };
 
         public static double[][] kPassingTimeOfFlightMap = {

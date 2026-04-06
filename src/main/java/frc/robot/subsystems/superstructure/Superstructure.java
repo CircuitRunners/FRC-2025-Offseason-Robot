@@ -245,6 +245,10 @@ public class Superstructure extends SubsystemBase {
       return intakeDeploy.setpointCommand(IntakeDeploy.IDLE);
     }
 
+    public void brakeIntakeRollers(boolean wantsBrake) {
+      intakeRollers.setNeutralBrake(wantsBrake);
+    }
+
     public Command juggle() {
       return Commands.parallel(
         shooter.setpointCommand(Shooter.JUGGLE),
@@ -264,7 +268,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command rampUpConveyorAndKicker() {
       return Commands.defer(() -> {
-        final double feedRampSeconds = 0.15;
+        final double feedRampSeconds = 0.00;
         final Timer timer = new Timer();
         final double rampSeconds = Math.max(feedRampSeconds, 0.02);
 
@@ -301,8 +305,10 @@ public class Superstructure extends SubsystemBase {
                           : State.SHOOTING;
               }),
               waitUntilSafeToShoot(),
-              rampUpConveyorAndKicker().alongWith(
-              intakeRollers.Pulse()),
+              Commands.parallel(
+                conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+                kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
+                intakeRollers.Pulse()),
               Commands.waitUntil(() -> false))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
@@ -419,7 +425,9 @@ public class Superstructure extends SubsystemBase {
             kicker.setpointCommand(Kicker.FEED_BACKWARDS)),
           Commands.sequence(
               deployIntake(),
-              intakeRollers.setpointCommand(IntakeRollers.INTAKE)),
+              intakeRollers.setpointCommand(IntakeRollers.INTAKE),
+              conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+            kicker.setpointCommand(Kicker.FEED_BACKWARDS)),
           () -> intakeDeployed),
           Commands.either(setState(State.SHOOTINTAKE), setState(State.INTAKING), () -> state == State.SHOOTING),
           Commands.waitUntil(() -> false))
@@ -452,16 +460,16 @@ public class Superstructure extends SubsystemBase {
 
     
     
-    public Command collectFuelTrajectory() {
-      return Commands.defer(() -> {
-        return new FollowNonstopTrajectory(objectPoseEstimator.getFuelCollectionTrajectory(), drive);
-      }, Set.of(drive)
-      );
-    }
+    // public Command collectFuelTrajectory() {
+    //   return Commands.defer(() -> {
+    //     return new FollowNonstopTrajectory(objectPoseEstimator.getFuelCollectionTrajectory(), drive);
+    //   }, Set.of(drive)
+    //   );
+    // }
 
-    public void updateSide(ObjectPoseEstimator.INTAKE_SIDE i) {
-      objectPoseEstimator.changeIntakeSide(i);
-    }
+    // public void updateSide(ObjectPoseEstimator.INTAKE_SIDE i) {
+    //   objectPoseEstimator.changeIntakeSide(i);
+    // }
 
     public Command tuck() {
       return Commands.sequence(

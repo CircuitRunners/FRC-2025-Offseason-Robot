@@ -36,9 +36,9 @@ public class KickerConstants {
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = 5.6;
-		config.Slot1.kV = 0.11;
-        config.Slot1.kP = 3.0;
+        config.Slot1.kS = 5.7;
+		config.Slot1.kV = 0.09;
+        config.Slot1.kP = 7.0;
 
         config.CurrentLimits.StatorCurrentLimitEnable = false;//Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 120.0;

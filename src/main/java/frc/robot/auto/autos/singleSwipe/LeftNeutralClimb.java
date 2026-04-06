@@ -32,7 +32,7 @@ public class LeftNeutralClimb extends AutoModeBase {
 
 		Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
-		superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.LEFT);
+		//superstructure.updateSide(ObjectPoseEstimator.INTAKE_SIDE.LEFT);
 		
 
 

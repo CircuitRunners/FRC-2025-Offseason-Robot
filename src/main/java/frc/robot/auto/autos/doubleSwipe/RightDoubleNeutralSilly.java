@@ -55,8 +55,7 @@ public class RightDoubleNeutralSilly extends AutoModeBase {
 				cmdWithAccuracy(leftShootToSilly),
 				Commands.sequence(
 					superstructure.deployIntake(),
-					superstructure.runIntakeIfDeployed(),
-                    superstructure.idleIntake()
+					superstructure.runIntakeIfDeployed()
 				)),
                 drive.stopDrivetrain(),
 			    superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime),
@@ -65,8 +64,7 @@ public class RightDoubleNeutralSilly extends AutoModeBase {
 				cmdWithAccuracy(leftShootToSilly),
 				Commands.sequence(
 					superstructure.deployIntake(),
-					superstructure.runIntakeIfDeployed(),
-                    superstructure.idleIntake()
+					superstructure.runIntakeIfDeployed()
 				))
 		);
 

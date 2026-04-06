@@ -38,6 +38,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib.logging.LogUtil;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.Util;
 import frc.lib.io.MotorIO.Setpoint;
@@ -142,6 +143,7 @@ public class ShotCalculator {
         if (latestParameters != null) {
             return latestParameters;
         }
+        LogUtil.recordTranslation2d("Passing target", new Translation2d(xPassTarget, yPassTarget));
 
         // Calculate estimated pose while accounting for phase delay
         Pose2d estimatedPose = drive.getPose();

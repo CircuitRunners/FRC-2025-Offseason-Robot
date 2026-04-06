@@ -43,6 +43,7 @@ public class IntakeDeployConstants {
         config.Slot0.kG = 0.7;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+        config.Slot0.GravityArmPositionOffset = -0.005;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
         config.MotionMagic.MotionMagicCruiseVelocity = 0.6;

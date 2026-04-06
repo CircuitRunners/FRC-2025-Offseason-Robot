@@ -14,6 +14,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -70,11 +71,29 @@ public class AutoModeBase {
 	 */
 	public static Command cmdWithAccuracy(AutoTrajectory trajectory, Time timeout, Distance epsilonDist) {
 		return Commands.defer(
-						() -> new FunctionalCommand(
-								trajectory.cmd()::initialize,
-								trajectory.cmd()::execute,
-								trajectory.cmd()::end,
-								() -> isFinished(trajectory, epsilonDist)),
+						() -> {
+							Command trajectoryCmd = trajectory.cmd();
+							Timer elapsedTimer = new Timer();
+							double totalTime = trajectory.getRawTrajectory().getTotalTime();
+							double computedMinFinishTime =
+									Math.max(
+											AutoConstants.kAccuracyMinGuardTime.in(Units.Seconds),
+											totalTime * AutoConstants.kAccuracyMinCompletionFraction);
+							final double minFinishTime =
+									totalTime > 0.02 ? Math.min(computedMinFinishTime, totalTime - 0.02) : 0.0;
+
+							return new FunctionalCommand(
+									() -> {
+										elapsedTimer.restart();
+										trajectoryCmd.initialize();
+									},
+									trajectoryCmd::execute,
+									(interrupted) -> {
+										trajectoryCmd.end(interrupted);
+										elapsedTimer.stop();
+									},
+									() -> elapsedTimer.hasElapsed(minFinishTime) && isFinished(trajectory, epsilonDist));
+						},
 						Set.of(drive))
 				.beforeStarting(() -> superstructure.setDriveReady(false))
 				.withTimeout(trajectory.getRawTrajectory().getTotalTime() + timeout.in(Units.Seconds));

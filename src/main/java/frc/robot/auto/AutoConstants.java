@@ -17,6 +17,8 @@ public class AutoConstants {
 	public static final Angle kAutoAngleEpsilon = Units.Degrees.of(1.0);
 	public static final Time kDelayTime = Units.Milliseconds.of(80);
 	public static final Time kDefaultTrajectoryTimeout = Units.Seconds.of(1.0);
+	public static final Time kAccuracyMinGuardTime = Units.Seconds.of(0.20);
+	public static final double kAccuracyMinCompletionFraction = 0.80;
 	public static Pose2d centerPreloadStart = new Pose2d(new Translation2d(3.5490357875823975, 4.020486831665039), Rotation2d.kZero);
 	public static Pose2d centerPreloadShoot = new Pose2d(new Translation2d(1.7453689575195312, 4.020486831665039), Rotation2d.kZero);
     public static enum AutoType {
@@ -24,7 +26,7 @@ public class AutoConstants {
 
 	public static enum AutoEndBehavior {
 	}
-	public static double shootAllFuelTime = 2.5;
+	public static double shootAllFuelTime = 3.0;
 	public static double delayTime = 4.0;
 
 	public static TrajectoryConfig intakeConfig = new TrajectoryConfig(DriveConstants.kIntakeMaxSpeed, DriveConstants.kMaxAcceleration)

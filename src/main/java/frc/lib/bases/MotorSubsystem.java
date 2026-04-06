@@ -105,6 +105,15 @@ public class MotorSubsystem<IO extends MotorIO> extends SubsystemBase {
 	}
 
 	/**
+	 * Sets neutral mode to brake or coast.
+	 *
+	 * @param wantsBrake True for brake, false for coast.
+	 */
+	public void setNeutralBrake(boolean wantsBrake) {
+		io.setNeutralBrake(wantsBrake);
+	}
+
+	/**
 	 * Gets the last applied setpoint to the MotorIO.
 	 *
 	 * @return Last applied Setpoint.

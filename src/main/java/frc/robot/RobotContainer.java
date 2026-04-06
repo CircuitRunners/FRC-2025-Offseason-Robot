@@ -247,10 +247,6 @@ public class RobotContainer {
             driveCommand
         );
 
-        ControlBoardConstants.mDriverController.rightStick().whileTrue(
-            superstructure.collectFuelTrajectory()
-        );
-
         
         // drive.getDrivetrain().setDefaultCommand(
         //     // Drivetrain will execute this command periodically
@@ -328,7 +324,7 @@ public class RobotContainer {
     }
 
     private final DriveMaintainingHeading driveCommand = 
-        new DriveMaintainingHeading(drive, superstructure, () -> ControlBoardConstants.mDriverController.getLeftY() * 0.9, () -> ControlBoardConstants.mDriverController.getLeftX() * 0.9, () -> -ControlBoardConstants.mDriverController.getRightX(), () -> superstructure.maintainHeadingEpsilon);
+        new DriveMaintainingHeading(drive, superstructure, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX(), () -> superstructure.maintainHeadingEpsilon);
     
     public Command resetToVisionPose() {
         return Commands.runOnce(() -> drive.getDrivetrain().resetPose(vision.getLatestVisionPose()));

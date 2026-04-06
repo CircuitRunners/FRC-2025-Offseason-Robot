@@ -33,7 +33,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 public class AutoModeSelector {
 	private AutoChooser mAutoChooser = new AutoChooser();
 
-	public static SendableChooser<Boolean> useObjectDetections = new SendableChooser<>();
+	//public static SendableChooser<Boolean> useObjectDetections = new SendableChooser<>();
 	
 
 	public AutoModeSelector(Drive drive, Superstructure superstructure, AutoFactory factory) {
@@ -64,9 +64,9 @@ public class AutoModeSelector {
 
 
 		//
-		useObjectDetections.setDefaultOption("no :(", false);
-		useObjectDetections.addOption("hell yea!", true);
-		SmartDashboard.putData("object detection", useObjectDetections);
+		// useObjectDetections.setDefaultOption("no :(", false);
+		// useObjectDetections.addOption("hell yea!", true);
+		// SmartDashboard.putData("object detection", useObjectDetections);
     }
 
 

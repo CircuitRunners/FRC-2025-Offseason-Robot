@@ -47,7 +47,7 @@ public class HoodConstants {
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 		config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-		config.MotionMagic.MotionMagicCruiseVelocity = 2.0;
+		config.MotionMagic.MotionMagicCruiseVelocity = 0.5;
 		config.MotionMagic.MotionMagicAcceleration = 15.0;
 
 		config.Voltage.PeakForwardVoltage = 12.0;
