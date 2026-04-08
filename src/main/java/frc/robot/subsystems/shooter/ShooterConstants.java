@@ -37,7 +37,7 @@ public class ShooterConstants {
 			0.0);
 
 	public static final VelocityGains kShootingVelocityGains = new VelocityGains(
-			13,
+			10.5,
 			0.0,
 			0.0,
 			5.25,

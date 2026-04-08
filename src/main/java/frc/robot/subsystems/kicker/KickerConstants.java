@@ -36,7 +36,7 @@ public class KickerConstants {
 			0.0);
 
 	public static final VelocityGains kShootingVelocityGains = new VelocityGains(
-			9.0,
+			11.0,
 			0.0,
 			0.0,
 			5.7,

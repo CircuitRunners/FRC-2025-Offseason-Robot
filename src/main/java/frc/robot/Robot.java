@@ -100,7 +100,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     mAutonomousCommand = mRobotContainer.getAutoModeSelector().getSelectedCommand();
-    //mAutonomousCommand = m_robotContainer.trajectoryTest();
 
 		autoTimer.start();
 

@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -24,6 +26,7 @@ import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
@@ -120,9 +123,6 @@ public class Superstructure extends SubsystemBase {
 
     @Override
     public void periodic() {
-        boolean shootingState = isShootingState();
-        shooter.setShootingGains(shootingState);
-        kicker.setShootingGains(shootingState);
         updateShooterSetpoint();
         updateHoodSetpoint();
         updateHeadingSetpoint();
@@ -220,11 +220,12 @@ public class Superstructure extends SubsystemBase {
               hood.followSetpointCommand(() -> hoodSetpoint),
               Commands.sequence(
               Commands.runOnce(() -> {
-                  state = (state == State.INTAKING)
+                  setStateInternal((state == State.INTAKING)
                           ? State.SHOOTINTAKE
-                          : State.SHOOTING;
+                          : State.SHOOTING);
               }),
               waitUntilSafeToShoot(),
+              Commands.runOnce(() -> setShootingGainProfile(true)),
               kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
               Commands.parallel(
                 conveyor.feedForwardOrPulseOnLowCurrent(),
@@ -236,7 +237,8 @@ public class Superstructure extends SubsystemBase {
           shooter.applySetpoint(Shooter.IDLE);
           hood.applySetpoint(Hood.ZERO);
           maintainHeadingEpsilon = 0.25;
-          state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
+          setShootingGainProfile(false);
+          setStateInternal((state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED);
       });
   }
 
@@ -304,11 +306,12 @@ public class Superstructure extends SubsystemBase {
               hood.followSetpointCommand(() -> hoodSetpoint),
               Commands.sequence(
               Commands.runOnce(() -> {
-                  state = (state == State.INTAKING)
+                  setStateInternal((state == State.INTAKING)
                           ? State.SHOOTINTAKE
-                          : State.SHOOTING;
+                          : State.SHOOTING);
               }),
               waitUntilSafeToShoot(),
+              Commands.runOnce(() -> setShootingGainProfile(true)),
               Commands.parallel(
                 conveyor.feedForwardOrPulseOnLowCurrent(),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
@@ -320,7 +323,8 @@ public class Superstructure extends SubsystemBase {
           shooter.applySetpoint(Shooter.IDLE);
           hood.applySetpoint(Hood.ZERO);
           maintainHeadingEpsilon = 0.25;
-          state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
+          setShootingGainProfile(false);
+          setStateInternal((state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED);
       });
     }
 
@@ -332,11 +336,12 @@ public class Superstructure extends SubsystemBase {
               hood.setpointCommand(Setpoint.withMotionMagicSetpoint(angle)),
               Commands.sequence(
               Commands.runOnce(() -> {
-                  state = (state == State.INTAKING)
+                  setStateInternal((state == State.INTAKING)
                           ? State.SHOOTINTAKE
-                          : State.SHOOTING;
+                          : State.SHOOTING);
               }),
               waitUntilSafeToShoot(),
+              Commands.runOnce(() -> setShootingGainProfile(true)),
               kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
               Commands.parallel(
                 conveyor.feedForwardOrPulseOnLowCurrent(),
@@ -348,7 +353,8 @@ public class Superstructure extends SubsystemBase {
           shooter.applySetpoint(Shooter.IDLE);
           hood.applySetpoint(Hood.ZERO);
           maintainHeadingEpsilon = 0.25;
-          state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
+          setShootingGainProfile(false);
+          setStateInternal((state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED);
       }), Set.of(conveyor, kicker, shooter, hood, intakeRollers));
     }
 
@@ -361,11 +367,12 @@ public class Superstructure extends SubsystemBase {
               intakeRollers.setpointCommand(IntakeRollers.INTAKE),
               Commands.sequence(
               Commands.runOnce(() -> {
-                  state = (state == State.INTAKING)
+                  setStateInternal((state == State.INTAKING)
                           ? State.SHOOTINTAKE
-                          : State.SHOOTING;
+                          : State.SHOOTING);
               }),
               waitUntilSafeToShoot(),
+              Commands.runOnce(() -> setShootingGainProfile(true)),
               kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
               Commands.parallel(
                 conveyor.feedForwardOrPulseOnLowCurrent(),
@@ -377,7 +384,8 @@ public class Superstructure extends SubsystemBase {
           hood.applySetpoint(Hood.ZERO);
           intakeRollers.applySetpoint(IntakeRollers.IDLE);
           maintainHeadingEpsilon = 0.25;
-          state = (state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED;
+          setShootingGainProfile(false);
+          setStateInternal((state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED);
       });
     }
 
@@ -419,7 +427,7 @@ public class Superstructure extends SubsystemBase {
             conveyor.applySetpoint(Conveyor.IDLE);
             kicker.applySetpoint(Kicker.IDLE);
             shooter.applySetpoint(Shooter.IDLE);
-            state = (state == State.SHOOTINTAKE) ? State.SHOOTING : State.DEPLOYED;})
+            setStateInternal((state == State.SHOOTINTAKE) ? State.SHOOTING : State.DEPLOYED);})
             .withName("End Intaking");
     }
 
@@ -441,7 +449,7 @@ public class Superstructure extends SubsystemBase {
             intakeRollers.applySetpoint(IntakeRollers.IDLE);
             conveyor.applySetpoint(Conveyor.IDLE);
             kicker.applySetpoint(Kicker.IDLE);
-            state = (state == State.SHOOTINTAKE) ? State.SHOOTING : State.DEPLOYED;})
+            setStateInternal((state == State.SHOOTINTAKE) ? State.SHOOTING : State.DEPLOYED);})
             .withName("End Intaking");
     }
 
@@ -501,11 +509,25 @@ public class Superstructure extends SubsystemBase {
     }
 
     public Command getAutoWaitCommand() {
-      return Commands.defer( () ->
+      return Commands.defer(() ->
         Commands.waitSeconds(RobotContainer.autoDelay.getSelected() ? AutoConstants.delayTime : 0.0),
         Set.of(this)
       );
     }
+
+    public DoubleSupplier getShootingTimeoutSeconds() {
+        return () -> RobotContainer.autoShootAllFuelTime.getSelected();
+    }
+
+    public Command timeoutShootWhenReady() {
+    return Commands.defer(() ->
+        shootWhenReadyTeleop()
+            .raceWith(
+                Commands.waitSeconds(getShootingTimeoutSeconds().getAsDouble())
+            ),
+			Set.of(this)
+    	);
+	}
 
     // public Command climb() {
     //   return Commands.defer(
@@ -674,9 +696,18 @@ public class Superstructure extends SubsystemBase {
         return time < 0.5;
       }
     }
+
+    private void setStateInternal(State nextState) {
+      state = nextState;
+    }
+
+    private void setShootingGainProfile(boolean shooting) {
+      // shooter.setShootingGains(shooting);
+      // kicker.setShootingGains(shooting);
+    }
   
     public Command setState(State state) {
-      return Commands.runOnce(() -> this.state = state);
+      return Commands.runOnce(() -> setStateInternal(state));
     }
 
     public Command setIntakeStatus(boolean status) {

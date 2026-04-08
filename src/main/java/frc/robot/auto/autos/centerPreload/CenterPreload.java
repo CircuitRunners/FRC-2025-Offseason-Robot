@@ -1,50 +1,28 @@
 package frc.robot.auto.autos.centerPreload;
 
- import java.util.ArrayList;
- import java.util.List;
+import edu.wpi.first.wpilibj2.command.Commands;
+import frc.lib.drive.PIDToPoseCommand;
+import frc.robot.auto.AutoConstants;
+import frc.robot.auto.AutoHelpers;
+import frc.robot.auto.AutoModeBase;
+import choreo.auto.AutoFactory;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.superstructure.Superstructure;
 
- import choreo.auto.AutoFactory;
- import choreo.auto.AutoTrajectory;
- import edu.wpi.first.math.geometry.Pose2d;
- import edu.wpi.first.math.geometry.Rotation2d;
- import edu.wpi.first.math.trajectory.Trajectory;
- import edu.wpi.first.units.Units;
- import edu.wpi.first.wpilibj2.command.Command;
- import edu.wpi.first.wpilibj2.command.Commands;
- import frc.lib.drive.PIDToPoseCommand;
- import frc.lib.util.FieldLayout;
- import frc.robot.subsystems.drive.Drive;
- import frc.robot.Robot;
- import frc.robot.RobotConstants;
- import frc.robot.RobotContainer;
- import frc.robot.auto.AutoConstants;
- import frc.robot.auto.AutoHelpers;
- import frc.robot.auto.AutoModeBase;
- import frc.robot.subsystems.superstructure.Superstructure;
- import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
+public class CenterPreload extends AutoModeBase {
+    public CenterPreload(Drive drive, Superstructure superstructure, AutoFactory factory) {
+        super(drive, superstructure, factory, "Center Preload");
 
-
- public class CenterPreload extends AutoModeBase {
- 	public CenterPreload(Drive drive, Superstructure superstructure, AutoFactory factory) {
- 		super(drive, superstructure, factory, "Center Preload");
-
-		
+        prepRoutine(
+                AutoHelpers.resetPoseIfWithoutEstimate(AutoConstants.centerPreloadStart, drive),
+                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
+                Commands.deadline(
+                        Commands.sequence(
+                                new PIDToPoseCommand(drive, superstructure, AutoConstants.centerPreloadShoot),
+                                drive.stopDrivetrain(),
+                                superstructure.shootWhenReadyAuto()),
+                        superstructure.deployIntake()));
+    }
+}
 
 
- 		prepRoutine(
- 			AutoHelpers.resetPoseIfWithoutEstimate(AutoConstants.centerPreloadStart, drive),
-			Commands.deadline(
-				Commands.sequence(
-					new PIDToPoseCommand(drive, superstructure, AutoConstants.centerPreloadShoot),
-					drive.stopDrivetrain(),
-					superstructure.shootWhenReadyAuto().withTimeout(AutoConstants.shootAllFuelTime)
-				),
-				superstructure.deployIntake()
-			)
-
-			
-         );
-
-
- 	}
- }

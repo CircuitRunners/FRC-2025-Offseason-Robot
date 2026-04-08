@@ -51,10 +51,11 @@
 // 			),
 // 			cmdWithAccuracy(leftIntakeToShoot).alongWith(superstructure.shooterIdleSpinup()),
 // 			drive.stopDrivetrain(),
-// 			superstructure.shootWhenReadyTeleop().withTimeout(AutoConstants.shootAllFuelTime)
+// 			superstructure.shootWhenReadyTeleop()
 			
 // 		);
 
 
 // 	}
 // }
+

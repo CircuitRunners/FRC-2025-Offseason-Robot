@@ -1,4 +1,4 @@
-package frc.robot.auto.autos.doubleSwipe;
+package frc.robot.auto.autos.superSilly;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
@@ -10,23 +10,22 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class LeftDoubleNeutral extends AutoModeBase {
+public class RightFakeout extends AutoModeBase {
 
-    public LeftDoubleNeutral(Drive drive, Superstructure superstructure, AutoFactory factory) {
-        super(drive, superstructure, factory, "Left Double Neutral");
+    public RightFakeout(Drive drive, Superstructure superstructure, AutoFactory factory) {
+        super(drive, superstructure, factory, "Left Fakeout");
 
         AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
-        AutoTrajectory leftIntakeToShoot2 = trajectory("leftIntakeToShoot2");
-        AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake");
-        AutoTrajectory leftShootToNeutralIntake = trajectory("leftShootToNeutralIntake");
+        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly");
+        AutoTrajectory rightTrenchFakeout = trajectoryMirroredLeftRight("leftTrenchFakeout");
 
-        Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
+        Pose2d startPose = rightTrenchFakeout.getInitialPose().get();
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        leftTrenchToNeutralIntake.cmd(),
+                        rightTrenchFakeout.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
@@ -38,18 +37,23 @@ public class LeftDoubleNeutral extends AutoModeBase {
                 drive.stopDrivetrain(),
                 superstructure.timeoutShootWhenReady(),
                 Commands.deadline(
-                        leftShootToNeutralIntake.cmd(),
+                        cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
-                Commands.parallel(
-                                cmdWithAccuracy(leftIntakeToShoot2),
-                                superstructure.runIntakeIfDeployed().withTimeout(1.0))
-                        .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),
-                superstructure.shootWhenReadyTeleop());
+                superstructure.timeoutShootWhenReady(),
+                superstructure.deployIntake(),
+                Commands.deadline(
+                        cmdWithAccuracy(leftShootToSilly),
+                        Commands.sequence(
+                                superstructure.deployIntake(),
+                                superstructure.runIntakeIfDeployed())));
     }
 }
+
+
+
 
 
 

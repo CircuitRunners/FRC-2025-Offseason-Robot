@@ -71,6 +71,7 @@ import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
 import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCamera;
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePieceConstants;
 import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulationFieldHandler;
+import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeSelector;
 @Logged
@@ -120,6 +121,7 @@ public class RobotContainer {
     }
 
     public static SendableChooser<Boolean> autoDelay = new SendableChooser<>();
+    public static SendableChooser<Double> autoShootAllFuelTime = new SendableChooser<>();
     private AutoModeSelector mAutoModeSelector;
     private static String mPreviousAutoName;
     public AutoModeSelector getAutoModeSelector() {
@@ -170,6 +172,11 @@ public class RobotContainer {
         autoDelay.addOption("YES DELAY", true);
 
         SmartDashboard.putData("Auto Delay", autoDelay);
+
+        autoShootAllFuelTime.setDefaultOption("3.0s", 3.0);
+        autoShootAllFuelTime.addOption("4.0s", 4.0);
+
+        SmartDashboard.putData("Auto Shoot All Fuel Time", autoShootAllFuelTime);
 
         
         // HubShiftUtil.setAllianceWinOverride(
@@ -310,6 +317,10 @@ public class RobotContainer {
         SmartDashboard.putBoolean("Hub State/Current Ignore State", superstructure.ignoreHubState);
 
         SmartDashboard.putBoolean("Shooter Idle/State", disableAutoSpinup);
+
+        Double selectedShootAllFuelTime = autoShootAllFuelTime.getSelected();
+        AutoConstants.shootAllFuelTime = selectedShootAllFuelTime != null ? selectedShootAllFuelTime : 3.0;
+        SmartDashboard.putNumber("Auto Shoot All Fuel Time/Selected", AutoConstants.shootAllFuelTime);
 
         LogUtil.recordPose2d("Vision pose", vision.getLatestVisionPose());
     }

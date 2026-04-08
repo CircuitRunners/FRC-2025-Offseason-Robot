@@ -174,9 +174,9 @@ public class ControlBoard {
 
 		driver.a().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(1625).in(Units.RotationsPerSecond)), Units.Degrees.of(11.8)));
 
-		driver.b().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.minus(Units.RPM.of(25))));
+		driver.b().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.minus(Units.RPM.of(12.5))));
 
-		driver.back().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.plus(Units.RPM.of(25))));
+		driver.back().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.plus(Units.RPM.of(12.5))));
 
 		// TOGGLES ####################################################################################
 

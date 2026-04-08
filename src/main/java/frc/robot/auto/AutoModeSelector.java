@@ -27,7 +27,7 @@ import frc.robot.auto.autos.singleSwipe.RightNeutralClimb;
 import frc.robot.auto.autos.superSilly.LeftFakeout;
 // import frc.robot.auto.autos.singleSwipe.RightObjectDetect;
 // import frc.robot.auto.autos.singleSwipe.LeftObjectDetect;
-
+import frc.robot.auto.autos.superSilly.RightFakeout;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 public class AutoModeSelector {
@@ -48,7 +48,7 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[RIGHT] Silly", () -> new RightDoubleNeutralSilly(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Double Neutral Linear", () -> new RightDoubleNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Risky", () -> new RightDoubleNeutralRisky(drive, superstructure, factory).getRoutine());
-		mAutoChooser.addRoutine("[RIGHT] Straight, Not Angles", () -> new RightDoubleNeutralStraight(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Straight, Not Angled", () -> new RightDoubleNeutralStraight(drive, superstructure, factory).getRoutine());
 
 		mAutoChooser.addRoutine("[CENTER] Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
 
@@ -60,6 +60,8 @@ public class AutoModeSelector {
 		// mAutoChooser.addRoutine("[RIGHT] Object Detect", () -> new RightObjectDetect(drive, superstructure, factory).getRoutine());
 
 		mAutoChooser.addRoutine("[LEFT] Fakeout", () -> new LeftFakeout(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Fakeout", () -> new RightFakeout(drive, superstructure, factory).getRoutine());
+
 
 
 
