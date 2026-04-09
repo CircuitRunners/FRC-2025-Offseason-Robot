@@ -35,6 +35,7 @@ public class LeftDoubleNeutralSilly extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),
+                superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),
@@ -42,6 +43,7 @@ public class LeftDoubleNeutralSilly extends AutoModeBase {
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
+                superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),
                 superstructure.deployIntake(),
                 Commands.deadline(

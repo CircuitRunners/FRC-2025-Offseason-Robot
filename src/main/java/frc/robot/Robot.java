@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    RobotController.setBrownoutVoltage(Units.Volts.of(6.3));
+    RobotController.setBrownoutVoltage(Units.Volts.of(6.2));
   }
 
   @Override

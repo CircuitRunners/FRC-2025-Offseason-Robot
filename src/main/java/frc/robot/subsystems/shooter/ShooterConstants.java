@@ -37,7 +37,7 @@ public class ShooterConstants {
 			0.0);
 
 	public static final VelocityGains kShootingVelocityGains = new VelocityGains(
-			10.5,
+			10.5, // make 6767 for emergency bang bang
 			0.0,
 			0.0,
 			5.25,
@@ -73,6 +73,7 @@ public class ShooterConstants {
 
         config.TorqueCurrent.PeakForwardTorqueCurrent = 800;
         config.TorqueCurrent.PeakReverseTorqueCurrent = -800;
+		//config.TorqueCurrent.PeakReverseTorqueCurrent = -2; emergency bang bang
         config.TorqueCurrent.TorqueNeutralDeadband = 0;
 
         config.Feedback.SensorToMechanismRatio = kGearing;

@@ -36,6 +36,7 @@ public class RightDoubleNeutral extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),
+                superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),
                 Commands.deadline(
                         rightShootToNeutralIntake.cmd(),
