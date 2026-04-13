@@ -34,7 +34,7 @@ public class RightNeutralClimb extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),
-                superstructure.shootWhenReadyTeleop());
+                superstructure.shootWhenReadyPulse());
     }
 }
 

@@ -51,7 +51,7 @@
 // 			),
 // 			cmdWithAccuracy(rightIntakeToShoot).alongWith(superstructure.shooterIdleSpinup()),
 // 			drive.stopDrivetrain(),
-// 			superstructure.shootWhenReadyTeleop()
+// 			superstructure.shootWhenReadyPulse()
 			
 // 		);
 

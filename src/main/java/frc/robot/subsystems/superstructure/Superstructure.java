@@ -268,7 +268,7 @@ public class Superstructure extends SubsystemBase {
     }
 
 
-    public Command shootWhenReadyTeleop() {
+    public Command shootWhenReadyPulse() {
       return Commands.sequence(
           Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
           Commands.parallel(
@@ -294,6 +294,39 @@ public class Superstructure extends SubsystemBase {
           kicker.applySetpoint(Kicker.FEED_BACKWARDS);
           shooter.applySetpoint(Shooter.IDLE);
           hood.applySetpoint(Hood.ZERO);
+          maintainHeadingEpsilon = 0.25;
+          setShootingGainProfile(false);
+          setStateInternal((state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED);
+      });
+    }
+
+    public Command shootWhenReadyRise() {
+      return Commands.sequence(
+          Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
+          Commands.parallel(
+              shooter.followSetpointCommand(() -> shooterSetpoint),
+              hood.followSetpointCommand(() -> hoodSetpoint),
+              Commands.sequence(
+              Commands.runOnce(() -> {
+                  setStateInternal((state == State.INTAKING)
+                          ? State.SHOOTINTAKE
+                          : State.SHOOTING);
+              }),
+              waitUntilSafeToShoot(),
+              Commands.runOnce(() -> setShootingGainProfile(true)),
+              conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
+              Commands.parallel(
+                conveyor.feedForwardOrPulseOnLowCurrent(),
+                kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
+                Commands.waitUntil(() -> isConveyorCurrentLowForWiggle()).andThen(intakeRise()),
+                Commands.waitUntil(() -> false)))
+      )).finallyDo(() -> {
+          conveyor.applySetpoint(Conveyor.IDLE);
+          kicker.applySetpoint(Kicker.FEED_BACKWARDS);
+          shooter.applySetpoint(Shooter.IDLE);
+          hood.applySetpoint(Hood.ZERO);
+          intakeDeploy.applySetpoint(IntakeDeploy.DEPLOY);
           maintainHeadingEpsilon = 0.25;
           setShootingGainProfile(false);
           setStateInternal((state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED);
@@ -383,6 +416,18 @@ public class Superstructure extends SubsystemBase {
         Commands.waitSeconds(0.5),
         intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY))
         .finallyDo(() -> intakeDeploy.applySetpoint(IntakeDeploy.IDLE));
+    }
+
+    public Command intakeRise() {
+      return Commands.sequence(
+        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.2), IntakeDeployConstants.kDefaultAcceleration),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.STOW),
+        deployIntake()
+      ).finallyDo(() -> {
+        intakeDeploy.setMotionMagicConstraints(IntakeDeployConstants.kDefaultCruiseVelocity, IntakeDeployConstants.kDefaultAcceleration);
+        intakeDeploy.applySetpoint(IntakeDeploy.IDLE);});
     }
 
     public Command runIntakeIfDeployedJuggle() {
@@ -495,7 +540,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command timeoutShootWhenReady() {
     return Commands.defer(() ->
-        shootWhenReadyTeleop()
+        shootWhenReadyPulse()
             .raceWith(
                 Commands.waitSeconds(getShootingTimeoutSeconds().getAsDouble())
             ),
@@ -709,7 +754,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     public boolean shouldHeadingLock() {
-      return (headingLockToggle && ControlBoardConstants.mDriverController.x().getAsBoolean()  /*&& (!nearTrench|| state == State.SHOOTING). && (visionValid() || Robot.isSimulation())*/);
+      return (headingLockToggle && (ControlBoardConstants.mDriverController.x().getAsBoolean() || ControlBoardConstants.mDriverController.b().getAsBoolean())  /*&& (!nearTrench|| state == State.SHOOTING). && (visionValid() || Robot.isSimulation())*/);
     }
 
     public void setPathFollowing(boolean isFollowing) {

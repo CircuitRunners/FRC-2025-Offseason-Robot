@@ -36,7 +36,7 @@ public class LeftFullDisruptionOpp extends AutoModeBase {
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.shootWhenReadyTeleop().withTimeout(2.0),
+                superstructure.shootWhenReadyPulse().withTimeout(2.0),
                 Commands.deadline(
                         cmdWithAccuracy(rightShootToSilly),
                         Commands.sequence(

@@ -10,6 +10,8 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import frc.lib.bases.ServoMotorSubsystem.ServoHomingConfig;
 import frc.lib.io.MotorIOTalonFX;
@@ -30,8 +32,13 @@ public class IntakeDeployConstants {
 
     public static final Angle kUpShakePosition = Units.Degrees.of(50);
 
+    public static final Angle kRiseUpPosition = Units.Degrees.of(50);
+    public static final Angle kFallDownPosition = Units.Degrees.of(20);
+
 	public static final Angle kExhaustPosition = kDeployPosition;
 	public static final Distance kArmLength = Units.Inches.of(14.0);
+	public static final AngularVelocity kDefaultCruiseVelocity = Units.RotationsPerSecond.of(0.6);
+	public static final AngularAcceleration kDefaultAcceleration = Units.RotationsPerSecondPerSecond.of(15.0);
 
 	public static final Angle kEpsilonThreshold = Units.Degrees.of(6.0);
 
@@ -46,8 +53,8 @@ public class IntakeDeployConstants {
         config.Slot0.GravityArmPositionOffset = -0.005;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 0.6;
-        config.MotionMagic.MotionMagicAcceleration = 15.0;
+		config.MotionMagic.MotionMagicCruiseVelocity = kDefaultCruiseVelocity.in(Units.RotationsPerSecond);
+		config.MotionMagic.MotionMagicAcceleration = kDefaultAcceleration.in(Units.RotationsPerSecondPerSecond);
 
         config.Voltage.PeakForwardVoltage = 12;
         config.Voltage.PeakReverseVoltage = -12;
