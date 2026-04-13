@@ -24,7 +24,9 @@ import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralSilly;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralStraight;
 import frc.robot.auto.autos.singleSwipe.LeftNeutralClimb;
 import frc.robot.auto.autos.singleSwipe.RightNeutralClimb;
+import frc.robot.auto.autos.superSilly.LeftDoubleSilly;
 import frc.robot.auto.autos.superSilly.LeftFakeout;
+import frc.robot.auto.autos.superSilly.RightDoubleSilly;
 // import frc.robot.auto.autos.singleSwipe.RightObjectDetect;
 // import frc.robot.auto.autos.singleSwipe.LeftObjectDetect;
 import frc.robot.auto.autos.superSilly.RightFakeout;
@@ -42,6 +44,7 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[LEFT] Double Neutral Linear", () -> new LeftDoubleNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[LEFT] Risky", () -> new LeftDoubleNeutralRisky(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[LEFT] Straight, Not Angled", () -> new LeftDoubleNeutralStraight(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] Double Silly", () -> new LeftDoubleSilly(drive, superstructure, factory).getRoutine());
 
 
 		mAutoChooser.addRoutine("[RIGHT] Close Single Neutral", () -> new RightNeutralClimb(drive, superstructure, factory).getRoutine());
@@ -49,6 +52,8 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[RIGHT] Double Neutral Linear", () -> new RightDoubleNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Risky", () -> new RightDoubleNeutralRisky(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Straight, Not Angled", () -> new RightDoubleNeutralStraight(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Double Silly", () -> new RightDoubleSilly(drive, superstructure, factory).getRoutine());
+
 
 		mAutoChooser.addRoutine("[CENTER] Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
 

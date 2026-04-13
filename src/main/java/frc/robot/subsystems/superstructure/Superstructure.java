@@ -119,7 +119,7 @@ public class Superstructure extends SubsystemBase {
     public Rotation2d headingSetpoint = new Rotation2d();
 
 
-    public AngularVelocity shooterIncrement = Units.RPM.of(0.0);
+    public AngularVelocity shooterIncrement = Units.RPM.of(25.0);
 
     @Override
     public void periodic() {
@@ -212,36 +212,6 @@ public class Superstructure extends SubsystemBase {
         withName("Shoot");
     }
 
-    public Command shootWhenReadyAuto() {
-      return Commands.sequence(
-          Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
-          Commands.parallel(
-              shooter.followSetpointCommand(() -> shooterSetpoint),
-              hood.followSetpointCommand(() -> hoodSetpoint),
-              Commands.sequence(
-              Commands.runOnce(() -> {
-                  setStateInternal((state == State.INTAKING)
-                          ? State.SHOOTINTAKE
-                          : State.SHOOTING);
-              }),
-              waitUntilSafeToShoot(),
-              Commands.runOnce(() -> setShootingGainProfile(true)),
-              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
-              Commands.parallel(
-                conveyor.feedForwardOrPulseOnLowCurrent(),
-                intakeRollers.Pulse(),
-                Commands.waitUntil(() -> false)))
-      )).finallyDo(() -> {
-          conveyor.applySetpoint(Conveyor.IDLE);
-          kicker.applySetpoint(Kicker.FEED_BACKWARDS);
-          shooter.applySetpoint(Shooter.IDLE);
-          hood.applySetpoint(Hood.ZERO);
-          maintainHeadingEpsilon = 0.25;
-          setShootingGainProfile(false);
-          setStateInternal((state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED);
-      });
-  }
-
     public Command turnToHubAuto() {
       return Commands.defer(() ->
       new PIDToPoseCommand(drive, this, new Pose2d(drive.getPose().getTranslation(), ShotCalculator.getInstance(drive).getParameters().heading()), Units.Inches.of(6.0), Units.Degrees.of(10)), Set.of(drive));
@@ -312,6 +282,8 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
               Commands.runOnce(() -> setShootingGainProfile(true)),
+              conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
               Commands.parallel(
                 conveyor.feedForwardOrPulseOnLowCurrent(),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
@@ -342,9 +314,11 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
               Commands.runOnce(() -> setShootingGainProfile(true)),
-              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD),
+              conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
               Commands.parallel(
                 conveyor.feedForwardOrPulseOnLowCurrent(),
+                kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
                 intakeRollers.Pulse(),
                 Commands.waitUntil(() -> false)))
       )).finallyDo(() -> {
@@ -702,8 +676,8 @@ public class Superstructure extends SubsystemBase {
     }
 
     private void setShootingGainProfile(boolean shooting) {
-      // shooter.setShootingGains(shooting);
-      // kicker.setShootingGains(shooting);
+      //shooter.setShootingGains(shooting);
+      kicker.setShootingGains(shooting);
     }
   
     public Command setState(State state) {

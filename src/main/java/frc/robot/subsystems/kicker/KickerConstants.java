@@ -36,7 +36,7 @@ public class KickerConstants {
 			0.0);
 
 	public static final VelocityGains kShootingVelocityGains = new VelocityGains(
-			11.0,
+			14.0,
 			0.0,
 			0.0,
 			5.7,
@@ -68,7 +68,7 @@ public class KickerConstants {
         config.CurrentLimits.StatorCurrentLimitEnable = false;//Robot.isReal();
         config.CurrentLimits.StatorCurrentLimit = 120.0;
 
-		config.CurrentLimits.SupplyCurrentLimitEnable = false;	
+		config.CurrentLimits.SupplyCurrentLimitEnable = true;	
 		config.CurrentLimits.SupplyCurrentLimit = 100.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
 		config.CurrentLimits.SupplyCurrentLowerTime = 0.5;

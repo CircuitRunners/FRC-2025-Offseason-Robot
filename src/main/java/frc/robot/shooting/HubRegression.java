@@ -52,10 +52,10 @@ public class HubRegression {
                         { 3.7, 2100}, // trench
                         { 4.0, 2150},
                         //{ 3.85, 2100}, // depot
-                        { 4.4, 2150}, //
-                        { 4.7, 2200},
-                        { 5.0, 2250}, //
-                        { 5.3, 2350} // corner 
+                        { 4.4, 2175}, //
+                        { 4.7, 2240},
+                        { 5.0, 2290}, //
+                        { 5.3, 2390} // corner 
         };
 
         public static double[][] kTimeOfFlightMap = {

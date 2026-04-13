@@ -170,9 +170,9 @@ public class ControlBoard {
 		.and(inLaunchingTolerance).debounce(0.1, DebounceType.kFalling)
 		.whileTrue(s.shootWhenReadyTeleop());
 
-		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2000).in(Units.RotationsPerSecond)), Units.Degrees.of(13.0)));
+		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2100).in(Units.RotationsPerSecond)), Units.Degrees.of(23.0)));
 
-		driver.a().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(1625).in(Units.RotationsPerSecond)), Units.Degrees.of(11.8)));
+		driver.a().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(1625).in(Units.RotationsPerSecond)), Units.Degrees.of(20)));
 
 		driver.b().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.minus(Units.RPM.of(12.5))));
 

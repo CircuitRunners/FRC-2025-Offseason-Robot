@@ -26,6 +26,8 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.logging.LogUtil;
 import frc.lib.logging.LoggedTracer;
@@ -61,6 +63,8 @@ public class Vision extends SubsystemBase {
 
   private final Matrix<N3, N1> stdDevs = VecBuilder.fill(0, 0, 0);
 
+  private boolean ignoreThrifty = false;
+
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
     this.io = io;
@@ -78,11 +82,15 @@ public class Vision extends SubsystemBase {
           new Alert(
               "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
     }
+
+    SmartDashboard.putData("ThriftyCam Ignore/Toggle",
+        new InstantCommand(() -> ignoreThrifty = !ignoreThrifty));
   }
 
   @Override
   public void periodic() {
     //LoggedTracer.record("Vision Loop Time");
+    SmartDashboard.putBoolean("ThriftyCam Ignore/State", ignoreThrifty);
     for (int i = 0; i < io.length; i++) {
       io[i].updateInputs(inputs[i]);
       //Logger.processInputs("Vision/Camera" + Integer.toString(i), inputs[i]);
@@ -101,6 +109,7 @@ public class Vision extends SubsystemBase {
 
       // Initialize logging values
       tagPoses.clear();
+
       robotPoses.clear();
       robotPosesAccepted.clear();
       robotPosesRejected.clear();
@@ -118,7 +127,7 @@ public class Vision extends SubsystemBase {
         lastTargetSeenTime = observation.timestamp();
 
         // Check whether to reject pose
-        boolean rejectPose = shouldRejectPoseObservation(observation);
+        boolean rejectPose = shouldRejectPoseObservation(observation) || (cameraIndex == 0 && ignoreThrifty);
 
         // Add pose to log
         robotPoses.add(observation.pose());

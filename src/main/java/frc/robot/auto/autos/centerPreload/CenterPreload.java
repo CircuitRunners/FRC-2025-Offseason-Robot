@@ -20,7 +20,7 @@ public class CenterPreload extends AutoModeBase {
                         Commands.sequence(
                                 new PIDToPoseCommand(drive, superstructure, AutoConstants.centerPreloadShoot),
                                 drive.stopDrivetrain(),
-                                superstructure.shootWhenReadyAuto()),
+                                superstructure.shootWhenReadyTeleop()),
                         superstructure.deployIntake()));
     }
 }
