@@ -317,7 +317,8 @@ public class Superstructure extends SubsystemBase {
               conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
               kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
               Commands.parallel(
-                conveyor.feedForwardOrPulseOnLowCurrent(),
+                //conveyor.feedForwardOrPulseOnLowCurrent(),
+                conveyor.setpointCommand(Conveyor.FEED_FORWARD),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
                 Commands.waitUntil(() -> isConveyorCurrentLowForWiggle()).andThen(intakeRise()),
                 Commands.waitUntil(() -> false)))
@@ -420,16 +421,17 @@ public class Superstructure extends SubsystemBase {
 
     public Command intakeRise() {
       return Commands.sequence(
-        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.4), IntakeDeployConstants.kDefaultAcceleration),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.STOW),
-        deployIntake()
+        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.8), IntakeDeployConstants.kDefaultAcceleration),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE, Units.Amps.of(110)),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY, Units.Amps.of(110)),
+        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.5), IntakeDeployConstants.kDefaultAcceleration),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP, Units.Amps.of(110)),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN, Units.Amps.of(110)),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP, Units.Amps.of(110)),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN, Units.Amps.of(110))
       ).finallyDo(() -> {
         intakeDeploy.setMotionMagicConstraints(IntakeDeployConstants.kDefaultCruiseVelocity, IntakeDeployConstants.kDefaultAcceleration);
-        intakeDeploy.applySetpoint(IntakeDeploy.IDLE);});
+        intakeDeploy.applySetpoint(IntakeDeploy.DEPLOY);});
     }
 
     public Command runIntakeIfDeployedJuggle() {

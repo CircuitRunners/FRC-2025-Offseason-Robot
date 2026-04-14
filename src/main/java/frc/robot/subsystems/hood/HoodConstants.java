@@ -25,7 +25,7 @@ public class HoodConstants {
     public static final Angle kMaxAngle = Units.Degrees.of(43.3);
     public static final Angle kMinAngle = Units.Degrees.of(20.0); // 8.2 higher
 
-    public static final Angle kEpsilonThreshold = Units.Degrees.of(3.0);
+    public static final Angle kEpsilonThreshold = Units.Degrees.of(1.0);
 	
 	public static final Time retractTime = Units.Seconds.of(0.1);
 

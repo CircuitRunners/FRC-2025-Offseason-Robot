@@ -36,7 +36,7 @@ public class KickerConstants {
 			0.0);
 
 	public static final VelocityGains kShootingVelocityGains = new VelocityGains(
-			14.0,
+			12.5,
 			0.0,
 			0.0,
 			5.7,
@@ -50,7 +50,7 @@ public class KickerConstants {
 	public static final AngularVelocity kFeedForwardVelocity = Units.RotationsPerSecond.of(Units.RPM.of(4200).in(Units.RotationsPerSecond));
 	public static final AngularVelocity kFeedBackwardVelocity = Units.RotationsPerSecond.of(Units.RPM.of(-1000).in(Units.RotationsPerSecond));
 
-	public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(2.0);
+	public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(5.0);
 
 	public static void applyVelocityGains(TalonFXConfiguration config, VelocityGains gains) {
 		config.Slot1.kP = gains.kP();

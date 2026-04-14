@@ -28,8 +28,8 @@ public class ConveyorConstants {
     public static final Voltage kPulseInVoltage = kFeedForwardVoltage;
     public static final Voltage kPulseOutVoltage = kFeedBackwardVoltage;
     public static final Current kPulseCurrentThreshold = Units.Amps.of(30.0);
-    public static final Current kWiggleCurrentThreshold = Units.Amps.of(45.0);
-    public static final double kCurrentDebounceSeconds = 0.5;
+    public static final Current kWiggleCurrentThreshold = Units.Amps.of(35.0);
+    public static final double kCurrentDebounceSeconds = 0.25;
 
 	public static final double pulseOutTime = 0.20;
 	public static final double pulseInTime = 0.80;
@@ -60,8 +60,8 @@ public class ConveyorConstants {
         config.mainConfig = getFXConfig();
         config.time = Minute;
         config.unit = Rotations; 
-        config.mainID = Ports.CONVEYOR.id; // PH
-        config.mainBus = Ports.CONVEYOR.bus; // PH
+        config.mainID = Ports.CONVEYOR.id;
+        config.mainBus = Ports.CONVEYOR.bus;
         return config;
     }
 

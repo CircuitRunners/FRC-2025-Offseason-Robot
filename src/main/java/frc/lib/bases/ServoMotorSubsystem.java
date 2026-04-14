@@ -4,12 +4,14 @@ import edu.wpi.first.units.BaseUnits;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.*;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.lib.io.MotorIO;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.util.DelayedBoolean;
@@ -168,6 +170,22 @@ public class ServoMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<IO> 
 	 */
 	public Command setpointCommandWithWait(Setpoint setpoint) {
 		return waitForPositionCommand(BaseUnits.AngleUnit.of(setpoint.baseUnits))
+				.deadlineFor(setpointCommand(setpoint));
+	}
+
+	/**
+	 * Creates a Command that goes to a setpoint and waits until either:
+	 * 1) the mechanism is near the setpoint's position, or
+	 * 2) stator current rises above a provided threshold.
+	 *
+	 * @param setpoint Setpoint to apply.
+	 * @param statorCurrentThreshold Stator current threshold that ends the wait when exceeded.
+	 * @return A new Command to apply setpoint and wait with current escape condition.
+	 */
+	public Command setpointCommandWithWait(Setpoint setpoint, Current statorCurrentThreshold) {
+		return Commands.waitUntil(() ->
+						nearPosition(BaseUnits.AngleUnit.of(setpoint.baseUnits))
+								|| new Trigger(() -> getStatorCurrent().gte(statorCurrentThreshold)).debounce(0.25).getAsBoolean())
 				.deadlineFor(setpointCommand(setpoint));
 	}
 
