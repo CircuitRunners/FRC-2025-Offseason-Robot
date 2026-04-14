@@ -251,69 +251,69 @@ public abstract class MotorIO implements Sendable {
 		builder.addBooleanProperty("Enabled", () -> getEnabled(), null);
 		builder.addStringProperty("Setpoint Type:", () -> getSetpoint().mode.toString(), null);
 		builder.addDoubleProperty("Setpoint Value as Double:", () -> getSetpointDoubleInUnits(), null);
-		inputs.initSendable(builder);
-		if (followerInputs.length > 0) {
-			builder.addDoubleArrayProperty(
-					"Followers/Velocity " + unitType.name() + " per " + time.name() + ":",
-					() -> {
-						double[] velocitiesUnits = new double[followerInputs.length];
-						for (int i = 0; i < followerInputs.length; i++) {
-							velocitiesUnits[i] = followerInputs[i].velocity.in(unitType.per(time));
-						}
-						return velocitiesUnits;
-					},
-					null);
-			builder.addDoubleArrayProperty(
-					"Followers/Position " + unitType.name() + ":",
-					() -> {
-						double[] positionsUnits = new double[followerInputs.length];
-						for (int i = 0; i < followerInputs.length; i++) {
-							positionsUnits[i] = followerInputs[i].position.in(unitType);
-						}
-						return positionsUnits;
-					},
-					null);
-			builder.addDoubleArrayProperty(
-					"Followers/Stator Current:",
-					() -> {
-						double[] statorCurrents = new double[followerInputs.length];
-						for (int i = 0; i < followerInputs.length; i++) {
-							statorCurrents[i] = followerInputs[i].statorCurrent.in(Units.Amps);
-						}
-						return statorCurrents;
-					},
-					null);
-			builder.addDoubleArrayProperty(
-					"Followers/Supply Current:",
-					() -> {
-						double[] supplyCurrents = new double[followerInputs.length];
-						for (int i = 0; i < followerInputs.length; i++) {
-							supplyCurrents[i] = followerInputs[i].supplyCurrent.in(Units.Amps);
-						}
-						return supplyCurrents;
-					},
-					null);
-			builder.addDoubleArrayProperty(
-					"Followers/Motor Voltage:",
-					() -> {
-						double[] motorVoltages = new double[followerInputs.length];
-						for (int i = 0; i < followerInputs.length; i++) {
-							motorVoltages[i] = followerInputs[i].motorVoltage.in(Units.Volts);
-						}
-						return motorVoltages;
-					},
-					null);
-			builder.addDoubleArrayProperty(
-					"Followers/Motor Temperature Celsius:",
-					() -> {
-						double[] motorTemperatures = new double[followerInputs.length];
-						for (int i = 0; i < followerInputs.length; i++) {
-							motorTemperatures[i] = followerInputs[i].motorTemperature.in(Units.Celsius);
-						}
-						return motorTemperatures;
-					},
-					null);
-		}
+		// inputs.initSendable(builder);
+		// if (followerInputs.length > 0) {
+		// 	builder.addDoubleArrayProperty(
+		// 			"Followers/Velocity " + unitType.name() + " per " + time.name() + ":",
+		// 			() -> {
+		// 				double[] velocitiesUnits = new double[followerInputs.length];
+		// 				for (int i = 0; i < followerInputs.length; i++) {
+		// 					velocitiesUnits[i] = followerInputs[i].velocity.in(unitType.per(time));
+		// 				}
+		// 				return velocitiesUnits;
+		// 			},
+		// 			null);
+		// 	builder.addDoubleArrayProperty(
+		// 			"Followers/Position " + unitType.name() + ":",
+		// 			() -> {
+		// 				double[] positionsUnits = new double[followerInputs.length];
+		// 				for (int i = 0; i < followerInputs.length; i++) {
+		// 					positionsUnits[i] = followerInputs[i].position.in(unitType);
+		// 				}
+		// 				return positionsUnits;
+		// 			},
+		// 			null);
+		// 	builder.addDoubleArrayProperty(
+		// 			"Followers/Stator Current:",
+		// 			() -> {
+		// 				double[] statorCurrents = new double[followerInputs.length];
+		// 				for (int i = 0; i < followerInputs.length; i++) {
+		// 					statorCurrents[i] = followerInputs[i].statorCurrent.in(Units.Amps);
+		// 				}
+		// 				return statorCurrents;
+		// 			},
+		// 			null);
+		// 	builder.addDoubleArrayProperty(
+		// 			"Followers/Supply Current:",
+		// 			() -> {
+		// 				double[] supplyCurrents = new double[followerInputs.length];
+		// 				for (int i = 0; i < followerInputs.length; i++) {
+		// 					supplyCurrents[i] = followerInputs[i].supplyCurrent.in(Units.Amps);
+		// 				}
+		// 				return supplyCurrents;
+		// 			},
+		// 			null);
+		// 	builder.addDoubleArrayProperty(
+		// 			"Followers/Motor Voltage:",
+		// 			() -> {
+		// 				double[] motorVoltages = new double[followerInputs.length];
+		// 				for (int i = 0; i < followerInputs.length; i++) {
+		// 					motorVoltages[i] = followerInputs[i].motorVoltage.in(Units.Volts);
+		// 				}
+		// 				return motorVoltages;
+		// 			},
+		// 			null);
+		// 	builder.addDoubleArrayProperty(
+		// 			"Followers/Motor Temperature Celsius:",
+		// 			() -> {
+		// 				double[] motorTemperatures = new double[followerInputs.length];
+		// 				for (int i = 0; i < followerInputs.length; i++) {
+		// 					motorTemperatures[i] = followerInputs[i].motorTemperature.in(Units.Celsius);
+		// 				}
+		// 				return motorTemperatures;
+		// 			},
+		// 			null);
+		// }
 	}
 
 	/**
@@ -334,10 +334,10 @@ public abstract class MotorIO implements Sendable {
 					() -> velocity.in(unitType.per(time)),
 					null);
 			builder.addDoubleProperty("Position " + unitType.name() + ":", () -> position.in(unitType), null);
-			builder.addDoubleProperty("Stator Current Amps:", () -> statorCurrent.in(Units.Amps), null);
-			builder.addDoubleProperty("Supply Current Amps:", () -> supplyCurrent.in(Units.Amps), null);
-			builder.addDoubleProperty("Motor Voltage:", () -> motorVoltage.in(Units.Volts), null);
-			builder.addDoubleProperty("Motor Temperature Celsius:", () -> motorTemperature.in(Units.Celsius), null);
+			// builder.addDoubleProperty("Stator Current Amps:", () -> statorCurrent.in(Units.Amps), null);
+			// builder.addDoubleProperty("Supply Current Amps:", () -> supplyCurrent.in(Units.Amps), null);
+			// builder.addDoubleProperty("Motor Voltage:", () -> motorVoltage.in(Units.Volts), null);
+			// builder.addDoubleProperty("Motor Temperature Celsius:", () -> motorTemperature.in(Units.Celsius), null);
 		}
 	}
 

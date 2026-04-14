@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
@@ -26,27 +27,33 @@ import frc.lib.util.Util;
 import frc.robot.RobotConstants;
 
 public class DriveConstants {
-    public static final double kDriveMaxAngularRate = 8.2; // 254
-    public static final AngularVelocity kMaxAngularRate = Units.RadiansPerSecond.of(2.75 * Math.PI); // 1678
-    public static final double kMaxAngularSpeedRadiansPerSecondSquared = 20.0;
-    public static final double kDriveMaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // 254
-    public static final LinearVelocity kMaxSpeed = TunerConstants.kSpeedAt12Volts; // 1678
-    public static final double kMaxAccelerationMetersPerSecondSquared = 10.0;
+    public static final AngularVelocity kMaxAngularRate = Units.RadiansPerSecond.of(8.2 * 0.70);//254 //(2.75 * Math.PI); 1678
+
+    public static final LinearVelocity kMaxSpeed = TunerConstants.kSpeedAt12Volts;
+	public static final LinearVelocity kIntakeMaxSpeed = kMaxSpeed.minus(Units.MetersPerSecond.of(2));
     public static final double kSteerJoystickDeadband = 0.05;
-    public static final double kHeadingControllerP = 5.0;
-    public static final double kHeadingControllerI = 0;
-    public static final double kHeadingControllerD = 0;
+	public static final double kDriveJoystickDeadband = 0.05;
+	public static final double kHeadingLockControllerP = 5.0;
+    public static final double kHeadingLockControllerI = 0.0;
+    public static final double kHeadingLockControllerD = 0.0;
     public static final double kMidlineBuffer = 1.0;
 
-    public static final LinearAcceleration kMaxAcceleration = Units.MetersPerSecondPerSecond.of(12.0);
+    public static final LinearAcceleration kMaxAcceleration = Units.MetersPerSecondPerSecond.of(10.0);
 
 
     public static final Translation2d kTranslation2dZero = new Translation2d(0.0, 0.0);
     public static final Rotation2d kRotation2dZero = new Rotation2d();
 
+	public static final Angle driveYawPassToleranceDeg = Units.Degrees.of(10.0);
+	public static final Angle driveYawLaunchToleranceDeg = Units.Degrees.of(15.0);
+    public static final double kWiggleAmplitudeDeg = 3.0;
+    public static final double kWiggleFrequencyHz = 3.0;
+    public static final double kWiggleMaxSpeed = 0.5;
+
 
     public static final SynchronousPIDF mAutoAlignHeadingController = getAutoAlignHeadingController();
 	public static final SynchronousPIDF mAutoAlignTranslationController = getAutoAlignTranslationController();
+	public static final SynchronousPIDF mIntakeAutoAlignTranslationController = getIntakeAutoAlignTranslationController();
 
 
 	public static final UnaryOperator<SwerveRequest.FieldCentric> getPIDToPoseRequestUpdater(Drive drive, Pose2d targetPose) {
@@ -160,9 +167,15 @@ public class DriveConstants {
 		return controller;
 	}
 
+	public static SynchronousPIDF getIntakeAutoAlignTranslationController() {
+		SynchronousPIDF controller = new SynchronousPIDF(3.15, 0.0, 0.0);
+		controller.setMaxAbsoluteOutput(kMaxSpeed.times(0.2).in(Units.MetersPerSecond));
+		return controller;
+	}
+
 	public static SynchronousPIDF getObjectDetectionTranslationController() {
-		SynchronousPIDF controller = new SynchronousPIDF(7.5, 0.0, 0.0);
-		controller.setMaxAbsoluteOutput(kMaxSpeed.in(Units.MetersPerSecond));
+		SynchronousPIDF controller = new SynchronousPIDF(5, 0.0, 0.0);
+		controller.setMaxAbsoluteOutput(kIntakeMaxSpeed.in(Units.MetersPerSecond));
 		return controller;
 	}
 

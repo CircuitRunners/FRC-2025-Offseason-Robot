@@ -94,6 +94,20 @@ public class Util {
 				&& epsilonEquals(a.vyMetersPerSecond, b.vyMetersPerSecond, linearVelocityEpsilon);
 	}
 
+	public static ChassisSpeeds transformVelocity(
+      ChassisSpeeds velocity, Translation2d transform, Rotation2d currentRotation) {
+    return new ChassisSpeeds(
+        velocity.vxMetersPerSecond
+            + velocity.omegaRadiansPerSecond
+                * (transform.getY() * currentRotation.getCos()
+                    - transform.getX() * currentRotation.getSin()),
+        velocity.vyMetersPerSecond
+            + velocity.omegaRadiansPerSecond
+                * (transform.getX() * currentRotation.getCos()
+                    - transform.getY() * currentRotation.getSin()),
+        velocity.omegaRadiansPerSecond);
+  }
+
 	public static class DistanceAngleConverter {
 		private final Distance radius;
 

@@ -23,17 +23,25 @@
 package frc.robot.shooting;
 
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.RobotConstants;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.lib.logging.LogUtil;
 import frc.lib.util.FieldLayout;
+import frc.lib.util.Util;
+import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.util.Bounds;
 
 public class ShotCalculator {
@@ -42,6 +50,9 @@ public class ShotCalculator {
     public ShotCalculator(Drive drive) {
         this.drive = drive;
     }
+
+    private final LinearFilter driveAngleFilter =
+      LinearFilter.movingAverage((int) (0.1 / 0.02));
 
     private double lastHoodAngle;
     private Rotation2d lastDriveAngle;
@@ -54,6 +65,7 @@ public class ShotCalculator {
     public record ShotParameters(
         boolean isValid,
         Rotation2d heading,
+        double driveVelocity,
         double hoodAngle,
         double flywheelSpeed,
         double distance,
@@ -69,12 +81,21 @@ public class ShotCalculator {
     private static final double passingMinDistance;
     private static final double passingMaxDistance;
     private static final double phaseDelay;
+    // presets
+    public static final double hubPresetDistance = 1.2;
+    public static final double towerPresetDistance = 2.5;
+    public static final double trenchPresetDistance = 3.03;
+    public static final double outpostPresetDistance = 4.84;
+
+    public static final Setpoint passingIdleSpeed = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(1000).in(Units.RotationsPerSecond)));
+    
+
 
     // Passing targets
     private static final Distance hubPassLine =
         FieldLayout.center.getMeasureY();
-    private static final Distance xPassTarget = Units.Inches.of(25);
-    private static final Distance yPassTarget = Units.Inches.of(50);
+    private static final Distance xPassTarget = Units.Inches.of(67);
+    private static final Distance yPassTarget = Units.Inches.of(65);
     // Boxes of bad
     // Under tower
     private static final Bounds towerBound =
@@ -99,11 +120,10 @@ public class ShotCalculator {
             FieldLayout.leftBumpEnd.in(Units.Meters));
 
     static {
-        minDistance = 1.34;
-        maxDistance = 5.60;
-        // TODO: define actual values when we tune the map
-        passingMinDistance = 0.0;
-        passingMaxDistance = 100000;
+        minDistance = 1.2;
+        maxDistance = 5.3;
+        passingMinDistance = 5.4;
+        passingMaxDistance = 17.16;
         phaseDelay = 0.03;
 
     }
@@ -121,8 +141,9 @@ public class ShotCalculator {
             FieldLayout.distanceFromAllianceWall(Units.Meters.of(drive.getPose().getX()), RobotConstants.isRedAlliance)
             .gte(FieldLayout.kAllianceZoneX.plus(Units.Inches.of(14)));
         if (latestParameters != null) {
-        return latestParameters;
+            return latestParameters;
         }
+        LogUtil.recordTranslation2d("Passing target", new Translation2d(xPassTarget, yPassTarget));
 
         // Calculate estimated pose while accounting for phase delay
         Pose2d estimatedPose = drive.getPose();
@@ -140,11 +161,14 @@ public class ShotCalculator {
                 passing ? getPassingTarget() : FieldLayout.blueHubCenter, RobotConstants.isRedAlliance);
         Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
         double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
+        SmartDashboard.putNumber("Shooter to Target", launcherToTargetDistance);
 
         // Calculate field relative launcher velocity
-        // This isn't actually the launcherVelocity given it won't account for angular velocity of robot
-        double launcherVelocityX = drive.getFieldRelativeChassisSpeeds().vxMetersPerSecond;
-        double launcherVelocityY = drive.getFieldRelativeChassisSpeeds().vyMetersPerSecond;
+        var robotVelocity = drive.getFieldRelativeChassisSpeeds();
+        var robotAngle = drive.getRotation();
+        ChassisSpeeds launcherVelocity =
+            Util.transformVelocity(
+                robotVelocity, ShooterConstants.robotToShooter.getTranslation(), robotAngle);
 
         // Account for imparted velocity by robot (launcher) to offset
         double timeOfFlight =
@@ -154,18 +178,18 @@ public class ShotCalculator {
         Pose2d lookaheadPose = launcherPosition;
         double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
 
-        for (int i = 0; i < 20; i++) {
-        timeOfFlight =
-            passing
-                ? getPassingTimeOfFlightForShot(lookaheadLauncherToTargetDistance)
-                : getTimeOfFlightForShot(lookaheadLauncherToTargetDistance);
-        double offsetX = launcherVelocityX * timeOfFlight;
-        double offsetY = launcherVelocityY * timeOfFlight;
-        lookaheadPose =
-            new Pose2d(
-                launcherPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),
-                launcherPosition.getRotation());
-        lookaheadLauncherToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
+        for (int i = 0; i < 8; i++) {
+            timeOfFlight =
+                passing
+                    ? getPassingTimeOfFlightForShot(lookaheadLauncherToTargetDistance)
+                    : getTimeOfFlightForShot(lookaheadLauncherToTargetDistance);
+            double offsetX = launcherVelocity.vxMetersPerSecond * timeOfFlight;
+            double offsetY = launcherVelocity.vyMetersPerSecond * timeOfFlight;
+            lookaheadPose =
+                new Pose2d(
+                    launcherPosition.getTranslation().plus(new Translation2d(offsetX, offsetY)),
+                    launcherPosition.getRotation());
+            lookaheadLauncherToTargetDistance = target.getDistance(lookaheadPose.getTranslation());
         }
 
         // Account for launcher being off center
@@ -176,10 +200,14 @@ public class ShotCalculator {
         // Calculate remaining parameters
         double hoodAngle =
             passing
-                ? Units.Degrees.of(getPassingHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Radians)
-                : Units.Degrees.of(getHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Radians);
+                ? Units.Degrees.of(getPassingHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Degrees)
+                : Units.Degrees.of(getHoodSetpointForShot(lookaheadLauncherToTargetDistance)).in(Units.Degrees);
         if (lastDriveAngle == null) lastDriveAngle = driveAngle;
         if (Double.isNaN(lastHoodAngle)) lastHoodAngle = hoodAngle; //NaN might be not possible, but i dont belive it
+        double driveVelocity =
+            driveAngleFilter.calculate(
+                driveAngle.minus(lastDriveAngle).getRadians() / 0.02);
+        lastDriveAngle = driveAngle;
         lastDriveAngle = driveAngle;
 
         // Check if inside a box of bad
@@ -189,6 +217,11 @@ public class ShotCalculator {
         boolean behindFarHub = farHubBound.contains(flippedPose.getTranslation());
         boolean outsideOfBadBoxes = !(insideTowerBadBox || behindNearHub || behindFarHub);
 
+         double shooterVelocity =
+        passing
+            ? getPassingShooterSetpointForShot(lookaheadLauncherToTargetDistance)
+            : getShooterSetpointForShot(lookaheadLauncherToTargetDistance);
+
         // Constructor parameters
         latestParameters =
             new ShotParameters(
@@ -197,10 +230,9 @@ public class ShotCalculator {
                     && lookaheadLauncherToTargetDistance
                         <= (passing ? passingMaxDistance : maxDistance),
                 driveAngle,
+                driveVelocity,
                 hoodAngle,
-                passing
-                    ? getPassingShooterSetpointForShot(lookaheadLauncherToTargetDistance)
-                    : getShooterSetpointForShot(lookaheadLauncherToTargetDistance),
+                shooterVelocity,
                 lookaheadLauncherToTargetDistance,
                 launcherToTargetDistance,
                 timeOfFlight,
@@ -242,21 +274,6 @@ public class ShotCalculator {
     public Translation2d getPassingTarget() {
         Distance flippedY = FieldLayout.handleAllianceFlip(drive.getPose(), RobotConstants.isRedAlliance).getMeasureY();
         boolean mirror = flippedY.gte(FieldLayout.center.getMeasureY());
-
-        // Check if we need to interpolate
-        if (FieldLayout.kFieldWidth.minus(hubPassLine).gte(flippedY) && flippedY.gte(hubPassLine)) {
-        double interpolateZoneAmount =
-            ((mirror ? FieldLayout.kFieldWidth.minus(flippedY).in(Units.Meters) : flippedY.minus(hubPassLine).in(Units.Meters))
-                / (FieldLayout.center.getMeasureY().minus(hubPassLine).in(Units.Meters)));
-        var unflippedPoseY =
-            mirror
-                ? FieldLayout.kFieldWidth.in(Units.Meters)
-                     - (MathUtil.interpolate(yPassTarget.in(Units.Meters), passingMinDistance, interpolateZoneAmount))
-                : MathUtil.interpolate(yPassTarget.in(Units.Meters), passingMinDistance, interpolateZoneAmount);
-        Translation2d flippedGoalTranslation =
-            FieldLayout.handleAllianceFlip(new Translation2d(xPassTarget, Units.Meters.of(unflippedPoseY)), RobotConstants.isRedAlliance);
-        return flippedGoalTranslation;
-        }
 
         // Fixed passing target
         Translation2d flippedGoalTranslation =

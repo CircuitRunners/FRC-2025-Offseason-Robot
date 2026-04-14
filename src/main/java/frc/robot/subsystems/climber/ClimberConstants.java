@@ -43,10 +43,10 @@ public class ClimberConstants {
 		FXConfig.Voltage.PeakForwardVoltage = 12.0;
 		FXConfig.Voltage.PeakReverseVoltage = -12.0;
 
-		FXConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+		FXConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
 		FXConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kMaxHeight.in(Units.Rotations);
 
-		FXConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+		FXConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
 		FXConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kZeroHeight.in(Units.Rotations);
 
 		FXConfig.Feedback.SensorToMechanismRatio = kGearing;

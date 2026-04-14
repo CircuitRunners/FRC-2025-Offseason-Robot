@@ -5,12 +5,16 @@ import java.util.Set;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+import choreo.trajectory.SwerveSample;
+import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -20,6 +24,7 @@ import frc.robot.auto.AutoConstants.AutoType;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
+import frc.lib.drive.ChoreoTrajectoryFlipper;
 import frc.lib.drive.PIDToPoseCommand;
 public class AutoModeBase {
     private static AutoRoutine routine;
@@ -27,6 +32,7 @@ public class AutoModeBase {
 	private static AutoType side;
 	private static Drive drive;
 	private static Superstructure superstructure;
+
 
 	public AutoModeBase(Drive drive, Superstructure superstructure, AutoFactory factory, String name) {
 		routine = factory.newRoutine(name);
@@ -50,6 +56,13 @@ public class AutoModeBase {
 		return routine.trajectory(name, index);
 	}
 
+	public AutoTrajectory trajectoryMirroredLeftRight(String name) {
+		AutoTrajectory base = trajectory(name);
+		@SuppressWarnings("unchecked")
+		Trajectory<SwerveSample> raw = (Trajectory<SwerveSample>) base.getRawTrajectory();
+		return routine.trajectory(ChoreoTrajectoryFlipper.mirrorLeftRight(raw));
+	}
+
 	/**
 	 * Runs an accuracy-based command for choreo following
 	 *
@@ -58,11 +71,29 @@ public class AutoModeBase {
 	 */
 	public static Command cmdWithAccuracy(AutoTrajectory trajectory, Time timeout, Distance epsilonDist) {
 		return Commands.defer(
-						() -> new FunctionalCommand(
-								trajectory.cmd()::initialize,
-								trajectory.cmd()::execute,
-								trajectory.cmd()::end,
-								() -> isFinished(trajectory, epsilonDist)),
+						() -> {
+							Command trajectoryCmd = trajectory.cmd();
+							Timer elapsedTimer = new Timer();
+							double totalTime = trajectory.getRawTrajectory().getTotalTime();
+							double computedMinFinishTime =
+									Math.max(
+											AutoConstants.kAccuracyMinGuardTime.in(Units.Seconds),
+											totalTime * AutoConstants.kAccuracyMinCompletionFraction);
+							final double minFinishTime =
+									totalTime > 0.02 ? Math.min(computedMinFinishTime, totalTime - 0.02) : 0.0;
+
+							return new FunctionalCommand(
+									() -> {
+										elapsedTimer.restart();
+										trajectoryCmd.initialize();
+									},
+									trajectoryCmd::execute,
+									(interrupted) -> {
+										trajectoryCmd.end(interrupted);
+										elapsedTimer.stop();
+									},
+									() -> elapsedTimer.hasElapsed(minFinishTime) && isFinished(trajectory, epsilonDist));
+						},
 						Set.of(drive))
 				.beforeStarting(() -> superstructure.setDriveReady(false))
 				.withTimeout(trajectory.getRawTrajectory().getTotalTime() + timeout.in(Units.Seconds));
@@ -125,7 +156,7 @@ public class AutoModeBase {
 
 	public void prepRoutine(Command... sequence) {
 		routine.active()
-				.onTrue(Commands.sequence(sequence)
+				.onTrue(Commands.sequence(superstructure.getAutoWaitCommand(), Commands.sequence(sequence))
 						.withName("Auto Routine Sequential Command Group"));
 	}
 

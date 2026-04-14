@@ -23,7 +23,7 @@ public class Climber extends ServoMotorSubsystem<MotorIOTalonFX> {
 				ClimberConstants.kEpsilonThreshold,
 				ClimberConstants.getServoConfig());
 		setCurrentPosition(ClimberConstants.kZeroHeight);
-		applySetpoint(ZERO);
+		//applySetpoint(ZERO);
 	}
 
 	@Override

@@ -20,40 +20,67 @@ import frc.lib.sim.RollerSim.RollerSimConstants;
 import frc.lib.util.TunableNumber;
 import frc.robot.Ports;
 import frc.robot.Robot;
+import frc.robot.shooting.ShotCalculator;
 
 public class ShooterConstants {
     public static final double kGearing = 1.0 / 1.0;
-    public static Transform2d robotToShooter = new Transform2d(Units.Inches.of(0), Units.Inches.of(6.881), Rotation2d.kZero);
+    public static Transform2d robotToShooter = new Transform2d(Units.Inches.of(-6.881), Units.Inches.of(0), Rotation2d.kZero);
 
-    public static final AngularVelocity kMinVelocity = Units.RotationsPerSecond.of(2000);
+	public record VelocityGains(double kP, double kI, double kD, double kS, double kV, double kA) {}
 
-    public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(100);
+	public static final VelocityGains kNotShootingVelocityGains = new VelocityGains(
+			10.5,
+			0.0,
+			0.0,
+			4.9,
+			0.035,
+			0.0);
+
+	public static final VelocityGains kShootingVelocityGains = new VelocityGains(
+			12.0, // make 6767 for emergency bang bang
+			0.0,
+			0.0,
+			5.25,
+			0.04,
+			0.0);
+
+	public static final AngularVelocity kIdleSpinup = Units.RotationsPerSecond.of((Units.RPM.of(1500).in(Units.RotationsPerSecond)));
+
+    public static final AngularVelocity kJuggleVelocity = Units.RotationsPerSecond.of(6.0);
+
+    public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(1.0);
+
+	public static void applyVelocityGains(TalonFXConfiguration config, VelocityGains gains) {
+		config.Slot1.kP = gains.kP();
+		config.Slot1.kI = gains.kI();
+		config.Slot1.kD = gains.kD();
+		config.Slot1.kS = gains.kS();
+		config.Slot1.kV = gains.kV();
+		config.Slot1.kA = gains.kA();
+	}
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot1.kS = 0.0; // default
-        config.Slot1.kA = 0.0; // default
-        config.Slot1.kP = 0.0; // default
-        config.Slot1.kI = 0.0; // default
-        config.Slot1.kD = 0.0; // default
+		applyVelocityGains(config, kNotShootingVelocityGains);
 
-        config.CurrentLimits.StatorCurrentLimitEnable = Robot.isReal();
-        config.CurrentLimits.StatorCurrentLimit = 120.0; // default
+        config.CurrentLimits.StatorCurrentLimitEnable = false; //Robot.isReal();
+        config.CurrentLimits.StatorCurrentLimit = 120.0;
 
-		config.CurrentLimits.SupplyCurrentLimitEnable = Robot.isReal();
-		config.CurrentLimits.SupplyCurrentLimit = 60.0;
+		config.CurrentLimits.SupplyCurrentLimitEnable = false; //Robot.isReal();	
+		config.CurrentLimits.SupplyCurrentLimit = 80.0;
 		config.CurrentLimits.SupplyCurrentLowerLimit = 60.0;
-		config.CurrentLimits.SupplyCurrentLowerTime = 0.1;
+		config.CurrentLimits.SupplyCurrentLowerTime = 0.3;
 
-        config.TorqueCurrent.PeakForwardTorqueCurrent = 800; // default
-        config.TorqueCurrent.PeakReverseTorqueCurrent = 800; // default
-        config.TorqueCurrent.TorqueNeutralDeadband = 0; // default
+        config.TorqueCurrent.PeakForwardTorqueCurrent = 800;
+        config.TorqueCurrent.PeakReverseTorqueCurrent = -800;
+		//config.TorqueCurrent.PeakReverseTorqueCurrent = -2; emergency bang bang
+        config.TorqueCurrent.TorqueNeutralDeadband = 0;
 
         config.Feedback.SensorToMechanismRatio = kGearing;
 
 		config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 
-		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
 		return config;
     }
@@ -66,6 +93,7 @@ public class ShooterConstants {
 		config.mainID = Ports.SHOOTER.id;
 		config.mainBus = Ports.SHOOTER.bus;
 		config.followerConfig = getFXConfig();
+		config.followerIDs = new int[] {Ports.SHOOTER_FOLLOWER.id};
 		config.followerMotorAlignment = new MotorAlignmentValue[] {MotorAlignmentValue.Opposed};
 		config.followerBuses = new CANBus[] {Ports.SHOOTER_FOLLOWER.bus};
 		return config;

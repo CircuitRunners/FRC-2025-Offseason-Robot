@@ -233,20 +233,20 @@ public class FieldLayout {
 	public static Rotation2d clampAwayFromTrench(Rotation2d rotation) {
 		double deg = rotation.getDegrees();
 
-		if (deg >= 40 && deg <= 70) {
-			return Rotation2d.fromDegrees((deg - 40 < 70 - deg) ? 40 : 70);
+		if (deg >= 30 && deg <= 80) {
+			return Rotation2d.fromDegrees((deg - 30 < 80 - deg) ? 30 : 80);
 		}
 
-		if (deg >= -140 && deg <= -110) {
-			return Rotation2d.fromDegrees((deg - (-140) < -110 - deg) ? -140 : -110);
+		if (deg >= -150 && deg <= -100) {
+			return Rotation2d.fromDegrees((deg - (-150) < -100 - deg) ? -150 : -100);
 		}
 
-		if (deg >= 130 && deg <= 160) {
-			return Rotation2d.fromDegrees((deg - 130 < 160 - deg) ? 130 : 160);
+		if (deg >= 120 && deg <= 170) {
+			return Rotation2d.fromDegrees((deg - 120 < 170 - deg) ? 120 : 170);
 		}
 
-		if (deg >= -50 && deg <= -20) {
-			return Rotation2d.fromDegrees((deg - (-50) < -20 - deg) ? -50 : -20);
+		if (deg >= -60 && deg <= -10) {
+			return Rotation2d.fromDegrees((deg - (-60) < -10 - deg) ? -60 : -10);
 		}
 
 		return rotation;

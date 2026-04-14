@@ -1,5 +1,6 @@
 package frc.lib.bases;
 
+import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
@@ -11,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.io.MotorIO;
 import frc.lib.io.MotorIO.Setpoint;
 import frc.lib.logging.LoggedTracer;
+import frc.robot.Robot;
+
 import java.util.function.Supplier;
 
 /**
@@ -34,7 +37,8 @@ public class MotorSubsystem<IO extends MotorIO> extends SubsystemBase {
 	@Override
 	public void periodic() {
 		io.updateInputs();
-		outputTelemetry();
+		Robot.batteryLogger.reportCurrentUsage(name, getSupplyCurrent().in(Units.Amps));
+		//outputTelemetry();
 	}
 
 	/**
@@ -98,6 +102,15 @@ public class MotorSubsystem<IO extends MotorIO> extends SubsystemBase {
 	 */
 	public Voltage getMotorVoltage() {
 		return io.getMotorVoltage();
+	}
+
+	/**
+	 * Sets neutral mode to brake or coast.
+	 *
+	 * @param wantsBrake True for brake, false for coast.
+	 */
+	public void setNeutralBrake(boolean wantsBrake) {
+		io.setNeutralBrake(wantsBrake);
 	}
 
 	/**

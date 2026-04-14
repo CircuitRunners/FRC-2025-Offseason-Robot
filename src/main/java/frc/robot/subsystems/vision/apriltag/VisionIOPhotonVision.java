@@ -80,7 +80,6 @@ public class VisionIOPhotonVision implements VisionIO {
               totalTagDistance += target.bestCameraToTarget.getTranslation().getNorm();
             }
 
-
             poseObservations.add(
                 new PoseObservation(
                     poseEstimate.timestampSeconds,

@@ -15,6 +15,7 @@ package frc.robot.subsystems.vision.apriltag;
 
 import static frc.robot.subsystems.vision.apriltag.VisionConstants.*;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -25,14 +26,17 @@ import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.logging.LogUtil;
+import frc.lib.logging.LoggedTracer;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.apriltag.VisionIO.PoseObservation;
 import frc.robot.subsystems.vision.apriltag.VisionIO.PoseObservationType;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
-
 
 public class Vision extends SubsystemBase {
   private final VisionConsumer consumer;
@@ -43,6 +47,23 @@ public class Vision extends SubsystemBase {
 
   private double lastTargetSeenTime = 0;
   private final VisionIO.VisionIOInputs[] inputs;
+
+  List<Pose3d> tagPoses = new ArrayList<>();
+  List<Pose3d> robotPoses = new ArrayList<>();
+  List<Pose3d> robotPosesAccepted = new ArrayList<>();
+  List<Pose3d> robotPosesRejected = new ArrayList<>();
+
+  List<Pose3d> allTagPoses = new ArrayList<>();
+  List<Pose3d> allRobotPoses = new ArrayList<>();
+  
+  List<Pose3d> allRobotPosesRejected = new ArrayList<>();
+  final int maxPoses = 5;
+
+  public List<Pose3d> allRobotPosesAccepted = new ArrayList<>();
+
+  private final Matrix<N3, N1> stdDevs = VecBuilder.fill(0, 0, 0);
+
+  private boolean ignoreThrifty = false;
 
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
@@ -61,20 +82,25 @@ public class Vision extends SubsystemBase {
           new Alert(
               "Vision camera " + Integer.toString(i) + " is disconnected.", AlertType.kWarning);
     }
+
+    SmartDashboard.putData("ThriftyCam Ignore/Toggle",
+        new InstantCommand(() -> ignoreThrifty = !ignoreThrifty));
   }
 
   @Override
   public void periodic() {
+    //LoggedTracer.record("Vision Loop Time");
+    SmartDashboard.putBoolean("ThriftyCam Ignore/State", ignoreThrifty);
     for (int i = 0; i < io.length; i++) {
       io[i].updateInputs(inputs[i]);
       //Logger.processInputs("Vision/Camera" + Integer.toString(i), inputs[i]);
     }
 
     // Initialize logging values
-    List<Pose3d> allTagPoses = new LinkedList<>();
-    List<Pose3d> allRobotPoses = new LinkedList<>();
-    List<Pose3d> allRobotPosesAccepted = new LinkedList<>();
-    List<Pose3d> allRobotPosesRejected = new LinkedList<>();
+    allTagPoses.clear();
+    allRobotPoses.clear();
+    
+    allRobotPosesRejected.clear();
 
     // Loop over cameras
     for (int cameraIndex = 0; cameraIndex < io.length; cameraIndex++) {
@@ -82,10 +108,11 @@ public class Vision extends SubsystemBase {
       disconnectedAlerts[cameraIndex].set(!inputs[cameraIndex].connected);
 
       // Initialize logging values
-      List<Pose3d> tagPoses = new LinkedList<>();
-      List<Pose3d> robotPoses = new LinkedList<>();
-      List<Pose3d> robotPosesAccepted = new LinkedList<>();
-      List<Pose3d> robotPosesRejected = new LinkedList<>();
+      tagPoses.clear();
+
+      robotPoses.clear();
+      robotPosesAccepted.clear();
+      robotPosesRejected.clear();
 
       // Add tag poses
       for (int tagId : inputs[cameraIndex].tagIds) {
@@ -100,14 +127,19 @@ public class Vision extends SubsystemBase {
         lastTargetSeenTime = observation.timestamp();
 
         // Check whether to reject pose
-        boolean rejectPose = shouldRejectPoseObservation(observation);
+        boolean rejectPose = shouldRejectPoseObservation(observation) || (cameraIndex == 0 && ignoreThrifty);
 
         // Add pose to log
         robotPoses.add(observation.pose());
         if (rejectPose) {
           robotPosesRejected.add(observation.pose());
         } else {
-          robotPosesAccepted.add(observation.pose());
+          allRobotPosesAccepted.addAll(robotPosesAccepted);
+
+          while (allRobotPosesAccepted.size() > 50) {
+              allRobotPosesAccepted.remove(0);
+          }
+          // robotPosesAccepted.add(observation.pose());
         }
 
         // Skip if rejected
@@ -116,8 +148,9 @@ public class Vision extends SubsystemBase {
         }
 
         // Calculate standard deviations
+        double averageDist = observation.averageTagDistance();
         double stdDevFactor =
-            Math.pow(observation.averageTagDistance(), 2.0) / observation.tagCount();
+            (averageDist * averageDist) / observation.tagCount();
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
         if (observation.type() == PoseObservationType.MEGATAG_2) {
@@ -133,11 +166,14 @@ public class Vision extends SubsystemBase {
           angularStdDev = 1000.0;
         }
 
+        stdDevs.set(0, 0, linearStdDev);
+        stdDevs.set(1, 0, linearStdDev);
+        stdDevs.set(2, 0, angularStdDev);
         // Send vision observation
         consumer.accept(
             observation.pose().toPose2d(),
             observation.timestamp(),
-            VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
+            stdDevs);
       }
 
       // Log camera datadata
@@ -157,25 +193,25 @@ public class Vision extends SubsystemBase {
       allRobotPoses.addAll(robotPoses);
       allRobotPosesAccepted.addAll(robotPosesAccepted);
       allRobotPosesRejected.addAll(robotPosesRejected);
-    } // for (camera : listOfCameras)
+    } //for (camera : listOfCameras)
 
-    // Log summary data
-    // Logger.recordOutput(
+    //Log summary data
+    // LogUtil.recordPose3d(
     //     "Vision/Summary/TagPoses", allTagPoses.toArray(new Pose3d[allTagPoses.size()]));
-    // Logger.recordOutput(
+    // LogUtil.recordPose3d(
     //     "Vision/Summary/RobotPoses", allRobotPoses.toArray(new Pose3d[allRobotPoses.size()]));
-    // Logger.recordOutput(
+    // LogUtil.recordPose3d(
     //     "Vision/Summary/RobotPosesAccepted",
     //     allRobotPosesAccepted.toArray(new Pose3d[allRobotPosesAccepted.size()]));
-    // Logger.recordOutput(
+    // LogUtil.recordPose3d(
     //     "Vision/Summary/RobotPosesRejected",
     //     allRobotPosesRejected.toArray(new Pose3d[allRobotPosesRejected.size()]));
 
-    if (timeSinceLastTargetSeen() < 0.25) { 
-      //statusLed.setColor(StatusLed.kBlue);
-    } else {
-      //statusLed.setColor(StatusLed.kBlack);
-    }
+    // if (timeSinceLastTargetSeen() < 0.25) { 
+    //   //statusLed.setColor(StatusLed.kBlue);
+    // } else {
+    //   //statusLed.setColor(StatusLed.kBlack);
+    // }
 
     tagLastSeenAlert.set(timeSinceLastTargetSeen() >= 20.0);
   }
@@ -230,5 +266,10 @@ public class Vision extends SubsystemBase {
       result &= cameraInput.connected;
     }
     return result;
+  }
+
+  public Pose2d getLatestVisionPose() {
+    if (allRobotPosesAccepted.size() == 0) return new Pose2d();
+    return allRobotPosesAccepted.get(allRobotPosesAccepted.size()-1).toPose2d();
   }
 }

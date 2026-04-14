@@ -10,6 +10,8 @@ import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import frc.lib.bases.ServoMotorSubsystem.ServoHomingConfig;
 import frc.lib.io.MotorIOTalonFX;
@@ -22,36 +24,43 @@ import frc.robot.Ports;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
 
-// PH -> PlaceHolder
 public class IntakeDeployConstants {
-    public static final double kGearing = (52.0 / 10.0);
+    public static final double kGearing = (52.0 / 10.0) * (36.0 / 12.0);
 
-	public static final Angle kDeployPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 3.0, true).get());
-	public static final Angle kStowPosition = Units.Degrees.of(new TunableNumber("kDeployPosition", 83.0, true).get());
+	public static final Angle kDeployPosition = Units.Degrees.of(0);
+	public static final Angle kStowPosition = Units.Degrees.of(124);
+
+    public static final Angle kUpShakePosition = Units.Degrees.of(50);
+
+    public static final Angle kRiseUpPosition = Units.Degrees.of(50);
+    public static final Angle kFallDownPosition = Units.Degrees.of(20);
 
 	public static final Angle kExhaustPosition = kDeployPosition;
 	public static final Distance kArmLength = Units.Inches.of(14.0);
+	public static final AngularVelocity kDefaultCruiseVelocity = Units.RotationsPerSecond.of(0.6);
+	public static final AngularAcceleration kDefaultAcceleration = Units.RotationsPerSecondPerSecond.of(15.0);
 
 	public static final Angle kEpsilonThreshold = Units.Degrees.of(6.0);
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 180.0; // PH
-        config.Slot0.kD = 0.0; // PH
-        config.Slot0.kS = 0.0; // PH
-        config.Slot0.kG = 0.0; // PH
+        config.Slot0.kP = 40.0;
+        config.Slot0.kD = 0.0;
+        config.Slot0.kS = 0.0;
+        config.Slot0.kG = 0.7;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
+        config.Slot0.GravityArmPositionOffset = -0.005;
         config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-        config.MotionMagic.MotionMagicCruiseVelocity = 5; // PH
-        config.MotionMagic.MotionMagicAcceleration = 7; // PH
+		config.MotionMagic.MotionMagicCruiseVelocity = kDefaultCruiseVelocity.in(Units.RotationsPerSecond);
+		config.MotionMagic.MotionMagicAcceleration = kDefaultAcceleration.in(Units.RotationsPerSecondPerSecond);
 
-        config.Voltage.PeakForwardVoltage = 6; // PH
-        config.Voltage.PeakReverseVoltage = -6; // PH
+        config.Voltage.PeakForwardVoltage = 12;
+        config.Voltage.PeakReverseVoltage = -12;
 
         config.CurrentLimits.SupplyCurrentLimitEnable = true;
-        config.CurrentLimits.SupplyCurrentLimit = 40; // PH
+        config.CurrentLimits.SupplyCurrentLimit = 40;
 
         config.Feedback.SensorToMechanismRatio = kGearing;
 
@@ -70,8 +79,8 @@ public class IntakeDeployConstants {
     public static MotorIOTalonFXConfig getIOConfig() {
         MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
         config.mainConfig = getFXConfig();
-        config.mainID = Ports.INTAKE_DEPLOY.id; // PH
-        config.mainBus = Ports.INTAKE_DEPLOY.bus; // PH
+        config.mainID = Ports.INTAKE_DEPLOY.id;
+        config.mainBus = Ports.INTAKE_DEPLOY.bus;
         config.time = Seconds;
         config.unit = Degrees;
         return config;
@@ -103,8 +112,8 @@ public class IntakeDeployConstants {
 		ServoHomingConfig config = new ServoHomingConfig();
 		config.kHomePosition = kDeployPosition;
 		config.kHomingTimeout = Seconds.of(0.2); 
-		config.kHomingVoltage = Units.Volts.of(-1); // PH
-		config.kSetHomedVelocity = Units.DegreesPerSecond.of(1.0); // PH
+		config.kHomingVoltage = Units.Volts.of(-1);
+		config.kSetHomedVelocity = Units.DegreesPerSecond.of(1.0);
 
 		return config;
 	}

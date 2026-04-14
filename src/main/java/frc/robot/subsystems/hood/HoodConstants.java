@@ -2,6 +2,7 @@ package frc.robot.subsystems.hood;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.signals.GravityTypeValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
@@ -16,30 +17,37 @@ import frc.lib.io.MotorIOTalonFXSim;
 import frc.lib.sim.PivotSim;
 import frc.lib.sim.PivotSim.PivotSimConstants;
 import frc.robot.Ports;
-import frc.robot.Robot;
 
 public class HoodConstants {
-    public static final double kGearing = (36.0 / 12.0) * (181.0 / 10.0);
+    public static final double kGearing = (25.0 / 12.0) * (181.0 / 10.0);
 
-    public static final Angle kKitbotPosition = Units.Degrees.of(10.0);
-    public static final Angle kMaxAngle = Units.Degrees.of(67.0);
-    public static final Angle kMinAngle = Units.Degrees.of(0.0);
+    public static final Angle kKitbotPosition = Units.Degrees.of(0.0);
+    public static final Angle kMaxAngle = Units.Degrees.of(43.3);
+    public static final Angle kMinAngle = Units.Degrees.of(20.0); // 8.2 higher
 
-    public static final Angle kEpsilonThreshold = Units.Degrees.of(0.5);
+    public static final Angle kEpsilonThreshold = Units.Degrees.of(3.0);
 	
 	public static final Time retractTime = Units.Seconds.of(0.1);
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 0.0;
+        config.Slot0.kP = 110.0;
         config.Slot0.kD = 0.0;
-        config.Slot0.kS = 0.0;
-        config.Slot0.kG = 0.0;
+        config.Slot0.kS = 0.33;
+        config.Slot0.kG = 0.3;
+
+		config.Slot2.kP = 1000.0;
+		config.Slot2.kD = 110.0;
+		config.Slot2.kG = 7.5;
+		config.Slot2.kS = 3.0;
+
+		config.Slot2.GravityType = GravityTypeValue.Elevator_Static;
+		config.Slot2.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 
         config.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
 		config.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
 
-		config.MotionMagic.MotionMagicCruiseVelocity = 7.0;
+		config.MotionMagic.MotionMagicCruiseVelocity = 0.5;
 		config.MotionMagic.MotionMagicAcceleration = 15.0;
 
 		config.Voltage.PeakForwardVoltage = 12.0;
@@ -57,6 +65,8 @@ public class HoodConstants {
 
 		config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
 		config.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kMinAngle.in(Units.Rotations);
+
+		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
 		return config;
     }
 
@@ -66,7 +76,7 @@ public class HoodConstants {
 		config.mainID = Ports.HOOD.id;
 		config.mainBus = Ports.HOOD.bus;
 		config.time = Units.Seconds;
-		config.unit = Units.Degrees;
+		config.unit = Units.Rotations;
 		return config;
 	}
 

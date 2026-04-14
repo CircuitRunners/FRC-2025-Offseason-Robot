@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.Map;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.trajectory.SwerveSample;
@@ -25,10 +28,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.MathHelpers;
+import frc.robot.Robot;
 import frc.robot.RobotConstants;
 import frc.robot.subsystems.superstructure.SuperstructureConstants;
 
-@Logged
 /**
  * The class represents the drivetrain of the robot. It manages telemetry output, pose tracking, and updating drivetrain  states.
  * I certify the work I am submitting is my original work. I have not shared nor exchanged information from anyone, nor will I do so in the future.
@@ -84,6 +87,10 @@ public class Drive extends SubsystemBase {
         SmartDashboard.putData("Drive", this);
         elasticPose.setRobotPose(getPose());
         SmartDashboard.putData("Elastic Field 2D", elasticPose);
+        // energy draw
+        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : getDrivetrain().getModules()) {
+            Robot.batteryLogger.reportCurrentUsage("Drivebase", module.getDriveMotor().getSupplyCurrent().getValueAsDouble() + module.getSteerMotor().getSupplyCurrent().getValueAsDouble());
+        }
     }
 
      /**
@@ -114,7 +121,7 @@ public class Drive extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        return getState().RawHeading;
+        return getPose().getRotation();
     }
 
     public static boolean onOpponentSide(boolean isRedAlliance, Pose2d pose) {
@@ -192,5 +199,12 @@ public class Drive extends SubsystemBase {
      */
     public Command brake() {
         return this.getDrivetrain().applyRequest(() -> new SwerveRequest.SwerveDriveBrake());
+    }
+    /**
+     * Sets zero velocity
+     * @return command
+     */
+    public Command stopDrivetrain() {
+      return Commands.runOnce(() -> getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds())));
     }
 }

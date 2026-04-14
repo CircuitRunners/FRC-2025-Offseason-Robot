@@ -1,43 +1,53 @@
 package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.bases.FlywheelMotorSubsystem;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIO.Setpoint;
-import frc.robot.subsystems.drive.Drive;
 
 public class Shooter extends FlywheelMotorSubsystem<MotorIOTalonFX> {
-    private Drive drive;
+
+    private enum GainProfile {
+        SHOOTING,
+        NOT_SHOOTING
+    }
+
+    private GainProfile gainProfile = GainProfile.NOT_SHOOTING;
 
     public static final Setpoint IDLE = Setpoint.withCoastSetpoint();
     public static final Setpoint STOP = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(0));
-    public static final Setpoint KITBOT = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(1000.0));
+    public static final Setpoint KITBOT = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(10.0));
+    
+    public static final Setpoint SPINUP = Setpoint.withVelocitySetpoint(ShooterConstants.kIdleSpinup);
 
-    public void setShooterVelocity(double RPM) {
-        applySetpoint(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(RPM)));
-    }
-
-    public void incrementVelocity(double inc) {
-        applySetpoint(Setpoint.withVelocitySetpoint(getVelocity().plus(Units.RotationsPerSecond.of(inc))));
-    }
-
-    public Command trackTargetCommand(Setpoint setpoint) {
-        return followSetpointCommand(() -> setpoint).withName("Track Hub");
-    }
-
-    private void stop() {
-        applySetpoint(STOP);
-    }
-
-    public Command stopCommand() {
-        return runOnce(this::stop);
-    }
+    public static final Setpoint JUGGLE = Setpoint.withVelocitySetpoint(ShooterConstants.kJuggleVelocity);
 
     public Shooter() {
         super(ShooterConstants.getMotorIO(),
             "Shooter", 
             ShooterConstants.kEpsilonThreshold
         );
+    }
+
+    public void setShootingGains(boolean isShooting) {
+        GainProfile nextProfile = isShooting ? GainProfile.SHOOTING : GainProfile.NOT_SHOOTING;
+        if (nextProfile == gainProfile) {
+            return;
+        }
+
+        ShooterConstants.VelocityGains gains = isShooting
+                ? ShooterConstants.kShootingVelocityGains
+                : ShooterConstants.kNotShootingVelocityGains;
+
+        io.changeMainConfig(config -> {
+            ShooterConstants.applyVelocityGains(config, gains);
+            return config;
+        });
+        io.changeFollowerConfig(config -> {
+            ShooterConstants.applyVelocityGains(config, gains);
+            return config;
+        });
+
+        gainProfile = nextProfile;
     }
 }

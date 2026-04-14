@@ -8,7 +8,8 @@ import com.ctre.phoenix6.controls.ControlRequest;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicExpoTorqueCurrentFOC;
-import com.ctre.phoenix6.controls.MotionMagicExpoVoltage;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
+import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.MotionMagicVelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.NeutralOut;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
@@ -18,11 +19,14 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularAccelerationUnit;
 import edu.wpi.first.units.TimeUnit;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.Velocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -41,6 +45,9 @@ public class MotorIOTalonFX extends MotorIO {
 	protected TalonFXConfiguration config;
 	protected TalonFXConfiguration followerConfig;
 	private final ControlRequestGetter requestGetter;
+	private AngularVelocity dynamicMotionMagicVelocity;
+	private AngularAcceleration dynamicMotionMagicAcceleration;
+	private Velocity<AngularAccelerationUnit> dynamicMotionMagicJerk;
 	private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
 	private ThreadPoolExecutor threadPoolExecutor =
 			new ThreadPoolExecutor(1, 1, 5, java.util.concurrent.TimeUnit.MILLISECONDS, queue);
@@ -106,7 +113,40 @@ public class MotorIOTalonFX extends MotorIO {
 
 	@Override
 	protected void setMotionMagicSetpoint(Angle mechanismPosition) {
-		setControl(requestGetter.getMotionMagicRequest(mechanismPosition));
+		setControl(requestGetter.getMotionMagicRequest(
+				mechanismPosition,
+				dynamicMotionMagicVelocity,
+				dynamicMotionMagicAcceleration,
+				dynamicMotionMagicJerk));
+	}
+
+	public void setDynamicMotionMagicVelocity(AngularVelocity mechanismVelocity) {
+		dynamicMotionMagicVelocity = mechanismVelocity;
+		reapplyDynamicMotionMagicIfActive();
+	}
+
+	public void setDynamicMotionMagicAcceleration(AngularAcceleration mechanismAcceleration) {
+		dynamicMotionMagicAcceleration = mechanismAcceleration;
+		reapplyDynamicMotionMagicIfActive();
+	}
+
+	public void setDynamicMotionMagicJerk(Velocity<AngularAccelerationUnit> mechanismJerk) {
+		dynamicMotionMagicJerk = mechanismJerk;
+		reapplyDynamicMotionMagicIfActive();
+	}
+
+	public void setDynamicMotionMagicConstraints(
+			AngularVelocity mechanismVelocity, AngularAcceleration mechanismAcceleration) {
+		setDynamicMotionMagicVelocity(mechanismVelocity);
+		setDynamicMotionMagicAcceleration(mechanismAcceleration);
+	}
+
+	public void setDynamicMotionMagicConstraints(
+			AngularVelocity mechanismVelocity,
+			AngularAcceleration mechanismAcceleration,
+			Velocity<AngularAccelerationUnit> mechanismJerk) {
+		setDynamicMotionMagicConstraints(mechanismVelocity, mechanismAcceleration);
+		setDynamicMotionMagicJerk(mechanismJerk);
 	}
 
 	@Override
@@ -136,6 +176,14 @@ public class MotorIOTalonFX extends MotorIO {
 		threadPoolExecutor.submit(() -> {
 			fx.setNeutralMode(neutralMode);
 		});
+	}
+
+	private void reapplyDynamicMotionMagicIfActive() {
+		if (!getEnabled() || getSetpoint().mode != Mode.MOTIONMAGIC) {
+			return;
+		}
+
+		setMotionMagicSetpoint(unitType.ofBaseUnits(getSetpoint().baseUnits));
 	}
 
 	@Override
@@ -207,6 +255,12 @@ public class MotorIOTalonFX extends MotorIO {
 	public MotorIOTalonFX(MotorIOTalonFXConfig config) {
 		super(config.unit, config.time, config.followerIDs.length);
 		requestGetter = config.requestGetter;
+		dynamicMotionMagicVelocity =
+				Units.RotationsPerSecond.of(config.mainConfig.MotionMagic.MotionMagicCruiseVelocity);
+		dynamicMotionMagicAcceleration =
+				Units.RotationsPerSecondPerSecond.of(config.mainConfig.MotionMagic.MotionMagicAcceleration);
+		dynamicMotionMagicJerk = Units.RotationsPerSecondPerSecond.per(Units.Second).of(
+				config.mainConfig.MotionMagic.MotionMagicJerk);
 		main = new TalonFX(config.mainID, config.mainBus);
 		setMainConfig(config.mainConfig);
 
@@ -237,23 +291,32 @@ public class MotorIOTalonFX extends MotorIO {
 
 	public static class ControlRequestGetter {
 		public ControlRequest getVoltageRequest(Voltage voltage) {
-			return new VoltageOut(voltage.in(Units.Volts)).withEnableFOC(false);
+			return new VoltageOut(voltage.in(Units.Volts)).withEnableFOC(true);
 		}
 
 		public ControlRequest getDutyCycleRequest(Dimensionless percent) {
 			return new DutyCycleOut(percent.in(Units.Percent));
 		}
 
-		public ControlRequest getMotionMagicRequest(Angle mechanismPosition) {
-			return new MotionMagicExpoVoltage(mechanismPosition).withSlot(0).withEnableFOC(true);
+		public ControlRequest getMotionMagicRequest(
+				Angle mechanismPosition,
+				AngularVelocity mechanismVelocity,
+				AngularAcceleration mechanismAcceleration,
+				Velocity<AngularAccelerationUnit> mechanismJerk) {
+			return new DynamicMotionMagicVoltage(mechanismPosition, mechanismVelocity, mechanismAcceleration)
+					.withJerk(mechanismJerk)
+					.withSlot(0)
+					.withEnableFOC(true);
 		}
 
 		public ControlRequest getVelocityRequest(AngularVelocity mechanismVelocity) {
-			return new MotionMagicVelocityTorqueCurrentFOC(mechanismVelocity).withSlot(1);
+			return new VelocityTorqueCurrentFOC(mechanismVelocity).withSlot(1);
 		}
 
 		public ControlRequest getPositionRequest(Angle mechanismPosition) {
-			return new PositionTorqueCurrentFOC(mechanismPosition).withSlot(2);
+			return new MotionMagicTorqueCurrentFOC(mechanismPosition).withSlot(2);
 		}
 	}
 }
+
+

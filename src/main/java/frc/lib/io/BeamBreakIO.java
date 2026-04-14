@@ -52,7 +52,7 @@ public abstract class BeamBreakIO implements Sendable {
 
 	@Override
 	public void initSendable(SendableBuilder builder) {
-		builder.addBooleanProperty("/" + name + ": Raw Status", () -> get(), null);
-		builder.addBooleanProperty("/" + name + ": Debounced Status", () -> debouncer.calculate(get()), null);
+		// builder.addBooleanProperty("/" + name + ": Raw Status", () -> get(), null);
+		// builder.addBooleanProperty("/" + name + ": Debounced Status", () -> debouncer.calculate(get()), null);
 	}
 }

@@ -7,9 +7,6 @@ import choreo.auto.AutoFactory;
 //import choreo.auto.AutoFactory;
 
 public class RobotConstants {
-	public static String kSerial;
-	public static boolean isComp;
-	public static boolean isOmega;
 
 	static {
 		RobotConstants.isRedAlliance = false;

@@ -9,41 +9,77 @@ import java.util.Optional;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.hal.AllianceStationID;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.drive.PIDToPoseCommand;
+import frc.lib.logging.LogUtil.GcStatsCollector;
 import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Stopwatch;
-
+import frc.robot.energy.BatteryLogger;
 @Logged
 public class Robot extends TimedRobot {
-  private final RobotContainer m_robotContainer;
+  private final RobotContainer mRobotContainer;
   private Command mAutonomousCommand;
+  private GcStatsCollector mGcStatsCollector = new GcStatsCollector();
   public static final Stopwatch autoTimer = new Stopwatch();
+
+  public static final BatteryLogger batteryLogger = new BatteryLogger();
+  private final BatteryIOInputs batteryInputs = new BatteryIOInputs();
+
+  private long disabledLoopCount = 0;
   public Robot() {
-    m_robotContainer = new RobotContainer();
+    mRobotContainer = new RobotContainer();
     Epilogue.bind(this);
+    DriverStation.silenceJoystickConnectionWarning(true);
   }
 
   @Override
   public void robotPeriodic() {
-    CommandScheduler.getInstance().run(); 
+    try {
+			Threads.setCurrentThreadPriority(true, 4);
+			CommandScheduler.getInstance().run();
+			Threads.setCurrentThreadPriority(false, 0);
+		} catch (Exception e) {
+			SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
+		}
+
+    batteryLogger.setBatteryVoltage(batteryInputs.batteryVoltage);
+    batteryLogger.setRioCurrent(batteryInputs.rioCurrent);
+
+    batteryLogger.periodic();
+
+    // CommandScheduler.getInstance().run(); 
+
+    // Update RobotContainer dashboard outputs
+    mRobotContainer.updateDashboardOutputs();
 
     // Clear shooting parameters
-    m_robotContainer.getShotCalculator().clearShootingParameters();
-    LoggedTracer.record("Robot Loop Time");
+    var shotCalculator = mRobotContainer.getShotCalculator();
+    shotCalculator.clearShootingParameters();
   }
 
   @Override
-  public void disabledInit() {}
+  public void robotInit() {
+    RobotController.setBrownoutVoltage(Units.Volts.of(6.0));
+  }
+
+  @Override
+  public void disabledInit() {
+    disabledLoopCount = 0;
+  }
 
   @Override
   public void disabledPeriodic() {
+    disabledLoopCount++;
+
     if (DriverStation.getAlliance().isPresent()) {
 			RobotConstants.isRedAlliance = DriverStation.getAlliance().equals(Optional.of(Alliance.Red));
 		} else {
@@ -52,6 +88,10 @@ public class Robot extends TimedRobot {
 							|| DriverStationSim.getAllianceStationId().equals(AllianceStationID.Red2)
 							|| DriverStationSim.getAllianceStationId().equals(AllianceStationID.Red3);
 		}
+
+    if (disabledLoopCount % 50 == 0) {
+      mRobotContainer.zeroIntakeDisabled();
+    }
   }
 
   @Override
@@ -59,8 +99,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    mAutonomousCommand = m_robotContainer.getAutoModeSelector().getSelectedCommand();
-    //mAutonomousCommand = m_robotContainer.getCmd();
+    mAutonomousCommand = mRobotContainer.getAutoModeSelector().getSelectedCommand();
 
 		autoTimer.start();
 
@@ -75,7 +114,9 @@ public class Robot extends TimedRobot {
     }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    autoTimer.reset();
+  }
 
   @Override
   public void teleopInit() {
@@ -103,4 +144,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {}
+
+  public static class BatteryIOInputs {
+    public double batteryVoltage = 12.0;
+    public double rioCurrent = 0.0;
+  }
 }
