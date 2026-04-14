@@ -420,7 +420,9 @@ public class Superstructure extends SubsystemBase {
 
     public Command intakeRise() {
       return Commands.sequence(
-        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.2), IntakeDeployConstants.kDefaultAcceleration),
+        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.4), IntakeDeployConstants.kDefaultAcceleration),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.STOW),
