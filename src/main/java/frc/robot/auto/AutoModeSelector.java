@@ -23,6 +23,7 @@ import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralRisky;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralSilly;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralStraight;
 import frc.robot.auto.autos.singleSwipe.LeftNeutralClimb;
+import frc.robot.auto.autos.singleSwipe.Popcorn;
 import frc.robot.auto.autos.singleSwipe.RightNeutralClimb;
 import frc.robot.auto.autos.superSilly.LeftDoubleSilly;
 import frc.robot.auto.autos.superSilly.LeftFakeout;
@@ -67,6 +68,8 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[LEFT] Fakeout", () -> new LeftFakeout(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Fakeout", () -> new RightFakeout(drive, superstructure, factory).getRoutine());
 
+		//mAutoChooser.addRoutine("Popcorn Penguins Steal", () -> new Popcorn(drive, superstructure, factory).getRoutine());
+		
 
 
 
