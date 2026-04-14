@@ -13,7 +13,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 public class Popcorn extends AutoModeBase {
 
     public Popcorn(Drive drive, Superstructure superstructure, AutoFactory factory) {
-        super(drive, superstructure, factory, "silly left");
+        super(drive, superstructure, factory, "popcorn");
 
         AutoTrajectory disruption2 = trajectory("disruption2");
         AutoTrajectory disruption2ToShoot = trajectory("disruption2ToShoot");
@@ -23,7 +23,7 @@ public class Popcorn extends AutoModeBase {
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady().withTimeout(2.25),
+                superstructure.timeoutShootWhenReady().withTimeout(1.25),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
                         disruption2.cmd(),
