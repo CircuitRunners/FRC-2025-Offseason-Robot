@@ -28,9 +28,9 @@
 // 	public RightObjectDetect(Drive drive, Superstructure superstructure, AutoFactory factory) {
 // 		super(drive, superstructure, factory, "lghafkjd");
 
-// 		AutoTrajectory rightShootToObjectDetect = trajectoryMirroredLeftRight("leftShootToObjectDetect");
+// 		AutoTrajectory rightShootToObjectDetect = trajectory("leftShootToObjectDetect").mirrorY();
 
-// 		AutoTrajectory rightIntakeToShoot = trajectoryMirroredLeftRight("leftIntakeToShoot");
+// 		AutoTrajectory rightIntakeToShoot = trajectory("leftIntakeToShoot").mirrorY();
 
 
 // 		Pose2d startPose = rightShootToObjectDetect.getInitialPose().get();

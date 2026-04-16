@@ -15,9 +15,9 @@ public class RightFullDisruptionSame extends AutoModeBase {
     public RightFullDisruptionSame(Drive drive, Superstructure superstructure, AutoFactory factory) {
         super(drive, superstructure, factory, "Right Full Disruption Same");
 
-        AutoTrajectory disruption = trajectoryMirroredLeftRight("disruption");
-        AutoTrajectory disruptionReturn = trajectoryMirroredLeftRight("disruptionReturnSame");
-        AutoTrajectory rightShootToSilly = trajectoryMirroredLeftRight("leftShootToSilly");
+        AutoTrajectory disruption = trajectory("disruption").mirrorY();
+        AutoTrajectory disruptionReturn = trajectory("disruptionReturnSame").mirrorY();
+        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly").mirrorY();
 
         Pose2d startPose = disruption.getInitialPose().get();
 

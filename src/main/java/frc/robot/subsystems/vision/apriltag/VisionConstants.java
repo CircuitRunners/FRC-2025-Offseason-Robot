@@ -43,8 +43,8 @@ public class VisionConstants {
   //         Units.inchesToMeters(7.523),
   //         new Rotation3d(0.0, Units.degreesToRadians(-20.0), Units.degreesToRadians(180.0)));
 
-  public static Transform3d robotToCamera0 = new Transform3d(Units.inchesToMeters(-2.5), Units.inchesToMeters(-10.068), Units.inchesToMeters(21.082),
-    new Rotation3d(0.0, Math.toRadians(-23.5), Math.toRadians(7)));
+  public static Transform3d robotToCamera0 = new Transform3d(Units.inchesToMeters(-1), Units.inchesToMeters(0), Units.inchesToMeters(21.082),
+    new Rotation3d(0.0, Math.toRadians(-28.0), Math.toRadians(0)));
   public static Transform3d robotToCamera1 = new Transform3d(Units.inchesToMeters(-12.194), Units.inchesToMeters(-9.053), Units.inchesToMeters(11.700),
     new Rotation3d(0, Math.toRadians(-20.0), Math.toRadians(180)));
 

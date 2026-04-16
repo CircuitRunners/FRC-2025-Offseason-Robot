@@ -428,10 +428,13 @@ public class Superstructure extends SubsystemBase {
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP, Units.Amps.of(110)),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN, Units.Amps.of(110))
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN, Units.Amps.of(110)),
+        intakeRollers.setpointCommand(IntakeRollers.INTAKE),
+        Commands.waitSeconds(1.0)
       ).finallyDo(() -> {
         intakeDeploy.setMotionMagicConstraints(IntakeDeployConstants.kDefaultCruiseVelocity, IntakeDeployConstants.kDefaultAcceleration);
-        intakeDeploy.applySetpoint(IntakeDeploy.DEPLOY);});
+        intakeDeploy.applySetpoint(IntakeDeploy.DEPLOY);
+        intakeRollers.applySetpoint(IntakeRollers.IDLE);});
     }
 
     public Command runIntakeIfDeployedJuggle() {

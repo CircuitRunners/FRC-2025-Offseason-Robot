@@ -15,8 +15,8 @@ public class LeftFakeout extends AutoModeBase {
     public LeftFakeout(Drive drive, Superstructure superstructure, AutoFactory factory) {
         super(drive, superstructure, factory, "Left Fakeout");
 
-        AutoTrajectory rightIntakeToShoot = trajectoryMirroredLeftRight("leftIntakeToShoot");
-        AutoTrajectory rightShootToSilly = trajectoryMirroredLeftRight("leftShootToSilly");
+        AutoTrajectory rightIntakeToShoot = trajectory("leftIntakeToShoot").mirrorY();
+        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly").mirrorY();
         AutoTrajectory leftTrenchFakeout = trajectory("leftTrenchFakeout");
 
         Pose2d startPose = leftTrenchFakeout.getInitialPose().get();

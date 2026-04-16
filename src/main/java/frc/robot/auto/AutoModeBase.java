@@ -5,8 +5,6 @@ import java.util.Set;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
-import choreo.trajectory.SwerveSample;
-import choreo.trajectory.Trajectory;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.Units;
@@ -24,7 +22,6 @@ import frc.robot.auto.AutoConstants.AutoType;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-import frc.lib.drive.ChoreoTrajectoryFlipper;
 import frc.lib.drive.PIDToPoseCommand;
 public class AutoModeBase {
     private static AutoRoutine routine;
@@ -54,13 +51,6 @@ public class AutoModeBase {
 
 	public AutoTrajectory trajectory(String name, int index) {
 		return routine.trajectory(name, index);
-	}
-
-	public AutoTrajectory trajectoryMirroredLeftRight(String name) {
-		AutoTrajectory base = trajectory(name);
-		@SuppressWarnings("unchecked")
-		Trajectory<SwerveSample> raw = (Trajectory<SwerveSample>) base.getRawTrajectory();
-		return routine.trajectory(ChoreoTrajectoryFlipper.mirrorLeftRight(raw));
 	}
 
 	/**

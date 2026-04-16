@@ -136,8 +136,8 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     
     public RobotContainer() {
-        SimulationFieldHandler.superstructure = this.superstructure;
-        SimulationFieldHandler.drive = this.drive;
+        // SimulationFieldHandler.superstructure = this.superstructure;
+        // SimulationFieldHandler.drive = this.drive;
         controlBoard.configureBindings(drive, superstructure);
         configureBindings();
         RobotConstants.mAutoFactory = new AutoFactory(
@@ -150,7 +150,9 @@ public class RobotContainer {
         // AutoHelpers.bindEventMarkers(RobotConstants.mAutoFactory)
         mAutoModeSelector = new AutoModeSelector(drive, superstructure, RobotConstants.mAutoFactory);
 		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
-        SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser());  
+        SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser()); 
+        
+        CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.warmupCmd());
 
         SmartDashboard.putData("Auto Overrides/Force Win",
             new InstantCommand(() -> autoWinOverride = Optional.of(true)));

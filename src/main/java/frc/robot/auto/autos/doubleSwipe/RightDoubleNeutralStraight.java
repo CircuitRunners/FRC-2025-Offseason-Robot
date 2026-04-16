@@ -15,9 +15,9 @@ public class RightDoubleNeutralStraight extends AutoModeBase {
     public RightDoubleNeutralStraight(Drive drive, Superstructure superstructure, AutoFactory factory) {
         super(drive, superstructure, factory, "Right Straight");
 
-        AutoTrajectory rightIntakeToShoot = trajectoryMirroredLeftRight("leftIntakeToShoot");
-        AutoTrajectory rightTrenchToNeutralIntake = trajectoryMirroredLeftRight("leftTrenchToNeutralIntakeStraight");
-        AutoTrajectory rightShootToSilly = trajectoryMirroredLeftRight("leftShootToSilly");
+        AutoTrajectory rightIntakeToShoot = trajectory("leftIntakeToShoot").mirrorY();
+        AutoTrajectory rightTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntakeStraight").mirrorY();
+        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly").mirrorY();
 
         Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
 

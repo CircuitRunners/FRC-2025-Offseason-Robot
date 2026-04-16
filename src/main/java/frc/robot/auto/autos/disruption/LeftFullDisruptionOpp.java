@@ -17,7 +17,7 @@ public class LeftFullDisruptionOpp extends AutoModeBase {
 
         AutoTrajectory disruption = trajectory("disruption");
         AutoTrajectory disruptionReturn = trajectory("disruptionReturnOpposite");
-        AutoTrajectory rightShootToSilly = trajectoryMirroredLeftRight("leftShootToSilly");
+        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly").mirrorY();
 
         Pose2d startPose = disruption.getInitialPose().get();
 

@@ -17,7 +17,7 @@ public class RightFakeout extends AutoModeBase {
 
         AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
         AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly");
-        AutoTrajectory rightTrenchFakeout = trajectoryMirroredLeftRight("leftTrenchFakeout");
+        AutoTrajectory rightTrenchFakeout = trajectory("leftTrenchFakeout").mirrorY();
 
         Pose2d startPose = rightTrenchFakeout.getInitialPose().get();
 

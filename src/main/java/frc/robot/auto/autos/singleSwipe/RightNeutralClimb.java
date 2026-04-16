@@ -15,8 +15,8 @@ public class RightNeutralClimb extends AutoModeBase {
     public RightNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
         super(drive, superstructure, factory, "Right Neutral Cycle + Climb");
 
-        AutoTrajectory rightIntakeToShoot = trajectoryMirroredLeftRight("leftIntakeToShootClose");
-        AutoTrajectory rightTrenchToNeutralIntake = trajectoryMirroredLeftRight("leftTrenchToNeutralIntakeClose");
+        AutoTrajectory rightIntakeToShoot = trajectory("leftIntakeToShootClose").mirrorY();
+        AutoTrajectory rightTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntakeClose").mirrorY();
 
         Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
 

@@ -15,8 +15,8 @@ public class RightFullDisruptionOpp extends AutoModeBase {
     public RightFullDisruptionOpp(Drive drive, Superstructure superstructure, AutoFactory factory) {
         super(drive, superstructure, factory, "Right Full Disruption Opp");
 
-        AutoTrajectory disruption = trajectoryMirroredLeftRight("disruption");
-        AutoTrajectory disruptionReturn = trajectoryMirroredLeftRight("disruptionReturnOpposite");
+        AutoTrajectory disruption = trajectory("disruption").mirrorY();
+        AutoTrajectory disruptionReturn = trajectory("disruptionReturnOpposite").mirrorY();
         AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly");
 
         Pose2d startPose = disruption.getInitialPose().get();
