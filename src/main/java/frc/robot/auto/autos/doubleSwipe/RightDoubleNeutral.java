@@ -29,7 +29,7 @@ public class RightDoubleNeutral extends AutoModeBase {
                         rightTrenchToNeutralIntake.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
-                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
+                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
                                 cmdWithAccuracy(rightIntakeToShoot),

@@ -320,7 +320,7 @@ public class Superstructure extends SubsystemBase {
                 //conveyor.feedForwardOrPulseOnLowCurrent(),
                 conveyor.setpointCommand(Conveyor.FEED_FORWARD),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
-                Commands.waitUntil(() -> isConveyorCurrentLowForWiggle()).andThen(intakeRise()),
+                Commands.waitUntil(() -> isConveyorCurrentLowForWiggle()).withTimeout(1.0).andThen(intakeRise()),
                 Commands.waitUntil(() -> false)))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
@@ -548,6 +548,16 @@ public class Superstructure extends SubsystemBase {
     public Command timeoutShootWhenReady() {
     return Commands.defer(() ->
         shootWhenReadyPulse()
+            .raceWith(
+                Commands.waitSeconds(getShootingTimeoutSeconds().getAsDouble())
+            ),
+			Set.of(this)
+    	);
+	}
+
+    public Command timeoutShootWhenReadyRise() {
+    return Commands.defer(() ->
+        shootWhenReadyRise()
             .raceWith(
                 Commands.waitSeconds(getShootingTimeoutSeconds().getAsDouble())
             ),

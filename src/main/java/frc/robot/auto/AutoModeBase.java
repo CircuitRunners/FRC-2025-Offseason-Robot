@@ -90,7 +90,7 @@ public class AutoModeBase {
 	}
 
 	/**
-	 * Returns an accuracy-based command for choreo following, including the default timeout
+	 * Returns an accuracy-based command for choreo following with a settable tolerance
 	 *
 	 * @param trajectory
 	 */
@@ -98,6 +98,11 @@ public class AutoModeBase {
 		return cmdWithAccuracy(trajectory, AutoConstants.kDefaultTrajectoryTimeout, epsilonDist);
 	}
 
+	/**
+	 * Returns an accuracy-based command for choreo following, including the default timeout
+	 *
+	 * @param trajectory
+	 */
 	public static Command cmdWithAccuracy(AutoTrajectory trajectory) {
 		return cmdWithAccuracy(trajectory, AutoConstants.kAutoLinearEpsilon);
 	}

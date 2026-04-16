@@ -3,6 +3,7 @@ package frc.robot.auto.autos.doubleSwipe;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
@@ -28,26 +29,26 @@ public class RightDoubleNeutralSilly extends AutoModeBase {
                         rightTrenchToNeutralIntake.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
-                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
+                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithAccuracy(rightIntakeToShoot),
+                                cmdWithAccuracy(rightIntakeToShoot, Units.Inches.of(12.0)),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 Commands.deadline(
-                        cmdWithAccuracy(rightShootToSilly),
+                        cmdWithAccuracy(rightShootToSilly, Units.Inches.of(12.0)),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 superstructure.deployIntake(),
                 Commands.deadline(
-                        cmdWithAccuracy(rightShootToSilly),
+                        cmdWithAccuracy(rightShootToSilly, Units.Inches.of(12.0)),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())));

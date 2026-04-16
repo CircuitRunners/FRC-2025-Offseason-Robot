@@ -28,7 +28,7 @@ public class RightDoubleSilly extends AutoModeBase {
                         cmdWithAccuracy(leftTrenchToNeutralIntake),
                         Commands.sequence(
                                 superstructure.deployIntake(),
-                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
+                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),

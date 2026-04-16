@@ -27,7 +27,7 @@ public class LeftNeutralClimb extends AutoModeBase {
                         leftTrenchToNeutralIntake.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
-                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
+                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
                                 cmdWithAccuracy(leftIntakeToShoot),

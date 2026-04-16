@@ -1,0 +1,83 @@
+{
+  "path_elements": [
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 4.396075810289697,
+        "y_meters": 0.4256904409839155,
+        "intermediate_handoff_radius_meters": 0.2
+      },
+      "rotation_target": {
+        "rotation_radians": 1.5707963267948966,
+        "profiled_rotation": true
+      }
+    },
+    {
+      "type": "translation",
+      "x_meters": 7.045705023286317,
+      "y_meters": 0.398042214015506,
+      "intermediate_handoff_radius_meters": 0.5
+    },
+    {
+      "type": "translation",
+      "x_meters": 8.07651531909478,
+      "y_meters": 0.6937879777325744,
+      "intermediate_handoff_radius_meters": 0.3
+    },
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 7.789369309780252,
+        "y_meters": 3.5232381767574026,
+        "intermediate_handoff_radius_meters": 0.9500000000000003
+      },
+      "rotation_target": {
+        "rotation_radians": 2.0038716634710974,
+        "profiled_rotation": true
+      }
+    },
+    {
+      "type": "translation",
+      "x_meters": 6.952311624217769,
+      "y_meters": 3.308803151651902,
+      "intermediate_handoff_radius_meters": 0.5499999999999999
+    },
+    {
+      "type": "translation",
+      "x_meters": 5.679418076335395,
+      "y_meters": 0.5070011795954787,
+      "intermediate_handoff_radius_meters": 0.8500000000000003
+    },
+    {
+      "type": "waypoint",
+      "translation_target": {
+        "x_meters": 4.057577463448586,
+        "y_meters": 0.4603044800612093,
+        "intermediate_handoff_radius_meters": 0.2
+      },
+      "rotation_target": {
+        "rotation_radians": 1.4391898790270403,
+        "profiled_rotation": true
+      }
+    }
+  ],
+  "constraints": {
+    "max_velocity_meters_per_sec": [
+      {
+        "value": 2.0,
+        "start_ordinal": 2,
+        "end_ordinal": 2
+      },
+      {
+        "value": 3.8,
+        "start_ordinal": 0,
+        "end_ordinal": 1
+      },
+      {
+        "value": 3.8,
+        "start_ordinal": 3,
+        "end_ordinal": 6
+      }
+    ]
+  }
+}

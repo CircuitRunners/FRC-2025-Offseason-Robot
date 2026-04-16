@@ -28,7 +28,7 @@ public class LeftFullDisruptionOpp extends AutoModeBase {
                         disruption.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
-                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
+                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
                                 cmdWithAccuracy(disruptionReturn),
