@@ -19,7 +19,6 @@ import frc.robot.controlboard.ControlBoardConstants;
 public class SuperstructureConstants {
 	public static final Time trenchLookaheadTime = Units.Milliseconds.of(100.0);
 	public static final Time aimLookaheadTime = Units.Milliseconds.of(100);
-	public static final Translation3d climberOffset = new Translation3d(Units.Inches.of(12.126), Units.Inches.of(2.651), Units.Inches.of(-20.299));
 
     public static Distance getAutoAlignScoringDistanceEpsilon() {
 		return Units.Inches.of(0);

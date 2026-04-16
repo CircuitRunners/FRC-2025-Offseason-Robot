@@ -23,7 +23,6 @@ import frc.lib.util.FieldLayout;
 import frc.lib.util.HubShiftUtil;
 import frc.robot.Robot;
 import frc.robot.shooting.ShotCalculator;
-import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
@@ -47,11 +46,10 @@ public class ControlBoard {
 	private IntakeRollers intakeRollers;
 	private Kicker kicker;
 	private Conveyor conveyor;
-	//private Climber climber;
 	private Superstructure superstructure;
 
 	
-    public ControlBoard(Drive drive, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, /*Climber climber,*/ Superstructure superstructure) {
+    public ControlBoard(Drive drive, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Superstructure superstructure) {
         this.drive = drive;
 		this.shooter = shooter;
 		this.hood = hood;
@@ -59,16 +57,15 @@ public class ControlBoard {
 		this.intakeRollers = intakeRollers;
 		this.kicker = kicker;
 		this.conveyor = conveyor;
-		//this.climber = climber;
         this.superstructure = superstructure;
 
     }
 
     private static ControlBoard instance = null;
 
-    public static ControlBoard getInstance(Drive drive, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, /*Climber climber,*/ Superstructure superstructure) {
+    public static ControlBoard getInstance(Drive drive, Shooter shooter, Hood hood, IntakeDeploy intakeDeploy, IntakeRollers intakeRollers, Kicker kicker, Conveyor conveyor, Superstructure superstructure) {
         if (instance == null) {
-            instance = new ControlBoard(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, /*climber,*/ superstructure);
+            instance = new ControlBoard(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, superstructure);
         }
         return instance;
     }
@@ -195,8 +192,6 @@ public class ControlBoard {
 				rumbleCommand(Units.Seconds.of(0.1)).onlyIf(() -> s.headingLockToggle == false)
 			).ignoringDisable(true)
 		));
-
-		//driver.b().whileTrue(s.climb()).onFalse(s.setState(Superstructure.State.CLIMBING));
  	}
 
 	// public Command shootingSetOverrideBehavior(Trigger button) {
@@ -230,9 +225,6 @@ public class ControlBoard {
 
 		// operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
 		// //operator.povRight().onTrue(conveyor.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(conveyor.setpointCommand(Setpoint.withNeutralSetpoint()));
-
-		// // operator.povUp().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
-		// // operator.povDown().onTrue(climber.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(climber.setpointCommand(Setpoint.withNeutralSetpoint()));
 
 		// operator.x().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(4)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));
 		// operator.b().onTrue(shooter.setpointCommand(Setpoint.withVoltageSetpoint(Units.Volts.of(-5)))).onFalse(shooter.setpointCommand(Setpoint.withNeutralSetpoint()));

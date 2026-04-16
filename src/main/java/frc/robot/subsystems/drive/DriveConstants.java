@@ -172,24 +172,6 @@ public class DriveConstants {
 		controller.setMaxAbsoluteOutput(kMaxSpeed.times(0.2).in(Units.MetersPerSecond));
 		return controller;
 	}
-
-	public static SynchronousPIDF getObjectDetectionTranslationController() {
-		SynchronousPIDF controller = new SynchronousPIDF(5, 0.0, 0.0);
-		controller.setMaxAbsoluteOutput(kIntakeMaxSpeed.in(Units.MetersPerSecond));
-		return controller;
-	}
-
-	public static SynchronousPIDF getObjectDetectionHeadingController() {
-		SynchronousPIDF controller = new SynchronousPIDF(5.0, 0.0, 0.0);
-		controller.setInputRange(-0.5, 0.5);
-		controller.setMaxAbsoluteOutput(kMaxAngularRate.in(Units.RotationsPerSecond));
-		controller.setContinuous();
-		return controller;
-	}
-
-	
-
-
 }
 
 	

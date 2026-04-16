@@ -10,9 +10,9 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class LeftNeutralClimb extends AutoModeBase {
+public class LeftNeutral extends AutoModeBase {
 
-    public LeftNeutralClimb(Drive drive, Superstructure superstructure, AutoFactory factory) {
+    public LeftNeutral(Drive drive, Superstructure superstructure, AutoFactory factory) {
         super(drive, superstructure, factory, "left Neutral Cycle");
 
         AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShootClose");

@@ -48,8 +48,6 @@ import frc.lib.drive.PIDToPoseCommand;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.controlboard.ControlBoardConstants;
 import frc.robot.shooting.ShotCalculator;
-import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.climber.ClimberConstants;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.drive.Drive;
@@ -66,11 +64,6 @@ import frc.robot.subsystems.vision.apriltag.Vision;
 import frc.robot.subsystems.vision.apriltag.VisionConstants;
 import frc.robot.subsystems.vision.apriltag.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.apriltag.VisionIOPhotonVisionSim;
-import frc.robot.subsystems.vision.objectdetection.ObjectDetectionConstants;
-import frc.robot.subsystems.vision.objectdetection.ObjectPoseEstimator;
-import frc.robot.subsystems.vision.objectdetection.objectdetectioncamera.ObjectDetectionCamera;
-import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulatedGamePieceConstants;
-import frc.robot.subsystems.vision.objectdetection.simulatedfield.SimulationFieldHandler;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeSelector;
@@ -87,28 +80,16 @@ public class RobotContainer {
         ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
         : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
-    public final ObjectPoseEstimator objectDetector = null;
-    // new ObjectPoseEstimator(
-    //     drive,
-    //     ObjectDetectionConstants.OBJECT_POSE_ESTIMATOR_DELETION_THRESHOLD_SECONDS,
-    //     SimulatedGamePieceConstants.GamePieceType.FUEL,
-    //     new ObjectDetectionCamera(
-    //         drive,
-    //         "ObjectDetection",
-    //         ObjectDetectionConstants.cameraTransform
-    //     )
-    // );
 
     private final Shooter shooter = new Shooter();
     private final IntakeDeploy intakeDeploy = new IntakeDeploy();
     private final IntakeRollers intakeRollers = new IntakeRollers();
     private final Kicker kicker = new Kicker();
     private final Conveyor conveyor = new Conveyor();
-    //private final Climber climber = new Climber();
-    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, /*climber,*/ objectDetector);
+    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor);
     
 
-    private final ControlBoard controlBoard = ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor,/* climber,*/ superstructure);
+    private final ControlBoard controlBoard = ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, superstructure);
     private final ShotCalculator shotCalculator = ShotCalculator.getInstance(drive);
 
     private Optional<Boolean> autoWinOverride = Optional.empty();
@@ -233,7 +214,6 @@ public class RobotContainer {
         for (SubsystemBase s : new SubsystemBase[] {
 			// intakeDeploy,
 			// intakeRollers,
-			// climber,
 			// conveyor,
 			// superstructure,
             // kicker,

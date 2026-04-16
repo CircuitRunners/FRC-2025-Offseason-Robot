@@ -22,25 +22,20 @@ import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutral;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralRisky;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralSilly;
 import frc.robot.auto.autos.doubleSwipe.RightDoubleNeutralStraight;
-import frc.robot.auto.autos.singleSwipe.LeftNeutralClimb;
+import frc.robot.auto.autos.singleSwipe.LeftNeutral;
 import frc.robot.auto.autos.singleSwipe.Popcorn;
-import frc.robot.auto.autos.singleSwipe.RightNeutralClimb;
+import frc.robot.auto.autos.singleSwipe.RightNeutral;
 import frc.robot.auto.autos.superSilly.LeftDoubleSilly;
 import frc.robot.auto.autos.superSilly.LeftFakeout;
 import frc.robot.auto.autos.superSilly.RightDoubleSilly;
-// import frc.robot.auto.autos.singleSwipe.RightObjectDetect;
-// import frc.robot.auto.autos.singleSwipe.LeftObjectDetect;
 import frc.robot.auto.autos.superSilly.RightFakeout;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 public class AutoModeSelector {
-	private AutoChooser mAutoChooser = new AutoChooser();
-
-	//public static SendableChooser<Boolean> useObjectDetections = new SendableChooser<>();
-	
+	private AutoChooser mAutoChooser = new AutoChooser();	
 
 	public AutoModeSelector(Drive drive, Superstructure superstructure, AutoFactory factory) {
-		mAutoChooser.addRoutine("[LEFT] Close Single Neutral", () -> new LeftNeutralClimb(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] Close Single Neutral", () -> new LeftNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[LEFT] Silly", () -> new LeftDoubleNeutralSilly(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[LEFT] Double Neutral Linear", () -> new LeftDoubleNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[LEFT] Risky", () -> new LeftDoubleNeutralRisky(drive, superstructure, factory).getRoutine());
@@ -48,7 +43,7 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[LEFT] Double Silly", () -> new LeftDoubleSilly(drive, superstructure, factory).getRoutine());
 
 
-		mAutoChooser.addRoutine("[RIGHT] Close Single Neutral", () -> new RightNeutralClimb(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Close Single Neutral", () -> new RightNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Silly", () -> new RightDoubleNeutralSilly(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Double Neutral Linear", () -> new RightDoubleNeutral(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Risky", () -> new RightDoubleNeutralRisky(drive, superstructure, factory).getRoutine());
@@ -62,21 +57,11 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[RIGHT] Same Disruption", () -> new RightFullDisruptionSame(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[LEFT] Opposite Disruption", () -> new LeftFullDisruptionOpp(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Opposite Disruption", () -> new RightFullDisruptionOpp(drive, superstructure, factory).getRoutine());
-		// mAutoChooser.addRoutine("[LEFT] Object Detect", () -> new LeftObjectDetect(drive, superstructure, factory).getRoutine());
-		// mAutoChooser.addRoutine("[RIGHT] Object Detect", () -> new RightObjectDetect(drive, superstructure, factory).getRoutine());
 
 		mAutoChooser.addRoutine("[LEFT] Fakeout", () -> new LeftFakeout(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Fakeout", () -> new RightFakeout(drive, superstructure, factory).getRoutine());
 
 		//mAutoChooser.addRoutine("Popcorn Penguins Steal", () -> new Popcorn(drive, superstructure, factory).getRoutine());
-		
-
-
-
-		//
-		// useObjectDetections.setDefaultOption("no :(", false);
-		// useObjectDetections.addOption("hell yea!", true);
-		// SmartDashboard.putData("object detection", useObjectDetections);
     }
 
 
