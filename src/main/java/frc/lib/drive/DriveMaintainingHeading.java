@@ -148,35 +148,6 @@ public class DriveMaintainingHeading extends Command{
                         var total = Math.hypot(x, y);
                         var driveVelocity = parameters.driveVelocity() * Math.max(1.0, total)/DriveConstants.kMaxSpeed.in(Units.MetersPerSecond);
                 Rotation2d targetAngle = mSuperstructure.headingSetpoint;
-                boolean canOscillate = 
-                        mSuperstructure.isShootingState()
-                                && mSuperstructure.atShotGoal()
-                                && mSuperstructure.isConveyorCurrentLowForWiggle()
-                                && total
-                                        <= DriveConstants
-                                                .kWiggleMaxSpeed;
-
-                if (canOscillate) {
-                    if (mOscillationHeadingCenter.isEmpty()) {
-                        mOscillationHeadingCenter = Optional.of(targetAngle);
-                        mOscillationStartTimestamp = Timer.getFPGATimestamp();
-                    }
-
-                    double elapsedSeconds = Timer.getFPGATimestamp() - mOscillationStartTimestamp;
-                    double oscillationRadians =
-                            Math.toRadians(DriveConstants.kWiggleAmplitudeDeg)
-                                    * Math.sin(
-                                            elapsedSeconds
-                                                    * DriveConstants.kWiggleFrequencyHz
-                                                    * 2.0
-                                                    * Math.PI);
-                    targetAngle =
-                            mOscillationHeadingCenter
-                                    .get()
-                                    .plus(Rotation2d.fromRadians(oscillationRadians));
-                } else {
-                    mOscillationHeadingCenter = Optional.empty();
-                }
 
                 mDrivetrain.getDrivetrain().setControl(
                     driveWithHeading
