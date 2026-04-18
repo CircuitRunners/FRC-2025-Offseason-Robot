@@ -59,6 +59,13 @@
      "exp":"0.35 m",
      "val":0.35
     }
+   },
+   "robotTrueMaxSpeed":{
+    "dimension":"LinVel",
+    "var":{
+     "exp":"3.7 m / s",
+     "val":3.7
+    }
    }
   },
   "poses":{

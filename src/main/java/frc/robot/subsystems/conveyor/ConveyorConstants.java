@@ -27,8 +27,9 @@ public class ConveyorConstants {
 	public static final Voltage kJuggleVoltage = Volts.of(-4);
     public static final Voltage kPulseInVoltage = kFeedForwardVoltage;
     public static final Voltage kPulseOutVoltage = kFeedBackwardVoltage;
-    public static final Current kPulseCurrentThreshold = Units.Amps.of(30.0);
-    public static final Current kWiggleCurrentThreshold = Units.Amps.of(35.0);
+    public static final Current kPulseLowCurrentThreshold = Units.Amps.of(30.0);
+    public static final Current kPulseHighCurrentThreshold = Units.Amps.of(70.0);
+    public static final Current kRiseCurrentThreshold = Units.Amps.of(35.0);
     public static final double kCurrentDebounceSeconds = 0.25;
 
 	public static final double pulseOutTime = 0.20;

@@ -32,7 +32,7 @@ public class LeftDoubleNeutral extends AutoModeBase {
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithAccuracy(leftIntakeToShoot),
+                                cmdWithLessAccuracy(leftIntakeToShoot),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),
@@ -44,7 +44,7 @@ public class LeftDoubleNeutral extends AutoModeBase {
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithAccuracy(leftIntakeToShoot2),
+                                cmdWithLessAccuracy(leftIntakeToShoot2),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),

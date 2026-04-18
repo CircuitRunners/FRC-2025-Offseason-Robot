@@ -32,7 +32,7 @@ public class RightDoubleNeutral extends AutoModeBase {
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithAccuracy(rightIntakeToShoot),
+                                cmdWithLessAccuracy(rightIntakeToShoot),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),
@@ -44,7 +44,7 @@ public class RightDoubleNeutral extends AutoModeBase {
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithAccuracy(rightIntakeToShoot2),
+                                cmdWithLessAccuracy(rightIntakeToShoot2),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),

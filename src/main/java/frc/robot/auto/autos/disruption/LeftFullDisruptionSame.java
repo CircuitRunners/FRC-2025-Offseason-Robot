@@ -31,7 +31,7 @@ public class LeftFullDisruptionSame extends AutoModeBase {
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithAccuracy(disruptionReturn),
+                                cmdWithLessAccuracy(disruptionReturn),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),

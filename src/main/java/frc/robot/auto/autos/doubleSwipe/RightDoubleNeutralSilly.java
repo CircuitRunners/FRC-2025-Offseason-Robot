@@ -32,14 +32,14 @@ public class RightDoubleNeutralSilly extends AutoModeBase {
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithAccuracy(rightIntakeToShoot, Units.Inches.of(12.0)),
+                                cmdWithLessAccuracy(rightIntakeToShoot),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         .alongWith(superstructure.shooterIdleSpinup()),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReadyRise(),
                 Commands.deadline(
-                        cmdWithAccuracy(rightShootToSilly, Units.Inches.of(12.0)),
+                        cmdWithLessAccuracy(rightShootToSilly),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
@@ -48,7 +48,7 @@ public class RightDoubleNeutralSilly extends AutoModeBase {
                 superstructure.timeoutShootWhenReadyRise(),
                 superstructure.deployIntake(),
                 Commands.deadline(
-                        cmdWithAccuracy(rightShootToSilly, Units.Inches.of(12.0)),
+                        cmdWithLessAccuracy(rightShootToSilly),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())));

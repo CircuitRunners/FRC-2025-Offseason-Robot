@@ -206,7 +206,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command turnToHubAuto() {
       return Commands.defer(() ->
-      new PIDToPoseCommand(drive, this, new Pose2d(drive.getPose().getTranslation(), ShotCalculator.getInstance(drive).getParameters().heading()), Units.Inches.of(6.0), Units.Degrees.of(10)), Set.of(drive));
+      new PIDToPoseCommand(drive, this, new Pose2d(drive.getPose().getTranslation(), ShotCalculator.getInstance(drive).getParameters().heading()), Units.Inches.of(6.0), Units.Degrees.of(7)), Set.of(drive));
     }
 
     public Command idleIntake() {
@@ -306,13 +306,13 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
               Commands.runOnce(() -> setShootingGainProfile(true)),
-              conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
-              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
+              // conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+              // kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
               Commands.parallel(
-                //conveyor.feedForwardOrPulseOnLowCurrent(),
-                conveyor.setpointCommand(Conveyor.FEED_FORWARD),
+                conveyor.feedForwardOrPulseOnLowCurrent(),
+                //conveyor.setpointCommand(Conveyor.FEED_FORWARD),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
-                Commands.waitUntil(() -> isConveyorCurrentLowForWiggle()).withTimeout(1.0).andThen(intakeRise()),
+                Commands.waitUntil(() -> isConveyorCurrentLowForRise()).withTimeout(1.0).andThen(intakeRise()),
                 Commands.waitUntil(() -> false)))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
@@ -331,7 +331,7 @@ public class Superstructure extends SubsystemBase {
           Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
           Commands.parallel(
               shooter.setpointCommand(Setpoint.withVelocitySetpoint(rpm.plus(shooterIncrement))),
-              hood.setpointCommand(Setpoint.withMotionMagicSetpoint(angle)),
+              hood.setpointCommand(Setpoint.withPositionSetpoint(angle)),
               Commands.sequence(
               Commands.runOnce(() -> {
                   setStateInternal((state == State.INTAKING)
@@ -581,8 +581,8 @@ public class Superstructure extends SubsystemBase {
       return conveyor.isStatorCurrentLowForPulse();
     }
 
-    public boolean isConveyorCurrentLowForWiggle() {
-      return conveyor.isStatorCurrentLowForWiggle();
+    public boolean isConveyorCurrentLowForRise() {
+      return conveyor.isStatorCurrentLowForRise();
     }
 
     public boolean shouldHeadingLock() {

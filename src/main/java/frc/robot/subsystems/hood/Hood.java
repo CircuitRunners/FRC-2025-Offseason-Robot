@@ -7,8 +7,8 @@ import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIO.Setpoint;
 
 public class Hood extends ServoMotorSubsystem<MotorIOTalonFX>{
-    public static final Setpoint KITBOT = Setpoint.withMotionMagicSetpoint(HoodConstants.kKitbotPosition);
-    public static final Setpoint ZERO = Setpoint.withMotionMagicSetpoint(HoodConstants.kMinAngle);
+    public static final Setpoint KITBOT = Setpoint.withPositionSetpoint(HoodConstants.kKitbotPosition);
+    public static final Setpoint ZERO = Setpoint.withPositionSetpoint(HoodConstants.kMinAngle);
     
     public Hood() {
         super(

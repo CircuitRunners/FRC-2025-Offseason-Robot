@@ -98,6 +98,10 @@ public class AutoModeBase {
 		return cmdWithAccuracy(trajectory, AutoConstants.kDefaultTrajectoryTimeout, epsilonDist);
 	}
 
+	public static Command cmdWithLessAccuracy(AutoTrajectory trajectory) {
+		return cmdWithAccuracy(trajectory, AutoConstants.kAutoLessAccurateLinearEpsilon);
+	}
+
 	/**
 	 * Returns an accuracy-based command for choreo following, including the default timeout
 	 *

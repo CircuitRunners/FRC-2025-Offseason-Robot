@@ -22,8 +22,8 @@ public class Conveyor extends MotorSubsystem<MotorIOTalonFX>{
     private final Trigger lowPulseCurrentDebouncedTrigger =
             new Trigger(this::isPulseStatorCurrentLowRaw)
                     .debounce(ConveyorConstants.kCurrentDebounceSeconds, DebounceType.kRising);
-    private final Trigger lowWiggleCurrentDebouncedTrigger =
-            new Trigger(this::isWiggleStatorCurrentLowRaw)
+    private final Trigger lowRiseCurrentDebouncedTrigger =
+            new Trigger(this::isRiseStatorCurrentLowRaw)
                     .debounce(ConveyorConstants.kCurrentDebounceSeconds, DebounceType.kRising);
     public boolean isPulsing = false;
     
@@ -35,16 +35,16 @@ public class Conveyor extends MotorSubsystem<MotorIOTalonFX>{
         return lowPulseCurrentDebouncedTrigger.getAsBoolean();
     }
 
-    public boolean isStatorCurrentLowForWiggle() {
-        return lowWiggleCurrentDebouncedTrigger.getAsBoolean();
+    public boolean isStatorCurrentLowForRise() {
+        return lowRiseCurrentDebouncedTrigger.getAsBoolean();
     }
 
     private boolean isPulseStatorCurrentLowRaw() {
-        return getStatorCurrent().lte(ConveyorConstants.kPulseCurrentThreshold);
+        return getStatorCurrent().lte(ConveyorConstants.kPulseLowCurrentThreshold) || getStatorCurrent().gte(ConveyorConstants.kPulseHighCurrentThreshold);
     }
 
-    private boolean isWiggleStatorCurrentLowRaw() {
-        return getStatorCurrent().lte(ConveyorConstants.kWiggleCurrentThreshold);
+    private boolean isRiseStatorCurrentLowRaw() {
+        return getStatorCurrent().lte(ConveyorConstants.kRiseCurrentThreshold);
     }
 
     private void startPulse(boolean in) {

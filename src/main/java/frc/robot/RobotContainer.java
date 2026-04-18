@@ -156,8 +156,9 @@ public class RobotContainer {
 
         SmartDashboard.putData("Auto Delay", autoDelay);
 
-        autoShootAllFuelTime.setDefaultOption("3.0s", 3.0);
-        autoShootAllFuelTime.addOption("4.0s", 4.0);
+        autoShootAllFuelTime.setDefaultOption("4.0s", 3.0);
+        autoShootAllFuelTime.addOption("3.0s", 4.0);
+        autoShootAllFuelTime.addOption("3.5s", 3.5);
 
         SmartDashboard.putData("Auto Shoot All Fuel Time", autoShootAllFuelTime);
 
