@@ -42,15 +42,15 @@
    "maxIntakeSpeed":{
     "dimension":"LinVel",
     "var":{
-     "exp":"1.3 m / s",
-     "val":1.3
+     "exp":"1.5 m / s",
+     "val":1.5
     }
    },
    "maxIntakeSpeed2":{
     "dimension":"LinVel",
     "var":{
-     "exp":"1.6 m / s",
-     "val":1.6
+     "exp":"2 m / s",
+     "val":2.0
     }
    },
    "riskyOffset":{
@@ -68,8 +68,8 @@
      "val":8.127134323120117
     },
     "y":{
-     "exp":"fieldY - 1.237248468399048 m",
-     "val":6.831751531600953
+     "exp":"fieldY - 1.437248468399048 m",
+     "val":6.631751531600953
     },
     "heading":{
      "exp":"-2 rad",
@@ -96,8 +96,8 @@
      "val":8.127134323120117
     },
     "y":{
-     "exp":"intakeBeginLeft.y - intakeLength",
-     "val":4.731751531600953
+     "exp":"fieldY / 2 + 0.75 m",
+     "val":4.7845
     },
     "heading":{
      "exp":"intakeBeginLeft.heading",
@@ -125,7 +125,7 @@
     },
     "y":{
      "exp":"intakeBeginLeft.y - riskyOffset",
-     "val":6.4817515316009535
+     "val":6.281751531600953
     },
     "heading":{
      "exp":"intakeBeginLeft.heading",
@@ -212,8 +212,8 @@
    }
   },
   "mass":{
-   "exp":"145 lbs",
-   "val":65.77089365
+   "exp":"142 lbs",
+   "val":64.41011654
   },
   "inertia":{
    "exp":"7.7 kg m ^ 2",
