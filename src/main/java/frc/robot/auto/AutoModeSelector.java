@@ -3,6 +3,8 @@ package frc.robot.auto;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
+import frc.robot.auto.autos.centerPreload.Asdf;
 import frc.robot.auto.autos.centerPreload.CenterPreload;
 import frc.robot.auto.autos.disruption.LeftFullDisruptionOpp;
 import frc.robot.auto.autos.disruption.LeftFullDisruptionSame;
@@ -56,6 +58,9 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[LEFT] Same Disruption", () -> new LeftFullDisruptionSame(drive, superstructure, factory).getRoutine());
 
 		mAutoChooser.addRoutine("[CENTER] Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
+
+
+		mAutoChooser.addRoutine("sillydsafassfsafsaf", () -> new Asdf(drive, superstructure, factory).getRoutine());
 
 
 		//mAutoChooser.addRoutine("Popcorn Penguins Steal", () -> new Popcorn(drive, superstructure, factory).getRoutine());
