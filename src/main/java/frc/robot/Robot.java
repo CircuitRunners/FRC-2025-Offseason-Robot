@@ -19,16 +19,12 @@ import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.logging.LogUtil.GcStatsCollector;
-import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Stopwatch;
 import frc.robot.energy.BatteryLogger;
 @Logged
 public class Robot extends TimedRobot {
   private final RobotContainer mRobotContainer;
   private Command mAutonomousCommand;
-  private GcStatsCollector mGcStatsCollector = new GcStatsCollector();
   public static final Stopwatch autoTimer = new Stopwatch();
 
   public static final BatteryLogger batteryLogger = new BatteryLogger();
@@ -55,8 +51,6 @@ public class Robot extends TimedRobot {
     batteryLogger.setRioCurrent(batteryInputs.rioCurrent);
 
     batteryLogger.periodic();
-
-    // CommandScheduler.getInstance().run(); 
 
     // Update RobotContainer dashboard outputs
     mRobotContainer.updateDashboardOutputs();

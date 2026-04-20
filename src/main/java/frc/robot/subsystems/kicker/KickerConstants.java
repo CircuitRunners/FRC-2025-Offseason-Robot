@@ -1,7 +1,5 @@
 package frc.robot.subsystems.kicker;
 
-import static edu.wpi.first.units.Units.Minute;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.CANBus;
@@ -16,11 +14,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
-import frc.lib.io.MotorIOTalonFXSim;
-import frc.lib.sim.RollerSim;
 import frc.lib.sim.RollerSim.RollerSimConstants;
 import frc.robot.Ports;
-import frc.robot.Robot;
 
 public class KickerConstants {
     private static final double kGearing = (18.0 / 18.0);

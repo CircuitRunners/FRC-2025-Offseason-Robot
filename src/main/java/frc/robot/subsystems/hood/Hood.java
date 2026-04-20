@@ -1,7 +1,5 @@
 package frc.robot.subsystems.hood;
 
-import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.bases.ServoMotorSubsystem;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIO.Setpoint;

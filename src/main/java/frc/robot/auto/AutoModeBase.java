@@ -11,7 +11,6 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -49,6 +48,9 @@ public class AutoModeBase {
 		return routine.trajectory(name);
 	}
 
+	/**
+	 * @return Trajectory from choreo up to the split index
+	 */
 	public AutoTrajectory trajectory(String name, int index) {
 		return routine.trajectory(name, index);
 	}
@@ -98,6 +100,11 @@ public class AutoModeBase {
 		return cmdWithAccuracy(trajectory, AutoConstants.kDefaultTrajectoryTimeout, epsilonDist);
 	}
 
+	/**
+	 * Returns an accuracy-based command for choreo following with a pre defined tolerance greater than normal cmdWithAccuracy
+	 *
+	 * @param trajectory
+	 */
 	public static Command cmdWithLessAccuracy(AutoTrajectory trajectory) {
 		return cmdWithAccuracy(trajectory, AutoConstants.kAutoLessAccurateLinearEpsilon);
 	}
@@ -153,6 +160,9 @@ public class AutoModeBase {
 		return false;
 	}
 
+	/** Creates a trigger that will run the auto command with an optional delay when auto starts
+	 * @param sequence The sequence of commands to run during auto
+	 */
 	public void prepRoutine(Command... sequence) {
 		routine.active()
 				.onTrue(Commands.sequence(superstructure.getAutoWaitCommand(), Commands.sequence(sequence))

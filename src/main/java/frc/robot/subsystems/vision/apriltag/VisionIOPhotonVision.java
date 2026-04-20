@@ -28,8 +28,6 @@ import java.util.function.Supplier;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
 
 public class VisionIOPhotonVision implements VisionIO {
   protected final PhotonCamera camera;

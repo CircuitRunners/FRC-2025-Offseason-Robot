@@ -1,59 +1,30 @@
 package frc.robot.subsystems.superstructure;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static frc.robot.subsystems.vision.apriltag.VisionConstants.singleTagIdsToReject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Set;
-import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.hal.DriverStationJNI;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.drive.RobotDriveBase;
-import edu.wpi.first.wpilibj.simulation.DriverStationSim;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.lib.drive.FollowNonstopTrajectory;
-import frc.lib.drive.FollowTrajectoryCommand;
 import frc.lib.drive.PIDToPoseCommand;
-import frc.lib.drive.PIDToPosesCommand;
 import frc.lib.io.MotorIO.Setpoint;
-import frc.lib.logging.LoggedTracer;
 import frc.lib.util.FieldLayout;
-import frc.lib.util.HubShiftUtil;
-import frc.lib.util.TunableNumber;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
 import frc.robot.RobotContainer;
 import frc.robot.auto.AutoConstants;
-import frc.robot.controlboard.ControlBoard;
 import frc.robot.controlboard.ControlBoardConstants;
 import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.conveyor.Conveyor;
@@ -64,11 +35,9 @@ import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.hood.HoodConstants;
 import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
 import frc.robot.subsystems.intakeDeploy.IntakeDeployConstants;
-import frc.robot.subsystems.intakeRollers.IntakeRollerConstants;
 import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.apriltag.Vision;
-import frc.robot.subsystems.vision.apriltag.VisionConstants;
 
 @Logged
 public class Superstructure extends SubsystemBase {
@@ -416,11 +385,15 @@ public class Superstructure extends SubsystemBase {
         intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.8), IntakeDeployConstants.kDefaultAcceleration),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY, Units.Amps.of(110)),
-        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.5), IntakeDeployConstants.kDefaultAcceleration),
+        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.2), IntakeDeployConstants.kDefaultAcceleration),
+        intakeRollers.setpointCommand(IntakeRollers.INTAKE),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP, Units.Amps.of(110)),
+        intakeRollers.setpointCommand(IntakeRollers.IDLE),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN, Units.Amps.of(110)),
+        intakeRollers.setpointCommand(IntakeRollers.INTAKE),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP, Units.Amps.of(110)),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN, Units.Amps.of(110)),
+        intakeRollers.setpointCommand(IntakeRollers.IDLE),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY, Units.Amps.of(110)),
         intakeRollers.setpointCommand(IntakeRollers.INTAKE),
         Commands.waitSeconds(1.0)
       ).finallyDo(() -> {

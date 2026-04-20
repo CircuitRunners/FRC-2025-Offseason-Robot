@@ -4,7 +4,6 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
@@ -15,7 +14,6 @@ public class LeftDoubleSilly extends AutoModeBase {
     public LeftDoubleSilly(Drive drive, Superstructure superstructure, AutoFactory factory) {
         super(drive, superstructure, factory, "double silly left");
 
-        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
         AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToSilly");
         AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly");
 

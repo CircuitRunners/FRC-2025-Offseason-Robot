@@ -15,7 +15,6 @@ package frc.robot.subsystems.vision.apriltag;
 
 import static frc.robot.subsystems.vision.apriltag.VisionConstants.*;
 
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,15 +22,11 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.lib.logging.LogUtil;
-import frc.lib.logging.LoggedTracer;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.apriltag.VisionIO.PoseObservation;
 import frc.robot.subsystems.vision.apriltag.VisionIO.PoseObservationType;
 

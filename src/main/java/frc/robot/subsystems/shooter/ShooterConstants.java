@@ -11,16 +11,10 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Velocity;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
-import frc.lib.io.MotorIOTalonFXSim;
-import frc.lib.sim.RollerSim;
 import frc.lib.sim.RollerSim.RollerSimConstants;
-import frc.lib.util.TunableNumber;
 import frc.robot.Ports;
-import frc.robot.Robot;
-import frc.robot.shooting.ShotCalculator;
 
 public class ShooterConstants {
     public static final double kGearing = 1.0 / 1.0;

@@ -23,7 +23,6 @@
 package frc.robot.shooting;
 
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.RobotConstants;
 import edu.wpi.first.math.MathUtil;
@@ -34,9 +33,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.lib.logging.LogUtil;
 import frc.lib.util.FieldLayout;

@@ -1,7 +1,5 @@
 package frc.robot.subsystems.drive;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
 import java.util.function.UnaryOperator;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -17,14 +15,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Time;
 import frc.lib.logging.LogUtil;
 import frc.lib.util.SynchronousPIDF;
-import frc.lib.util.Util;
-import frc.robot.RobotConstants;
 
 public class DriveConstants {
     public static final AngularVelocity kMaxAngularRate = Units.RadiansPerSecond.of(8.2 * 0.70);//254 //(2.75 * Math.PI); 1678

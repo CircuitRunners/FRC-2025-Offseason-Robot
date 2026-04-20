@@ -3,29 +3,19 @@ package frc.robot.controlboard;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.RobotState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.lib.io.MotorIO.Setpoint;
-import frc.lib.util.FieldLayout;
 import frc.lib.util.HubShiftUtil;
-import frc.robot.Robot;
 import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.conveyor.Conveyor;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.hood.Hood;
 import frc.robot.subsystems.intakeDeploy.IntakeDeploy;
 import frc.robot.subsystems.intakeDeploy.IntakeDeployConstants;
@@ -33,10 +23,7 @@ import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.kicker.Kicker;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.superstructure.Superstructure;
-import frc.robot.subsystems.superstructure.Superstructure.State;
 
-import java.util.Set;
-import java.util.function.Supplier;
 
 public class ControlBoard {
     private Drive drive;
@@ -85,15 +72,6 @@ public class ControlBoard {
         new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active() || ShotCalculator.getInstance(drive).getParameters().passing());
 
 	// public static enum OverrideBehavior {
-	// 	NET_SCORE(() -> superstructure.netScore().andThen(superstructure.tuck())),
-	// 	PROCESSOR_SCORE(
-	// 			() -> superstructure.processorScore().andThen(superstructure.tuckAfterProcessor())),
-	// 	ALGAE_HOLD(() -> superstructure.algaeStow()),
-	// 	CORAL_SCORE_L1(() -> superstructure.softCoralScore()),
-	// 	CORAL_SCORE_L2(() -> superstructure.coralScore(Level.L2)),
-	// 	CORAL_SCORE_L3(() -> superstructure.coralScore(Level.L3)),
-	// 	CORAL_SCORE_L4(() -> superstructure.coralScore(Level.L4)),
-	// 	TUCK(() -> superstructure.tuck()),
 	// 	NONE(() -> Commands.none());
 
 	// 	public final Supplier<Command> action;
@@ -125,11 +103,6 @@ public class ControlBoard {
 	// 	return overrideBehavior;
 	// }
 
-	// public void bringupControls() {
-	// 	operator.a().onTrue(Commands.runOnce(() -> Detection.mInstance.setPipeline(DetectionConstants.kAutoPipeline)));
-	// 	operator.b().onTrue(Commands.runOnce(() -> Detection.mInstance.setPipeline(DetectionConstants.kTelePipeline)));
-	// }
-
 	public void driverControls() {
 		Superstructure s = superstructure;
 
@@ -159,9 +132,9 @@ public class ControlBoard {
 
 		// SHOOTING ##############################################################################
 
-		driver.leftTrigger(0.1).and(driver.x()).whileTrue(s.shootAndIntake());
+		driver.leftTrigger(0.1).and(driver.x().or(driver.y())).whileTrue(s.shootAndIntake());
 
- 		driver.x()
+ 		driver.b()
 		.and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean())
 		.and(driver.leftTrigger(0.1).negate())
 		.and(inLaunchingTolerance).debounce(0.1, DebounceType.kFalling)
@@ -175,7 +148,7 @@ public class ControlBoard {
 
 		driver.rightStick().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.plus(Units.RPM.of(12.5))));
 
-		driver.b()
+		driver.x()
 		.and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean())
 		.and(driver.leftTrigger(0.1).negate())
 		.and(inLaunchingTolerance).debounce(0.1, DebounceType.kFalling)
@@ -192,6 +165,8 @@ public class ControlBoard {
 				rumbleCommand(Units.Seconds.of(0.1)).onlyIf(() -> s.headingLockToggle == false)
 			).ignoringDisable(true)
 		));
+
+		driver.back().whileTrue(s.turnToHubAuto());
  	}
 
 	// public Command shootingSetOverrideBehavior(Trigger button) {

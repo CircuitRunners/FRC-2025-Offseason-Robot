@@ -16,23 +16,18 @@ import edu.wpi.first.units.measure.Distance;
 import frc.lib.bases.ServoMotorSubsystem.ServoHomingConfig;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
-import frc.lib.io.MotorIOTalonFXSim;
-import frc.lib.sim.PivotSim;
 import frc.lib.sim.PivotSim.PivotSimConstants;
-import frc.lib.util.TunableNumber;
 import frc.robot.Ports;
-import frc.robot.Robot;
-import frc.robot.RobotConstants;
 
 public class IntakeDeployConstants {
     public static final double kGearing = (52.0 / 10.0) * (36.0 / 12.0);
 
 	public static final Angle kDeployPosition = Units.Degrees.of(0);
-	public static final Angle kStowPosition = Units.Degrees.of(124);
+	public static final Angle kStowPosition = Units.Degrees.of(124.5);
 
     public static final Angle kUpShakePosition = Units.Degrees.of(30);
 
-    public static final Angle kRiseUpPosition = Units.Degrees.of(55);
+    public static final Angle kRiseUpPosition = Units.Degrees.of(67);
     public static final Angle kFallDownPosition = Units.Degrees.of(20);
 
 	public static final Angle kExhaustPosition = kDeployPosition;
@@ -40,7 +35,7 @@ public class IntakeDeployConstants {
 	public static final AngularVelocity kDefaultCruiseVelocity = Units.RotationsPerSecond.of(0.6);
 	public static final AngularAcceleration kDefaultAcceleration = Units.RotationsPerSecondPerSecond.of(15.0);
 
-	public static final Angle kEpsilonThreshold = Units.Degrees.of(6.0);
+	public static final Angle kEpsilonThreshold = Units.Degrees.of(8.0);
 
     public static TalonFXConfiguration getFXConfig() {
         TalonFXConfiguration config = new TalonFXConfiguration();
