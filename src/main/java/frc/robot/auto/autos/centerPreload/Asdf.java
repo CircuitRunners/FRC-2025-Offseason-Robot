@@ -3,8 +3,9 @@ package frc.robot.auto.autos.centerPreload;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.drive.DriveTrajectory;
+import frc.lib.drive.SOTMTrajectory;
 import frc.lib.util.FieldLayout;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
@@ -22,22 +23,18 @@ public class Asdf extends AutoModeBase {
         super(drive, superstructure, factory, "Center Preload");
 
         AutoTrajectory test = trajectory("NewPath");
+        Pose2d startPose = test.getInitialPose().get();
         Trajectory<SwerveSample> trajectory = test.getRawTrajectory();
-        Supplier<Optional<Double>> omegaSupplier = () -> {
-            ShotCalculator.getInstance(drive).clearShootingParameters();
-            return Optional.of(AutoHelpers.launchOnTheMoveOmega(drive));
-        };
+
 
         prepRoutine(
-                AutoHelpers.resetPoseIfWithoutEstimate(FieldLayout.handleAllianceFlip(trajectory.getInitialPose(false).get(), true), drive),
+                AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
-                Commands.runOnce(() -> superstructure.shootOnTheMove = true),
-                Commands.deadline(Commands.waitSeconds(0.35), superstructure.shooterIdleSpinup()),
                 Commands.deadline(
-                        new DriveTrajectory(
+                        new SOTMTrajectory(
                                 trajectory,
-                                omegaSupplier,
-                                drive),
+                                drive,
+                                superstructure),
                         superstructure.shootWhenReadyRise()));
     }
 }

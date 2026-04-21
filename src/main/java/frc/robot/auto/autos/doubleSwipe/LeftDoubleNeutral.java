@@ -4,7 +4,6 @@ import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.drive.DriveTrajectory;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
@@ -27,8 +26,7 @@ public class LeftDoubleNeutral extends AutoModeBase {
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        // leftTrenchToNeutralIntake.cmd(),
-                        new DriveTrajectory(leftTrenchToNeutralIntake.getRawTrajectory(), drive),
+                        leftTrenchToNeutralIntake.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
