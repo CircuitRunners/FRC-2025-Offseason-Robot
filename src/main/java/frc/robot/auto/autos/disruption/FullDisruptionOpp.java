@@ -1,4 +1,4 @@
-package frc.robot.auto.autos.doubleSwipe;
+package frc.robot.auto.autos.disruption;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
@@ -9,44 +9,44 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class RightDoubleNeutralSilly extends AutoModeBase {
+public class FullDisruptionOpp extends AutoModeBase {
 
-    public RightDoubleNeutralSilly(Drive drive, Superstructure superstructure, AutoFactory factory) {
-        super(drive, superstructure, factory, "silly right");
+    public FullDisruptionOpp(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
+        super(drive, superstructure, factory, "Left Full Disruption Opp");
 
-        AutoTrajectory rightIntakeToShoot = trajectory("leftIntakeToShoot").mirrorY();
-        AutoTrajectory rightTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake").mirrorY();
-        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly").mirrorY();
+        AutoTrajectory disruption = flipY(trajectory("disruption"), mirrorY);
+        AutoTrajectory disruptionReturn = flipY(trajectory("disruptionReturnOpposite"), mirrorY);
+        AutoTrajectory rightShootToSilly = flipY(trajectory("leftShootToSilly").mirrorY(), mirrorY);
 
-        Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
+        Pose2d startPose = disruption.getInitialPose().get();
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        rightTrenchToNeutralIntake.cmd(),
+                        disruption.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithLessAccuracy(rightIntakeToShoot),
+                                cmdWithLessAccuracy(disruptionReturn),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                superstructure.shootWhenReadyPulse().withTimeout(2.0),
                 Commands.deadline(
-                        cmdWithLessAccuracy(rightShootToSilly),
+                        cmdWithAccuracy(rightShootToSilly),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                superstructure.timeoutShootWhenReady(),
                 superstructure.deployIntake(),
                 Commands.deadline(
-                        cmdWithLessAccuracy(rightShootToSilly),
+                        cmdWithAccuracy(rightShootToSilly),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())));

@@ -9,30 +9,25 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class RightFakeout extends AutoModeBase {
+public class DoubleSilly extends AutoModeBase {
 
-    public RightFakeout(Drive drive, Superstructure superstructure, AutoFactory factory) {
-        super(drive, superstructure, factory, "Left Fakeout");
+    public DoubleSilly(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
+        super(drive, superstructure, factory, "double silly left");
 
-        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
-        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly");
-        AutoTrajectory rightTrenchFakeout = trajectory("leftTrenchFakeout").mirrorY();
+        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToSilly"), mirrorY);
+        AutoTrajectory leftShootToSilly = flipY(trajectory("leftShootToSilly"), mirrorY);
 
-        Pose2d startPose = rightTrenchFakeout.getInitialPose().get();
+        Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        rightTrenchFakeout.cmd(),
+                        cmdWithAccuracy(leftTrenchToNeutralIntake),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
-                Commands.parallel(
-                                cmdWithLessAccuracy(leftIntakeToShoot),
-                                superstructure.runIntakeIfDeployed().withTimeout(1.0))
-                        ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),
@@ -52,6 +47,7 @@ public class RightFakeout extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())));
     }
 }
+
 
 
 

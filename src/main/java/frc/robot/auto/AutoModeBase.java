@@ -172,4 +172,9 @@ public class AutoModeBase {
 	public AutoRoutine getRoutine() {
 		return routine;
 	}
+
+	public AutoTrajectory flipY(AutoTrajectory t, boolean bool) {
+		if (bool) return t.mirrorY();
+		else return t;
+	}
 }

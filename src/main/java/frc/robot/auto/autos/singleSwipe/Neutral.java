@@ -9,13 +9,13 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class LeftNeutral extends AutoModeBase {
+public class Neutral extends AutoModeBase {
 
-    public LeftNeutral(Drive drive, Superstructure superstructure, AutoFactory factory) {
+    public Neutral(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "left Neutral Cycle");
 
-        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShootClose");
-        AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntakeClose");
+        AutoTrajectory leftIntakeToShoot = flipY(trajectory("leftIntakeToShootClose"), mirrorY);
+        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntakeClose"), mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 

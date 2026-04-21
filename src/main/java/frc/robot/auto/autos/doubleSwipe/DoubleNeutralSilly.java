@@ -1,4 +1,4 @@
-package frc.robot.auto.autos.superSilly;
+package frc.robot.auto.autos.doubleSwipe;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
@@ -9,13 +9,14 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class RightDoubleSilly extends AutoModeBase {
+public class DoubleNeutralSilly extends AutoModeBase {
 
-    public RightDoubleSilly(Drive drive, Superstructure superstructure, AutoFactory factory) {
-        super(drive, superstructure, factory, "double silly left");
+    public DoubleNeutralSilly(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
+        super(drive, superstructure, factory, "silly left");
 
-        AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToSilly").mirrorY();
-        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly").mirrorY();
+        AutoTrajectory leftIntakeToShoot = flipY(trajectory("leftIntakeToShoot"), mirrorY);
+        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntake"), mirrorY);
+        AutoTrajectory leftShootToSilly = flipY(trajectory("leftShootToSilly"), mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
@@ -23,11 +24,15 @@ public class RightDoubleSilly extends AutoModeBase {
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        cmdWithAccuracy(leftTrenchToNeutralIntake),
+                        leftTrenchToNeutralIntake.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
+                Commands.parallel(
+                                cmdWithLessAccuracy(leftIntakeToShoot),
+                                superstructure.runIntakeIfDeployed().withTimeout(1.0))
+                        ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),

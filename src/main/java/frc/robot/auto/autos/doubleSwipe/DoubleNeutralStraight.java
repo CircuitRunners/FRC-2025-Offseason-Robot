@@ -9,35 +9,35 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class RightDoubleNeutralRisky extends AutoModeBase {
+public class DoubleNeutralStraight extends AutoModeBase {
 
-    public RightDoubleNeutralRisky(Drive drive, Superstructure superstructure, AutoFactory factory) {
-        super(drive, superstructure, factory, "Right Risky");
+    public DoubleNeutralStraight(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
+        super(drive, superstructure, factory, "Left Straight");
 
-        AutoTrajectory rightIntakeToShoot = trajectory("leftIntakeToShootRisky").mirrorY();
-        AutoTrajectory rightTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntakeRisky").mirrorY();
-        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly").mirrorY();
+        AutoTrajectory leftIntakeToShoot = flipY(trajectory("leftIntakeToShoot"), mirrorY);
+        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntakeStraight"), mirrorY);
+        AutoTrajectory leftShootToSilly = flipY(trajectory("leftShootToSilly"), mirrorY);
 
-        Pose2d startPose = rightTrenchToNeutralIntake.getInitialPose().get();
+        Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        rightTrenchToNeutralIntake.cmd(),
+                        leftTrenchToNeutralIntake.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithLessAccuracy(rightIntakeToShoot),
+                                cmdWithLessAccuracy(leftIntakeToShoot),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),
                 Commands.deadline(
-                        cmdWithAccuracy(rightShootToSilly),
+                        cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
@@ -46,7 +46,7 @@ public class RightDoubleNeutralRisky extends AutoModeBase {
                 superstructure.timeoutShootWhenReady(),
                 superstructure.deployIntake(),
                 Commands.deadline(
-                        cmdWithAccuracy(rightShootToSilly),
+                        cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())));

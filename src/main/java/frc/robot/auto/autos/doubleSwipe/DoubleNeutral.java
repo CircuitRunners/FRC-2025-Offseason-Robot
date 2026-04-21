@@ -1,60 +1,56 @@
-package frc.robot.auto.autos.disruption;
+package frc.robot.auto.autos.doubleSwipe;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class LeftFullDisruptionOpp extends AutoModeBase {
+public class DoubleNeutral extends AutoModeBase {
 
-    public LeftFullDisruptionOpp(Drive drive, Superstructure superstructure, AutoFactory factory) {
-        super(drive, superstructure, factory, "Left Full Disruption Opp");
+    public DoubleNeutral(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
+        super(drive, superstructure, factory, "Left Double Neutral");
 
-        AutoTrajectory disruption = trajectory("disruption");
-        AutoTrajectory disruptionReturn = trajectory("disruptionReturnOpposite");
-        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly").mirrorY();
+        AutoTrajectory leftIntakeToShoot = flipY(trajectory("leftIntakeToShoot"), mirrorY);
+        AutoTrajectory leftIntakeToShoot2 = flipY(trajectory("leftIntakeToShoot2"), mirrorY);
+        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntake"), mirrorY);
+        AutoTrajectory leftShootToNeutralIntake = flipY(trajectory("leftShootToNeutralIntake"), mirrorY);
 
-        Pose2d startPose = disruption.getInitialPose().get();
+        Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        disruption.cmd(),
+                        leftTrenchToNeutralIntake.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithLessAccuracy(disruptionReturn),
+                                cmdWithLessAccuracy(leftIntakeToShoot),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.shootWhenReadyPulse().withTimeout(2.0),
+                superstructure.timeoutShootWhenReady(),
                 Commands.deadline(
-                        cmdWithAccuracy(rightShootToSilly),
+                        leftShootToNeutralIntake.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
+                Commands.parallel(
+                                cmdWithLessAccuracy(leftIntakeToShoot2),
+                                superstructure.runIntakeIfDeployed().withTimeout(1.0))
+                        ,
                 drive.stopDrivetrain(),
-                superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
-                superstructure.deployIntake(),
-                Commands.deadline(
-                        cmdWithAccuracy(rightShootToSilly),
-                        Commands.sequence(
-                                superstructure.deployIntake(),
-                                superstructure.runIntakeIfDeployed())));
+                superstructure.shootWhenReadyPulse());
     }
 }
-
-
-
 
 
 

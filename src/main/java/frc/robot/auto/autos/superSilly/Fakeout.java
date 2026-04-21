@@ -1,4 +1,4 @@
-package frc.robot.auto.autos.disruption;
+package frc.robot.auto.autos.superSilly;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
@@ -9,28 +9,28 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class RightFullDisruptionSame extends AutoModeBase {
+public class Fakeout extends AutoModeBase {
 
-    public RightFullDisruptionSame(Drive drive, Superstructure superstructure, AutoFactory factory) {
-        super(drive, superstructure, factory, "Right Full Disruption Same");
+    public Fakeout(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
+        super(drive, superstructure, factory, "Left Fakeout");
 
-        AutoTrajectory disruption = trajectory("disruption").mirrorY();
-        AutoTrajectory disruptionReturn = trajectory("disruptionReturnSame").mirrorY();
-        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly").mirrorY();
+        AutoTrajectory rightIntakeToShoot = flipY(trajectory("leftIntakeToShoot").mirrorY(), mirrorY);
+        AutoTrajectory rightShootToSilly = flipY(trajectory("leftShootToSilly").mirrorY(), mirrorY);
+        AutoTrajectory leftTrenchFakeout = flipY(trajectory("leftTrenchFakeout"), mirrorY);
 
-        Pose2d startPose = disruption.getInitialPose().get();
+        Pose2d startPose = leftTrenchFakeout.getInitialPose().get();
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        disruption.cmd(),
+                        leftTrenchFakeout.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithLessAccuracy(disruptionReturn),
+                                cmdWithLessAccuracy(rightIntakeToShoot),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         ,
                 drive.stopDrivetrain(),

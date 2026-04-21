@@ -1,4 +1,4 @@
-package frc.robot.auto.autos.doubleSwipe;
+package frc.robot.auto.autos.disruption;
 
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
@@ -9,28 +9,28 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class LeftDoubleNeutralSilly extends AutoModeBase {
+public class FullDisruptionSame extends AutoModeBase {
 
-    public LeftDoubleNeutralSilly(Drive drive, Superstructure superstructure, AutoFactory factory) {
-        super(drive, superstructure, factory, "silly left");
+    public FullDisruptionSame(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
+        super(drive, superstructure, factory, "Left Full Disruption Same");
 
-        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
-        AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake");
-        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly");
+        AutoTrajectory disruption = flipY(trajectory("disruption"), mirrorY);
+        AutoTrajectory disruptionReturn = flipY(trajectory("disruptionReturnSame"), mirrorY);
+        AutoTrajectory leftShootToSilly = flipY(trajectory("leftShootToSilly"), mirrorY);
 
-        Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
+        Pose2d startPose = disruption.getInitialPose().get();
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        leftTrenchToNeutralIntake.cmd(),
+                        disruption.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.parallel(
-                                cmdWithLessAccuracy(leftIntakeToShoot),
+                                cmdWithLessAccuracy(disruptionReturn),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         ,
                 drive.stopDrivetrain(),
@@ -52,7 +52,6 @@ public class LeftDoubleNeutralSilly extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())));
     }
 }
-
 
 
 

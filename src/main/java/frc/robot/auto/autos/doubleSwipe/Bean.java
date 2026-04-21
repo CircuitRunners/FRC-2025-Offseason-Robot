@@ -11,20 +11,20 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class LeftBeen extends AutoModeBase {
+public class Bean extends AutoModeBase {
 
-    public LeftBeen(Drive drive, Superstructure superstructure, AutoFactory factory) {
+    public Bean(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "silly left");
 
-        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot");
-        AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake");
-        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly", 0);
-        AutoTrajectory leftBumpyIntakeToShoot0 = trajectory("leftBumpyIntakeToShoot", 0);
-        AutoTrajectory leftBumpyIntakeToShoot1 = trajectory("leftBumpyIntakeToShoot", 1);
+        AutoTrajectory leftIntakeToShoot = flipY(trajectory("leftIntakeToShoot"), mirrorY);
+        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntake"), mirrorY);
+        AutoTrajectory leftShootToSilly = flipY(trajectory("leftShootToSilly", 0), mirrorY);
+        AutoTrajectory leftBumpyIntakeToShoot0 = flipY(trajectory("leftBumpyIntakeToShoot", 0), mirrorY);
+        AutoTrajectory leftBumpyIntakeToShoot1 = flipY(trajectory("leftBumpyIntakeToShoot", 1), mirrorY);
 
-        AutoTrajectory leftBumpyIntakeToShoot2 = trajectory("leftBumpyIntakeToShoot", 2);
-        AutoTrajectory leftBumpyIntakeToShoot3 = trajectory("leftBumpyIntakeToShoot", 3);
-        AutoTrajectory leftBumpySillyToShoot = trajectory("leftBumpySillyToShoot");
+        AutoTrajectory leftBumpyIntakeToShoot2 = flipY(trajectory("leftBumpyIntakeToShoot", 2), mirrorY);
+        AutoTrajectory leftBumpyIntakeToShoot3 = flipY(trajectory("leftBumpyIntakeToShoot", 3), mirrorY);
+        AutoTrajectory leftBumpySillyToShoot = flipY(trajectory("leftBumpySillyToShoot"), mirrorY);
 
 
 
