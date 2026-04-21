@@ -32,7 +32,7 @@ public class RightDoubleNeutralRisky extends AutoModeBase {
                 Commands.parallel(
                                 cmdWithLessAccuracy(rightIntakeToShoot),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
-                        .alongWith(superstructure.shooterIdleSpinup()),
+                        ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),

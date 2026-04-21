@@ -65,6 +65,7 @@ public class Superstructure extends SubsystemBase {
     private boolean superstructureDone = false;
     private boolean driveReady = false;
     private boolean intakeDeployed = false;
+    private boolean intakeBraked = false;
     public boolean shootOnTheMove = true;
     public boolean headingLockToggle = true;
     public boolean nearTrench = false;
@@ -183,7 +184,20 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void brakeIntakeRollers(boolean wantsBrake) {
-      intakeRollers.setNeutralBrake(wantsBrake);
+      if (intakeBraked != wantsBrake) {
+        intakeBraked = !intakeBraked;
+        intakeRollers.setNeutralBrake(wantsBrake);
+      } else {return;}
+    }
+
+    public Command autoShootCommand() {
+      return Commands.defer(() ->
+        Commands.sequence(
+          drive.stopDrivetrain(),
+          turnToHubAuto().withTimeout(1.0),
+          timeoutShootWhenReady()
+        ), Set.of(drive, shooter)
+      );
     }
 
     public Command juggle() {
@@ -358,10 +372,6 @@ public class Superstructure extends SubsystemBase {
       });
     }
 
-    public Command shooterIdleSpinup() {
-      return shooter.setpointCommand(Shooter.SPINUP);
-    }
-
     public Command deployIntake() {
       if (Robot.isReal()) {
         return Commands.sequence(intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY), setIntakeStatus(true))
@@ -371,6 +381,14 @@ public class Superstructure extends SubsystemBase {
         return Commands.sequence(intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY), setIntakeStatus(true))
         .withName("Intake Deploy");
     }
+    private void enableDisableCamera1(boolean bool) {
+      vision.ignoreCameras = bool;
+    }
+    public Command disableCamera(boolean bool) {
+      return Commands.runOnce(
+        () -> enableDisableCamera1(bool)
+      );
+    }
 
     public Command shakeIntake() {
       return Commands.sequence(
@@ -378,6 +396,14 @@ public class Superstructure extends SubsystemBase {
         Commands.waitSeconds(0.5),
         intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY))
         .finallyDo(() -> intakeDeploy.applySetpoint(IntakeDeploy.IDLE));
+    }
+
+    public Command deployAndRunIntakeOtto() {
+      return Commands.sequence(
+        deployIntake(),
+        Commands.runOnce(() -> brakeIntakeRollers(false)),
+        runIntakeIfDeployed()
+      );
     }
 
     public Command intakeRise() {

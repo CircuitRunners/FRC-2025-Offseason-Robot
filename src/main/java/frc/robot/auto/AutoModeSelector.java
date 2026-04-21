@@ -10,6 +10,7 @@ import frc.robot.auto.autos.disruption.LeftFullDisruptionOpp;
 import frc.robot.auto.autos.disruption.LeftFullDisruptionSame;
 import frc.robot.auto.autos.disruption.RightFullDisruptionOpp;
 import frc.robot.auto.autos.disruption.RightFullDisruptionSame;
+import frc.robot.auto.autos.doubleSwipe.LeftBeen;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutral;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutralRisky;
 import frc.robot.auto.autos.doubleSwipe.LeftDoubleNeutralSilly;
@@ -60,7 +61,7 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[CENTER] Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
 
 
-		mAutoChooser.addRoutine("sillydsafassfsafsaf", () -> new Asdf(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] BEAN", () -> new LeftBeen(drive, superstructure, factory).getRoutine());
 
 
 		//mAutoChooser.addRoutine("Popcorn Penguins Steal", () -> new Popcorn(drive, superstructure, factory).getRoutine());

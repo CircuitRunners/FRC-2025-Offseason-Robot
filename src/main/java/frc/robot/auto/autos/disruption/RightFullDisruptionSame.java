@@ -32,7 +32,7 @@ public class RightFullDisruptionSame extends AutoModeBase {
                 Commands.parallel(
                                 cmdWithLessAccuracy(disruptionReturn),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
-                        .alongWith(superstructure.shooterIdleSpinup()),
+                        ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),

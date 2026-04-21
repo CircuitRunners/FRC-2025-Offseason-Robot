@@ -33,7 +33,7 @@ public class Popcorn extends AutoModeBase {
                 Commands.parallel(
                                 cmdWithLessAccuracy(disruption2ToShoot),
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
-                        .alongWith(superstructure.shooterIdleSpinup()),
+                        ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady());
