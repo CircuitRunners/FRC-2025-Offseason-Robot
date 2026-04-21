@@ -59,7 +59,6 @@ public class Vision extends SubsystemBase {
   private final Matrix<N3, N1> stdDevs = VecBuilder.fill(0, 0, 0);
 
   public boolean ignoreThrifty = false;
-  public boolean ignoreCameras = false;
   
   public Vision(VisionConsumer consumer, VisionIO... io) {
     this.consumer = consumer;
@@ -81,14 +80,12 @@ public class Vision extends SubsystemBase {
 
     SmartDashboard.putData("ThriftyCam Ignore/Toggle",
         new InstantCommand(() -> ignoreThrifty = !ignoreThrifty));
-    SmartDashboard.putBoolean("auton ignore tags", ignoreCameras);
   }
 
   @Override
   public void periodic() {
     //LoggedTracer.record("Vision Loop Time");
     SmartDashboard.putBoolean("ThriftyCam Ignore/State", ignoreThrifty);
-    SmartDashboard.putBoolean("auton ignore tags", ignoreCameras);
 
     for (int i = 0; i < io.length; i++) {
       io[i].updateInputs(inputs[i]);
@@ -126,7 +123,7 @@ public class Vision extends SubsystemBase {
         lastTargetSeenTime = observation.timestamp();
 
         // Check whether to reject pose
-        boolean rejectPose = shouldRejectPoseObservation(observation) || (cameraIndex == 0 && ignoreThrifty || ignoreCameras);
+        boolean rejectPose = shouldRejectPoseObservation(observation) || (cameraIndex == 0 && ignoreThrifty);
 
         // Add pose to log
         robotPoses.add(observation.pose());

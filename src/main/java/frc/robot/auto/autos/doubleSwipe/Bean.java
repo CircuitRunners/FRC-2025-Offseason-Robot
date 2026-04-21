@@ -16,19 +16,15 @@ public class Bean extends AutoModeBase {
     public Bean(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "silly left");
 
-        AutoTrajectory leftIntakeToShoot = flipY(trajectory("leftIntakeToShoot"), mirrorY);
         AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntake"), mirrorY);
-        AutoTrajectory leftShootToSilly = flipY(trajectory("leftShootToSilly", 0), mirrorY);
-        AutoTrajectory leftBumpyIntakeToShoot0 = flipY(trajectory("leftBumpyIntakeToShoot", 0), mirrorY);
-        AutoTrajectory leftBumpyIntakeToShoot1 = flipY(trajectory("leftBumpyIntakeToShoot", 1), mirrorY);
 
-        AutoTrajectory leftBumpyIntakeToShoot2 = flipY(trajectory("leftBumpyIntakeToShoot", 2), mirrorY);
-        AutoTrajectory leftBumpyIntakeToShoot3 = flipY(trajectory("leftBumpyIntakeToShoot", 3), mirrorY);
-        AutoTrajectory leftBumpySillyToShoot = flipY(trajectory("leftBumpySillyToShoot"), mirrorY);
-
-
-
-
+        AutoTrajectory firstIntakeToBumpStart = flipY(trajectory("LeftBumpyIntakeToSilly", 0), mirrorY);
+        AutoTrajectory firstBumpStartToEnd = flipY(trajectory("LeftBumpyIntakeToSilly", 1), mirrorY);
+        AutoTrajectory firstSOTM = flipY(trajectory("LeftBumpyIntakeToSilly", 2), mirrorY);
+        AutoTrajectory silly = flipY(trajectory("LeftBumpyIntakeToSilly", 3), mirrorY);
+        AutoTrajectory secondBumpStartToEnd = flipY(trajectory("LeftBumpyIntakeToSilly", 4), mirrorY);
+        AutoTrajectory secondSOTM = flipY(trajectory("LeftBumpyIntakeToSilly", 5), mirrorY);
+        AutoTrajectory goBack = flipY(trajectory("LeftBumpyIntakeToSilly", 6), mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
@@ -42,40 +38,29 @@ public class Bean extends AutoModeBase {
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 Commands.sequence(
-                    leftBumpyIntakeToShoot0.cmd(),
-                    superstructure.disableCamera(true),
-                    leftBumpyIntakeToShoot1.cmd(),
-                    superstructure.disableCamera(false)                  
+                    firstIntakeToBumpStart.cmd(),
+                    firstBumpStartToEnd.cmd()            
                 ),
                 Commands.deadline(
                         new SOTMTrajectory(
-                                leftBumpyIntakeToShoot2.getRawTrajectory(),
+                                firstSOTM.getRawTrajectory(),
                                 drive,
                                 superstructure),
                         superstructure.shootWhenReadyRise()),
-                leftBumpyIntakeToShoot3.cmd(),
                 Commands.deadline(
-                        leftShootToSilly.cmd(),
+                        silly.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
-                
-                Commands.sequence(
-                    leftBumpySillyToShoot.cmd(),
-                    leftBumpyIntakeToShoot0.cmd(),
-                    superstructure.disableCamera(true),
-                    leftBumpyIntakeToShoot1.cmd(),
-                    superstructure.disableCamera(false)
-                ),
+                        secondBumpStartToEnd.cmd(),
                 Commands.deadline(
                         new SOTMTrajectory(
-                                leftBumpyIntakeToShoot2.getRawTrajectory(),
+                                secondSOTM.getRawTrajectory(),
                                 drive,
                                 superstructure),
                         superstructure.shootWhenReadyRise()),
-                leftBumpyIntakeToShoot3.cmd(),
                 Commands.deadline(
-                        leftShootToSilly.cmd(),
+                        goBack.cmd(),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed()))

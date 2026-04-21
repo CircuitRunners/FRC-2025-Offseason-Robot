@@ -173,8 +173,8 @@ public class AutoModeBase {
 		return routine;
 	}
 
-	public AutoTrajectory flipY(AutoTrajectory t, boolean bool) {
-		if (bool) return t.mirrorY();
-		else return t;
+	public AutoTrajectory flipY(AutoTrajectory traj, boolean shouldFlip) {
+		if (shouldFlip) return traj.mirrorY();
+		else return traj;
 	}
 }

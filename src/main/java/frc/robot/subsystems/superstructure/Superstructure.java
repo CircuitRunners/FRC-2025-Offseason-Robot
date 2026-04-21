@@ -381,14 +381,6 @@ public class Superstructure extends SubsystemBase {
         return Commands.sequence(intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY), setIntakeStatus(true))
         .withName("Intake Deploy");
     }
-    private void enableDisableCamera1(boolean bool) {
-      vision.ignoreCameras = bool;
-    }
-    public Command disableCamera(boolean bool) {
-      return Commands.runOnce(
-        () -> enableDisableCamera1(bool)
-      );
-    }
 
     public Command shakeIntake() {
       return Commands.sequence(
