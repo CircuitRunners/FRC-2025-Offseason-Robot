@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import java.util.function.UnaryOperator;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.config.RobotConfig;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.MathUtil;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -31,9 +33,10 @@ public class DriveConstants {
     public static final double kHeadingLockControllerI = 0.0;
     public static final double kHeadingLockControllerD = 0.0;
     public static final double kMidlineBuffer = 1.0;
+	public static final AngularAcceleration kMaxAngularAcceleration =
+			kMaxAngularRate.div(0.1).per(Units.Second);
 
     public static final LinearAcceleration kMaxAcceleration = Units.MetersPerSecondPerSecond.of(10.0);
-
 
     public static final Translation2d kTranslation2dZero = new Translation2d(0.0, 0.0);
     public static final Rotation2d kRotation2dZero = new Rotation2d();
@@ -165,6 +168,15 @@ public class DriveConstants {
 		SynchronousPIDF controller = new SynchronousPIDF(3.15, 0.0, 0.0);
 		controller.setMaxAbsoluteOutput(kMaxSpeed.times(0.2).in(Units.MetersPerSecond));
 		return controller;
+	}
+
+	public static RobotConfig getRobotConfig() {
+		try {
+			return RobotConfig.fromGUISettings();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
 

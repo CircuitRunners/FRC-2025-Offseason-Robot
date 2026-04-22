@@ -299,9 +299,4 @@ public class RobotContainer {
     public Command resetToVisionPose() {
         return Commands.runOnce(() -> drive.getDrivetrain().resetPose(vision.getLatestVisionPose()));
     }
-
-    
-
-    
-
 }
