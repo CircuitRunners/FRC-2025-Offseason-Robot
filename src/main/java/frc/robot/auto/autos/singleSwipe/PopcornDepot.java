@@ -9,15 +9,17 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class Popcorn extends AutoModeBase {
+public class PopcornDepot extends AutoModeBase {
 
-    public Popcorn(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
-        super(drive, superstructure, factory, "popcorn");
+    public PopcornDepot(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
+        super(drive, superstructure, factory, "popcornDepot");
 
         AutoTrajectory bumpStartToEnd = flipY(trajectory("leftDisruption2", 0), mirrorY);
         AutoTrajectory disruption2 = flipY(trajectory("leftDisruption2", 1), mirrorY);
         AutoTrajectory intakeToBumpStart = flipY(trajectory("leftDisruption2ToShootBump", 0), mirrorY);
         AutoTrajectory bumpStartToEnd2 = flipY(trajectory("leftDisruption2ToShootBump", 1), mirrorY);
+        AutoTrajectory bumpEndToDepot = trajectory("rightDisruptionShootBumpToDepot");
+        AutoTrajectory depotToCenter = trajectory("depotToCenter");
 
         Pose2d startPose = bumpStartToEnd.getInitialPose().get();
 
@@ -39,7 +41,17 @@ public class Popcorn extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady());
+                superstructure.timeoutShootWhenReady(),
+                Commands.deadline(
+                        bumpEndToDepot.cmd(),
+                        Commands.sequence(
+                                superstructure.deployIntake(),
+                                Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
+                                superstructure.runIntakeIfDeployed())),
+                depotToCenter.cmd(),
+                superstructure.turnToHubAuto().withTimeout(1.0),
+                superstructure.timeoutShootWhenReady()
+                );
     }
 }
 
