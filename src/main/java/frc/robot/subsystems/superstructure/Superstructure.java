@@ -656,7 +656,7 @@ public class Superstructure extends SubsystemBase {
             isLeft = false;
         }
         return Commands.sequence(
-            commandToIntermediate(drive, isLeft),
+            // commandToIntermediate(drive, isLeft),
             commandToShoot(drive, isLeft),
             drive.stopDrivetrain(),
             turnToHubAuto().withTimeout(1.0),
