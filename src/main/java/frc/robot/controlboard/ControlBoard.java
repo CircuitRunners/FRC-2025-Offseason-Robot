@@ -170,7 +170,8 @@ public class ControlBoard {
 
 		driver.povLeft().whileTrue(
 			Commands.defer(
-				() -> drive.commandToShoot(() -> driver.getLeftX()),
+				() -> (superstructure.goToShootCommand(drive))
+				,
 				Set.of(drive)
 			)
 		);

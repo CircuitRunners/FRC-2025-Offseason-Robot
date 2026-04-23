@@ -237,39 +237,4 @@ public class Drive extends SubsystemBase {
         );
 
     }
-
-    public Command commandToShoot(DoubleSupplier stickDouble) {
-        // Since we are using a holonomic drivetrain, the rotation component of this pose
-        // represents the goal holonomic rotation
-        Pose2d targetPose;
-        if (Math.abs(stickDouble.getAsDouble()) < DriveConstants.kDriveJoystickDeadband) {
-            if (getPose().getTranslation().getDistance(AutoConstants.leftShoot.getTranslation())
-                < getPose().getTranslation().getDistance(AutoConstants.rightShoot.getTranslation())) {
-                targetPose = AutoConstants.leftShoot;
-            } else {
-                targetPose = AutoConstants.rightShoot;
-            }
-        } else {
-            if (stickDouble.getAsDouble() > 0) {
-                targetPose = AutoConstants.rightShoot;
-            } else {
-                targetPose = AutoConstants.leftShoot;
-            }
-        }
-
-
-        // Create the constraints to use while pathfinding
-        PathConstraints constraints = new PathConstraints(
-                DriveConstants.kMaxSpeed.in(Units.MetersPerSecond), DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond),
-                DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
-
-        // Since AutoBuilder is configured, we can use it to build pathfinding commands
-        Command pathfindingCommand = AutoBuilder.pathfindToPose(
-                targetPose,
-                constraints,
-                0.0 // Goal end velocity in meters/sec
-        );
-
-        return pathfindingCommand;
-    }
 }

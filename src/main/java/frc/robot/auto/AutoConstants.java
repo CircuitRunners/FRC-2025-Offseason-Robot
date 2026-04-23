@@ -40,6 +40,11 @@ public class AutoConstants {
 
 
 
+	public static Pose2d leftIntermediate = new Pose2d(new Translation2d(6.1265997886657715, 7.190897464752197), Rotation2d.fromDegrees(-90));
+	public static Pose2d rightIntermediate = new Pose2d(new Translation2d(6.1265997886657715, 8.069 - 7.190897464752197), Rotation2d.fromDegrees(90));
+
+
+
 	
 
 

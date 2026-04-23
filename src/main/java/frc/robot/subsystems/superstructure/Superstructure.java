@@ -3,6 +3,9 @@ package frc.robot.subsystems.superstructure;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -12,6 +15,7 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
@@ -594,6 +598,73 @@ public class Superstructure extends SubsystemBase {
 
     public boolean getSuperstructureDone() {
       return superstructureDone;
+    }
+
+    public Command commandToIntermediate(Drive drive, boolean isLeft) {
+        Pose2d targetPose;
+        
+        if (isLeft) {
+            targetPose = AutoConstants.leftIntermediate;
+        } else {
+            targetPose = AutoConstants.rightIntermediate;
+        }
+        
+        PathConstraints constraints = new PathConstraints(
+                DriveConstants.kMaxSpeed.in(Units.MetersPerSecond), DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond),
+                DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
+
+        Command pathfindingCommand = AutoBuilder.pathfindToPose(
+                targetPose,
+                constraints,
+                2
+        );
+
+        return pathfindingCommand;
+    }
+
+    public Command commandToShoot(Drive drive, boolean isLeft) {
+        PathPlannerPath leftPathToShoot = null;
+        try {
+          if (isLeft)
+            leftPathToShoot = PathPlannerPath.fromChoreoTrajectory("leftPathToShoot");
+          else{
+            leftPathToShoot = PathPlannerPath.fromChoreoTrajectory("rightPathToShoot");
+          }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PathConstraints constraints = new PathConstraints(
+                DriveConstants.kMaxSpeed.in(Units.MetersPerSecond), DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond),
+                DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
+
+        Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
+            leftPathToShoot,
+            constraints);
+
+        return pathfindingCommand;
+    }
+
+    public Command goToShootCommand(Drive drive) {
+      if (FieldLayout.distanceFromAllianceWall(Units.Meters.of(drive.getPose().getX()), RobotConstants.isRedAlliance)
+            .gte(FieldLayout.kAllianceZoneX.plus(Units.Inches.of(14)))) {
+        boolean isLeft;
+        if (drive.getLookaheadPose(Time.ofBaseUnits(.5, Units.Seconds)).getTranslation().getDistance(AutoConstants.leftShoot.getTranslation())
+          < drive.getLookaheadPose(Time.ofBaseUnits(.5, Units.Seconds)).getTranslation().getDistance(AutoConstants.rightShoot.getTranslation())) {
+            isLeft = true;
+        } else {
+            isLeft = false;
+        }
+        return Commands.sequence(
+            commandToIntermediate(drive, isLeft),
+            commandToShoot(drive, isLeft),
+            drive.stopDrivetrain(),
+            turnToHubAuto().withTimeout(1.0),
+            timeoutShootWhenReady()
+        );
+    } else{
+      return Commands.none();
+    }
     }
 
 }
