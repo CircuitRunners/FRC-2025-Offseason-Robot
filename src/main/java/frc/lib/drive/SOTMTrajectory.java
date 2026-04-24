@@ -39,8 +39,14 @@ public class SOTMTrajectory extends Command {
 
   @Override
   public void execute() {
+    Pose2d targetPose;
     SwerveSample sample = trajectory.sampleAt(timer.get(), RobotConstants.isRedAlliance).orElseThrow();
-    Pose2d targetPose = new Pose2d(sample.getPose().getTranslation(), superstructure.headingSetpoint);
+    if (timer.get() > 0.3) {
+      targetPose = new Pose2d(sample.getPose().getTranslation(), superstructure.headingSetpoint);
+    }
+    else {
+    targetPose = sample.getPose();
+    }
     drive.getDrivetrain().setControl(
         DriveConstants.getPIDToPoseRequestUpdater(drive, targetPose)
             .apply(DriveConstants.PIDToPoseRequest));

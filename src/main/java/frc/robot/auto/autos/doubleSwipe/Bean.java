@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.drive.SOTMTrajectory;
+import frc.robot.Robot;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
@@ -18,13 +19,13 @@ public class Bean extends AutoModeBase {
 
         AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntake"), mirrorY);
 
-        AutoTrajectory firstIntakeToBumpStart = flipY(trajectory("LeftBumpyIntakeToSilly", 0), mirrorY);
-        AutoTrajectory firstBumpStartToEnd = flipY(trajectory("LeftBumpyIntakeToSilly", 1), mirrorY);
-        AutoTrajectory firstSOTM = flipY(trajectory("LeftBumpyIntakeToSilly", 2), mirrorY);
-        AutoTrajectory silly = flipY(trajectory("LeftBumpyIntakeToSilly", 3), mirrorY);
-        AutoTrajectory secondBumpStartToEnd = flipY(trajectory("LeftBumpyIntakeToSilly", 4), mirrorY);
-        AutoTrajectory secondSOTM = flipY(trajectory("LeftBumpyIntakeToSilly", 5), mirrorY);
-        AutoTrajectory goBack = flipY(trajectory("LeftBumpyIntakeToSilly", 6), mirrorY);
+        AutoTrajectory firstIntakeToBumpStart = flipY(trajectory("leftBumpyIntakeToSilly", 0), mirrorY);
+        AutoTrajectory firstBumpStartToEnd = flipY(trajectory("leftBumpyIntakeToSilly", 1), mirrorY);
+        AutoTrajectory firstSOTM = flipY(trajectory("leftBumpyIntakeToSilly", 2), mirrorY);
+        AutoTrajectory silly = flipY(trajectory("leftBumpyIntakeToSilly", 3), mirrorY);
+        AutoTrajectory secondBumpStartToEnd = flipY(trajectory("leftBumpyIntakeToSilly", 4), mirrorY);
+        AutoTrajectory secondSOTM = flipY(trajectory("leftBumpyIntakeToSilly", 5), mirrorY);
+        AutoTrajectory goBack = flipY(trajectory("leftBumpyIntakeToSilly", 6), mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
@@ -37,10 +38,10 @@ public class Bean extends AutoModeBase {
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
-                Commands.sequence(
-                    firstIntakeToBumpStart.cmd(),
-                    firstBumpStartToEnd.cmd()            
-                ),
+                        Commands.deadline(
+                                firstIntakeToBumpStart.cmd(),
+                                superstructure.runIntakeIfDeployed()),
+                    firstBumpStartToEnd.cmd(),           
                 Commands.deadline(
                         new SOTMTrajectory(
                                 firstSOTM.getRawTrajectory(),
@@ -58,7 +59,7 @@ public class Bean extends AutoModeBase {
                                 secondSOTM.getRawTrajectory(),
                                 drive,
                                 superstructure),
-                        superstructure.shootWhenReadyRise()),
+                        Commands.waitSeconds(0.3).andThen(superstructure.shootWhenReadyRise())),
                 Commands.deadline(
                         goBack.cmd(),
                         Commands.sequence(
