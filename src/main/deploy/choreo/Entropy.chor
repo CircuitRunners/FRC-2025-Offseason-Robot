@@ -7,8 +7,8 @@
    "SOTMSpeed":{
     "dimension":"LinVel",
     "var":{
-     "exp":"0.5 m / s",
-     "val":0.5
+     "exp":"0.4 m / s",
+     "val":0.4
     }
    },
    "bumpSpeed":{
@@ -77,8 +77,8 @@
    "robotTrueMaxSpeed":{
     "dimension":"LinVel",
     "var":{
-     "exp":"3.7 m / s",
-     "val":3.7
+     "exp":"3.8 m / s",
+     "val":3.8
     }
    }
   },
@@ -117,8 +117,8 @@
      "val":8.127134323120117
     },
     "y":{
-     "exp":"fieldY - 1.437248468399048 m",
-     "val":6.631751531600953
+     "exp":"fieldY - 1.137248468399048 m",
+     "val":6.931751531600953
     },
     "heading":{
      "exp":"-2 rad",
@@ -174,7 +174,7 @@
     },
     "y":{
      "exp":"intakeBeginLeft.y - riskyOffset",
-     "val":6.281751531600953
+     "val":6.581751531600953
     },
     "heading":{
      "exp":"intakeBeginLeft.heading",
@@ -191,8 +191,8 @@
      "val":5.680447101593018
     },
     "heading":{
-     "exp":"-0.8164245890776145 rad",
-     "val":-0.8164245890776145
+     "exp":"-1.0308396872277543 rad",
+     "val":-1.0308396872277543
     }
    },
    "leftBumpIntermediate":{
@@ -219,8 +219,8 @@
      "val":5.639444828033447
     },
     "heading":{
-     "exp":"-0.8164245890776145 rad",
-     "val":-0.8164245890776145
+     "exp":"-1.0308396872277543 rad",
+     "val":-1.0308396872277543
     }
    },
    "leftIntermediate":{
