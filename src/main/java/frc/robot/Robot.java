@@ -95,6 +95,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     mAutonomousCommand = mRobotContainer.getAutoModeSelector().getSelectedCommand();
 
+
 		autoTimer.start();
 
 		if (mAutonomousCommand != null) {

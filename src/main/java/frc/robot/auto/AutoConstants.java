@@ -35,5 +35,17 @@ public class AutoConstants {
 	public static TrajectoryConfig regularConfig = new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration)
 		.setEndVelocity(DriveConstants.kIntakeMaxSpeed);
 
+	public static Pose2d leftShoot = new Pose2d(new Translation2d(3.9356820583343506, 8.069 - 0.55803394317627), Rotation2d.fromRadians(-1.371850369090507));
+	public static Pose2d rightShoot = new Pose2d(new Translation2d(3.9356820583343506, 0.55803394317627), Rotation2d.fromRadians(1.371850369090507));
+
+
+
+	public static Pose2d leftIntermediate = new Pose2d(new Translation2d(6.1265997886657715, 7.190897464752197), Rotation2d.fromDegrees(-90));
+	public static Pose2d rightIntermediate = new Pose2d(new Translation2d(6.1265997886657715, 8.069 - 7.190897464752197), Rotation2d.fromDegrees(90));
+
+
+
+	
+
 
 }

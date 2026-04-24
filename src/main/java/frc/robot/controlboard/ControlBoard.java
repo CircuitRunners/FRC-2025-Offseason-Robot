@@ -1,5 +1,7 @@
 package frc.robot.controlboard;
 
+import java.util.Set;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
@@ -165,6 +167,15 @@ public class ControlBoard {
 				rumbleCommand(Units.Seconds.of(0.1)).onlyIf(() -> s.headingLockToggle == false)
 			).ignoringDisable(true)
 		));
+
+		driver.povLeft().whileTrue(
+			Commands.defer(
+				() -> (superstructure.goToShootCommand(drive))
+				,
+				Set.of(drive)
+			)
+		);
+		
 
 		driver.back().whileTrue(s.turnToHubAuto());
  	}
