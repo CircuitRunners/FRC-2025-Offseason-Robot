@@ -14,9 +14,9 @@ public class FullDisruptionSame extends AutoModeBase {
     public FullDisruptionSame(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "Left Full Disruption Same");
 
-        AutoTrajectory disruption = flipY(trajectory("disruption"), mirrorY);
-        AutoTrajectory disruptionReturn = flipY(trajectory("disruptionReturnSame"), mirrorY);
-        AutoTrajectory leftShootToSilly = flipY(trajectory("leftShootToSilly"), mirrorY);
+        AutoTrajectory disruption = trajectory("disruption", mirrorY);
+        AutoTrajectory disruptionReturn = trajectory("disruptionReturnSame", mirrorY);
+        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly", mirrorY);
 
         Pose2d startPose = disruption.getInitialPose().get();
 
@@ -35,7 +35,7 @@ public class FullDisruptionSame extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
@@ -43,7 +43,7 @@ public class FullDisruptionSame extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),

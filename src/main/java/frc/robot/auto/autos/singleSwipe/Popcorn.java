@@ -14,17 +14,17 @@ public class Popcorn extends AutoModeBase {
     public Popcorn(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "popcorn");
 
-        AutoTrajectory bumpStartToEnd = flipY(trajectory("leftDisruption2", 0), mirrorY);
-        AutoTrajectory disruption2 = flipY(trajectory("leftDisruption2", 1), mirrorY);
-        AutoTrajectory intakeToBumpStart = flipY(trajectory("leftDisruption2ToShootBump", 0), mirrorY);
-        AutoTrajectory bumpStartToEnd2 = flipY(trajectory("leftDisruption2ToShootBump", 1), mirrorY);
+        AutoTrajectory bumpStartToEnd = trajectory("leftDisruption2", 0, mirrorY);
+        AutoTrajectory disruption2 = trajectory("leftDisruption2", 1, mirrorY);
+        AutoTrajectory intakeToBumpStart = trajectory("leftDisruption2ToShootBump", 0, mirrorY);
+        AutoTrajectory bumpStartToEnd2 = trajectory("leftDisruption2ToShootBump", 1, mirrorY);
 
         Pose2d startPose = bumpStartToEnd.getInitialPose().get();
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady().withTimeout(1.0),
+                superstructure.timeoutShootWhenReadyRise().withTimeout(1.0),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 bumpStartToEnd.cmd(),
                 Commands.deadline(
@@ -39,7 +39,7 @@ public class Popcorn extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady());
+                superstructure.timeoutShootWhenReadyRise());
     }
 }
 

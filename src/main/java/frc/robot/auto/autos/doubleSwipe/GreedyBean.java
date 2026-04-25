@@ -12,20 +12,20 @@ import frc.robot.auto.AutoModeBase;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
 
-public class Bean extends AutoModeBase {
+public class GreedyBean extends AutoModeBase {
 
-    public Bean(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
+    public GreedyBean(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "silly left");
 
         AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake", mirrorY);
 
-        AutoTrajectory firstIntakeToBumpStart = trajectory("leftBumpyIntakeToSilly", 0, mirrorY);
-        AutoTrajectory firstBumpStartToEnd = trajectory("leftBumpyIntakeToSilly", 1, mirrorY);
-        AutoTrajectory firstSOTM = trajectory("leftBumpyIntakeToSilly", 2, mirrorY);
-        AutoTrajectory silly = trajectory("leftBumpyIntakeToSilly", 3, mirrorY);
-        AutoTrajectory secondBumpStartToEnd = trajectory("leftBumpyIntakeToSilly", 4, mirrorY);
-        AutoTrajectory secondSOTM = trajectory("leftBumpyIntakeToSilly", 5, mirrorY);
-        AutoTrajectory goBack = trajectory("leftBumpyIntakeToSilly", 6, mirrorY);
+        AutoTrajectory firstIntakeToBumpStart = trajectory("leftGreedyBumpyIntakeToSilly", 0, mirrorY);
+        AutoTrajectory firstBumpStartToEnd = trajectory("leftGreedyBumpyIntakeToSilly", 1, mirrorY);
+        AutoTrajectory firstSOTM = trajectory("leftGreedyBumpyIntakeToSilly", 2, mirrorY);
+        AutoTrajectory silly = trajectory("leftGreedyBumpyIntakeToSilly", 3, mirrorY);
+        AutoTrajectory secondBumpStartToEnd = trajectory("leftGreedyBumpyIntakeToSilly", 4, mirrorY);
+        AutoTrajectory secondSOTM = trajectory("leftGreedyBumpyIntakeToSilly", 5, mirrorY);
+        AutoTrajectory goBack = trajectory("leftGreedyBumpyIntakeToSilly", 6, mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 

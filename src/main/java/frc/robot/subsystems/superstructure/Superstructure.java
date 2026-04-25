@@ -86,7 +86,7 @@ public class Superstructure extends SubsystemBase {
     public Rotation2d headingSetpoint = new Rotation2d();
 
 
-    public AngularVelocity shooterIncrement = Units.RPM.of(25.0);
+    public AngularVelocity shooterIncrement = Units.RPM.of(12.5);
 
     @Override
     public void periodic() {
@@ -299,7 +299,7 @@ public class Superstructure extends SubsystemBase {
                 conveyor.feedForwardOrPulseOnLowCurrent(),
                 //conveyor.setpointCommand(Conveyor.FEED_FORWARD),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
-                Commands.waitUntil(() -> isConveyorCurrentLowForRise()).withTimeout(1.0).andThen(intakeRise()),
+                Commands.waitUntil(() -> isConveyorCurrentLowForRise()).withTimeout(1.0).andThen(intakeRollers.setpointCommand(IntakeRollers.INTAKE)).andThen(intakeRise()),
                 Commands.waitUntil(() -> false)))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
@@ -402,22 +402,21 @@ public class Superstructure extends SubsystemBase {
       );
     }
 
+    public Command intakeUpDown() {
+      return Commands.sequence(
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP, Units.Amps.of(110)),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN, Units.Amps.of(110)));
+    }
+
     public Command intakeRise() {
       return Commands.sequence(
         intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.8), IntakeDeployConstants.kDefaultAcceleration),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY, Units.Amps.of(110)),
-        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.2), IntakeDeployConstants.kDefaultAcceleration),
-        intakeRollers.setpointCommand(IntakeRollers.INTAKE),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP, Units.Amps.of(110)),
-        intakeRollers.setpointCommand(IntakeRollers.IDLE),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.FALL_DOWN, Units.Amps.of(110)),
-        intakeRollers.setpointCommand(IntakeRollers.INTAKE),
-        intakeDeploy.setpointCommandWithWait(IntakeDeploy.RISE_UP, Units.Amps.of(110)),
-        intakeRollers.setpointCommand(IntakeRollers.IDLE),
+        intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY, Units.Amps.of(110)),
-        intakeRollers.setpointCommand(IntakeRollers.INTAKE),
-        Commands.waitSeconds(1.0)
+        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.1), IntakeDeployConstants.kDefaultAcceleration),
+        intakeUpDown().repeatedly()
       ).finallyDo(() -> {
         intakeDeploy.setMotionMagicConstraints(IntakeDeployConstants.kDefaultCruiseVelocity, IntakeDeployConstants.kDefaultAcceleration);
         intakeDeploy.applySetpoint(IntakeDeploy.DEPLOY);
@@ -600,71 +599,62 @@ public class Superstructure extends SubsystemBase {
       return superstructureDone;
     }
 
-    public Command commandToIntermediate(Drive drive, boolean isLeft) {
-        Pose2d targetPose;
-        
-        if (isLeft) {
-            targetPose = AutoConstants.leftIntermediate;
-        } else {
-            targetPose = AutoConstants.rightIntermediate;
-        }
-        
-        PathConstraints constraints = new PathConstraints(
-                DriveConstants.kMaxSpeed.in(Units.MetersPerSecond), DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond),
-                DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
-
-        Command pathfindingCommand = AutoBuilder.pathfindToPose(
-                targetPose,
-                constraints,
-                2
-        );
-
-        return pathfindingCommand;
-    }
-
-    public Command commandToShoot(Drive drive, boolean isLeft) {
-        PathPlannerPath leftPathToShoot = null;
+    public Command commandToNeutral(Drive drive, boolean isLeft) {
+      PathPlannerPath pathToNeutral = null;
         try {
           if (isLeft)
-            leftPathToShoot = PathPlannerPath.fromChoreoTrajectory("leftPathToShoot");
+            pathToNeutral = PathPlannerPath.fromChoreoTrajectory("leftPathToNeutral");
           else{
-            leftPathToShoot = PathPlannerPath.fromChoreoTrajectory("rightPathToShoot");
+            pathToNeutral = PathPlannerPath.fromChoreoTrajectory("rightPathToNeutral");
           }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         PathConstraints constraints = new PathConstraints(
-                DriveConstants.kMaxSpeed.in(Units.MetersPerSecond), DriveConstants.kMaxAcceleration.in(Units.MetersPerSecondPerSecond),
+                3.6, 7.0,
                 DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
 
         Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
-            leftPathToShoot,
+            pathToNeutral,
             constraints);
 
         return pathfindingCommand;
     }
 
-    public Command goToShootCommand(Drive drive) {
-      if (FieldLayout.distanceFromAllianceWall(Units.Meters.of(drive.getPose().getX()), RobotConstants.isRedAlliance)
-            .gte(FieldLayout.kAllianceZoneX.plus(Units.Inches.of(14)))) {
+    public Command commandToShoot(boolean isLeft) {
+        PathPlannerPath pathToShoot = null;
+        try {
+          if (isLeft)
+            pathToShoot = PathPlannerPath.fromChoreoTrajectory("leftPathToShoot");
+          else{
+            pathToShoot = PathPlannerPath.fromChoreoTrajectory("rightPathToShoot");
+          }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        PathConstraints constraints = new PathConstraints(
+                3.6, 7.0,
+                DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
+
+        Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
+            pathToShoot,
+            constraints);
+
+        return pathfindingCommand;
+    }
+
+    public Command goToShootCommand() {
         boolean isLeft;
-        if (drive.getLookaheadPose(Time.ofBaseUnits(.5, Units.Seconds)).getTranslation().getDistance(AutoConstants.leftShoot.getTranslation())
-          < drive.getLookaheadPose(Time.ofBaseUnits(.5, Units.Seconds)).getTranslation().getDistance(AutoConstants.rightShoot.getTranslation())) {
+        if (drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(AutoConstants.leftShoot.getTranslation())
+          < drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(AutoConstants.rightShoot.getTranslation())) {
             isLeft = true;
         } else {
             isLeft = false;
         }
-        return Commands.sequence(
-            // commandToIntermediate(drive, isLeft),
-            commandToShoot(drive, isLeft),
-            drive.stopDrivetrain(),
-            turnToHubAuto().withTimeout(1.0),
-            timeoutShootWhenReady()
-        );
-    } else{
-      return Commands.none();
-    }
+        return 
+            commandToShoot(isLeft);
     }
 
 }

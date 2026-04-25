@@ -117,11 +117,11 @@ public class ShotCalculator {
             FieldLayout.leftBumpEnd.in(Units.Meters));
 
     static {
-        minDistance = 1.2;
+        minDistance = 1.43;
         maxDistance = 5.3;
         passingMinDistance = 5.4;
         passingMaxDistance = 17.16;
-        phaseDelay = 0.03;
+        phaseDelay = 0.10;
 
     }
 

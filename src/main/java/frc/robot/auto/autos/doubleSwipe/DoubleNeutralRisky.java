@@ -14,9 +14,9 @@ public class DoubleNeutralRisky extends AutoModeBase {
     public DoubleNeutralRisky(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "Left Risky");
 
-        AutoTrajectory leftIntakeToShoot = flipY(trajectory("leftIntakeToShootRisky"), mirrorY);
-        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntakeRisky"), mirrorY);
-        AutoTrajectory leftShootToSilly = flipY(trajectory("leftShootToSilly"), mirrorY);
+        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShootRisky", mirrorY);
+        AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntakeRisky", mirrorY);
+        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly", mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
@@ -35,7 +35,7 @@ public class DoubleNeutralRisky extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
@@ -43,7 +43,7 @@ public class DoubleNeutralRisky extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),

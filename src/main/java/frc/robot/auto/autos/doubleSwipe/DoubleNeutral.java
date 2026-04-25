@@ -15,10 +15,10 @@ public class DoubleNeutral extends AutoModeBase {
     public DoubleNeutral(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "Left Double Neutral");
 
-        AutoTrajectory leftIntakeToShoot = flipY(trajectory("leftIntakeToShoot"), mirrorY);
-        AutoTrajectory leftIntakeToShoot2 = flipY(trajectory("leftIntakeToShoot2"), mirrorY);
-        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntake"), mirrorY);
-        AutoTrajectory leftShootToNeutralIntake = flipY(trajectory("leftShootToNeutralIntake"), mirrorY);
+        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot", mirrorY);
+        AutoTrajectory leftIntakeToShoot2 = trajectory("leftIntakeToShoot2", mirrorY);
+        AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake", mirrorY);
+        AutoTrajectory leftShootToNeutralIntake = trajectory("leftShootToNeutralIntake", mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
@@ -37,7 +37,7 @@ public class DoubleNeutral extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 Commands.deadline(
                         leftShootToNeutralIntake.cmd(),
                         Commands.sequence(

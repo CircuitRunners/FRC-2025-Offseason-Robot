@@ -14,10 +14,10 @@ public class PopcornDepot extends AutoModeBase {
     public PopcornDepot(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "popcornDepot");
 
-        AutoTrajectory bumpStartToEnd = flipY(trajectory("leftDisruption2", 0), mirrorY);
-        AutoTrajectory disruption2 = flipY(trajectory("leftDisruption2", 1), mirrorY);
-        AutoTrajectory intakeToBumpStart = flipY(trajectory("leftDisruption2ToShootBump", 0), mirrorY);
-        AutoTrajectory bumpStartToEnd2 = flipY(trajectory("leftDisruption2ToShootBump", 1), mirrorY);
+        AutoTrajectory bumpStartToEnd = trajectory("leftDisruption2", 0, mirrorY);
+        AutoTrajectory disruption2 = trajectory("leftDisruption2", 1, mirrorY);
+        AutoTrajectory intakeToBumpStart = trajectory("leftDisruption2ToShootBump", 0, mirrorY);
+        AutoTrajectory bumpStartToEnd2 = trajectory("leftDisruption2ToShootBump", 1, mirrorY);
         AutoTrajectory bumpEndToDepot = trajectory("rightDisruptionShootBumpToDepot");
         AutoTrajectory depotToCenter = trajectory("depotToCenter");
 
@@ -26,7 +26,7 @@ public class PopcornDepot extends AutoModeBase {
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady().withTimeout(1.0),
+                superstructure.timeoutShootWhenReadyRise().withTimeout(1.0),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 bumpStartToEnd.cmd(),
                 Commands.deadline(
@@ -41,7 +41,7 @@ public class PopcornDepot extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 Commands.deadline(
                         bumpEndToDepot.cmd(),
                         Commands.sequence(
@@ -50,7 +50,7 @@ public class PopcornDepot extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 depotToCenter.cmd(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady()
+                superstructure.timeoutShootWhenReadyRise()
                 );
     }
 }

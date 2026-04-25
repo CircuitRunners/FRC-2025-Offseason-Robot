@@ -170,7 +170,7 @@ public class ControlBoard {
 
 		driver.povLeft().whileTrue(
 			Commands.defer(
-				() -> (superstructure.goToShootCommand(drive))
+				() -> (superstructure.goToShootCommand())
 				,
 				Set.of(drive)
 			)

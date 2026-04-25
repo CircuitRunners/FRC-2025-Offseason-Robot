@@ -14,9 +14,9 @@ public class Fakeout extends AutoModeBase {
     public Fakeout(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "Left Fakeout");
 
-        AutoTrajectory rightIntakeToShoot = flipY(trajectory("leftIntakeToShoot").mirrorY(), mirrorY);
-        AutoTrajectory rightShootToSilly = flipY(trajectory("leftShootToSilly").mirrorY(), mirrorY);
-        AutoTrajectory leftTrenchFakeout = flipY(trajectory("leftTrenchFakeout"), mirrorY);
+        AutoTrajectory rightIntakeToShoot = trajectory("leftIntakeToShoot", !mirrorY);
+        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly", !mirrorY);
+        AutoTrajectory leftTrenchFakeout = trajectory("leftTrenchFakeout", mirrorY);
 
         Pose2d startPose = leftTrenchFakeout.getInitialPose().get();
 
@@ -35,7 +35,7 @@ public class Fakeout extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 Commands.deadline(
                         cmdWithAccuracy(rightShootToSilly),
                         Commands.sequence(
@@ -43,7 +43,7 @@ public class Fakeout extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(rightShootToSilly),

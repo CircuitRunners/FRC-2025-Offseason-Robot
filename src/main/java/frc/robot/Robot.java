@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     try {
-			Threads.setCurrentThreadPriority(true, 4);
+			Threads.setCurrentThreadPriority(true, 5);
 			CommandScheduler.getInstance().run();
 			Threads.setCurrentThreadPriority(false, 0);
 		} catch (Exception e) {
@@ -141,7 +141,7 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {}
 
   public static class BatteryIOInputs {
-    public double batteryVoltage = 12.0;
+    public double batteryVoltage = 12.5;
     public double rioCurrent = 0.0;
   }
 }

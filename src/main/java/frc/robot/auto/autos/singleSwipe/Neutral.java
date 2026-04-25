@@ -14,8 +14,8 @@ public class Neutral extends AutoModeBase {
     public Neutral(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "left Neutral Cycle");
 
-        AutoTrajectory leftIntakeToShoot = flipY(trajectory("leftIntakeToShootClose"), mirrorY);
-        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToNeutralIntakeClose"), mirrorY);
+        AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShootClose", mirrorY);
+        AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntakeClose", mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 

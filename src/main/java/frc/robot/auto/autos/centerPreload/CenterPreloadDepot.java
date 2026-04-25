@@ -28,7 +28,7 @@ public class CenterPreloadDepot extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 depotToCenter.cmd(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady()
+                superstructure.timeoutShootWhenReadyRise()
                 );
     }
 }

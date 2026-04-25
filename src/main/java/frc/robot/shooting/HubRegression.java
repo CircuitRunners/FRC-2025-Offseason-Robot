@@ -34,28 +34,18 @@ public class HubRegression {
 
                         // @x --> distance from target (in meters)
                         // @y --> shooter velocity (in rpm)
-                        // { 1.43, 1700}, // hub
-                        // { 1.85, 1750}, // corner hub
-                        // { 2.15, 1750},
-                        // { 2.7, 1850}, //
-                        // { 3.1, 1950}, // tower
-                        // { 3.5, 2000}, // trench
-                        // { 3.85, 2100}, // depot
-                        // { 4.4, 2200}, //
-                        // { 5.0, 2250}, //
-                        // { 5.3, 2300} // corner
                         { 1.43, 1625}, // hub
-                        { 1.7, 1625}, // corner hub
-                        { 2.15, 1750}, // maybe 1725 or 1700
-                        { 2.7, 1840}, // maybe 1825
-                        { 3.1, 1950}, // tower // might be higher
-                        { 3.7, 2100}, // trench
-                        { 4.0, 2150},
+                        { 1.7, 1650}, // corner hub
+                        { 2.15, 1775}, // maybe 1725 or 1700
+                        { 2.7, 1865}, // maybe 1825
+                        { 3.1, 1975}, // tower // might be higher
+                        { 3.7, 2125}, // trench
+                        { 4.0, 2175},
                         //{ 3.85, 2100}, // depot
-                        { 4.4, 2175}, //
-                        { 4.7, 2240},
-                        { 5.0, 2290}, //
-                        { 5.3, 2390} // corner 
+                        { 4.4, 2200}, //
+                        { 4.7, 2265},
+                        { 5.0, 2315}, //
+                        { 5.3, 2415} // corner 
         };
 
         public static double[][] kTimeOfFlightMap = {
@@ -63,10 +53,10 @@ public class HubRegression {
 
                         // @x --> distance from target (in meters)
                         // @y --> time of flight (in seconds)
-                        { 1.61, 0.90 },
-                        { 1.88, 1.09 },
-                        { 3.15, 1.11 },
-                        { 4.55, 1.12 },
-                        { 5.68, 1.16 }
+                        { 1.61, 0.95 },
+                        { 1.88, 1.14 },
+                        { 3.15, 1.16 },
+                        { 4.55, 1.17 },
+                        { 5.68, 1.21 }
         };
 }

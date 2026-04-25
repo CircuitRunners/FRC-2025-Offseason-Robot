@@ -14,8 +14,8 @@ public class DoubleSilly extends AutoModeBase {
     public DoubleSilly(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "double silly left");
 
-        AutoTrajectory leftTrenchToNeutralIntake = flipY(trajectory("leftTrenchToSilly"), mirrorY);
-        AutoTrajectory leftShootToSilly = flipY(trajectory("leftShootToSilly"), mirrorY);
+        AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToSilly", mirrorY);
+        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly", mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
@@ -30,7 +30,7 @@ public class DoubleSilly extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
@@ -38,7 +38,7 @@ public class DoubleSilly extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),

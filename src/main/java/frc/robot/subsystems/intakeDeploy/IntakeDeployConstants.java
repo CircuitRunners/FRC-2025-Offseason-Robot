@@ -23,7 +23,7 @@ public class IntakeDeployConstants {
     public static final double kGearing = (52.0 / 10.0) * (36.0 / 12.0);
 
 	public static final Angle kDeployPosition = Units.Degrees.of(0);
-	public static final Angle kStowPosition = Units.Degrees.of(124.5);
+	public static final Angle kStowPosition = Units.Degrees.of(125.5);
 
     public static final Angle kUpShakePosition = Units.Degrees.of(30);
 

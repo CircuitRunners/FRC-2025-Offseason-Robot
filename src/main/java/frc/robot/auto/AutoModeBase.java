@@ -48,11 +48,22 @@ public class AutoModeBase {
 		return routine.trajectory(name);
 	}
 
+
+	public AutoTrajectory trajectory(String name, Boolean mirror) {
+		if (mirror) return routine.trajectory(name).mirrorY();
+		else return routine.trajectory(name);
+	}
+
 	/**
 	 * @return Trajectory from choreo up to the split index
 	 */
 	public AutoTrajectory trajectory(String name, int index) {
 		return routine.trajectory(name, index);
+	}
+
+	public AutoTrajectory trajectory(String name, int index, Boolean mirror) {
+		if (mirror) return routine.trajectory(name, index).mirrorY();
+		else return routine.trajectory(name, index);
 	}
 
 	/**
@@ -171,10 +182,5 @@ public class AutoModeBase {
 
 	public AutoRoutine getRoutine() {
 		return routine;
-	}
-
-	public AutoTrajectory flipY(AutoTrajectory traj, boolean shouldFlip) {
-		if (shouldFlip) return traj.mirrorY();
-		else return traj;
 	}
 }

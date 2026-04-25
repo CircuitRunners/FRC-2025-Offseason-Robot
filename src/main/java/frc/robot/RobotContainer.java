@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.Optional;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoFactory;
@@ -48,13 +49,13 @@ public class RobotContainer {
     private final Drive drive = new Drive();
     private final Hood hood = new Hood();
     private final Vision vision = new Vision(
-        drive.getDrivetrain().getVisionConsumer()
-        // (RobotBase.isSimulation())
-        // ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
-        // : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
-        // (RobotBase.isSimulation())
-        // ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
-        // : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        drive.getDrivetrain().getVisionConsumer(),
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera0Name, VisionConstants.robotToCamera0, drive::getPose),
+        (RobotBase.isSimulation())
+        ? new VisionIOPhotonVisionSim(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
+        : new VisionIOPhotonVision(VisionConstants.camera1Name, VisionConstants.robotToCamera1, drive::getPose)
     );
 
     private final Shooter shooter = new Shooter();
@@ -93,8 +94,6 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     
     public RobotContainer() {
-        // SimulationFieldHandler.superstructure = this.superstructure;
-        // SimulationFieldHandler.drive = this.drive;
         controlBoard.configureBindings(drive, superstructure);
         configureBindings();
         RobotConstants.mAutoFactory = new AutoFactory(
@@ -104,12 +103,12 @@ public class RobotContainer {
 				true,
 				drive);
 
-        // AutoHelpers.bindEventMarkers(RobotConstants.mAutoFactory)
+        CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.warmupCmd());
+        CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
+
         mAutoModeSelector = new AutoModeSelector(drive, superstructure, RobotConstants.mAutoFactory);
 		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
         SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser()); 
-        
-        CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.warmupCmd());
 
         SmartDashboard.putData("Auto Overrides/Force Win",
             new InstantCommand(() -> autoWinOverride = Optional.of(true)));

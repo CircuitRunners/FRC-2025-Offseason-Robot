@@ -14,9 +14,9 @@ public class FullDisruptionOpp extends AutoModeBase {
     public FullDisruptionOpp(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
         super(drive, superstructure, factory, "Left Full Disruption Opp");
 
-        AutoTrajectory disruption = flipY(trajectory("disruption"), mirrorY);
-        AutoTrajectory disruptionReturn = flipY(trajectory("disruptionReturnOpposite"), mirrorY);
-        AutoTrajectory rightShootToSilly = flipY(trajectory("leftShootToSilly").mirrorY(), mirrorY);
+        AutoTrajectory disruption = trajectory("disruption", mirrorY);
+        AutoTrajectory disruptionReturn = trajectory("disruptionReturnOpposite", mirrorY);
+        AutoTrajectory rightShootToSilly = trajectory("leftShootToSilly", !mirrorY);
 
         Pose2d startPose = disruption.getInitialPose().get();
 
@@ -43,7 +43,7 @@ public class FullDisruptionOpp extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReady(),
+                superstructure.timeoutShootWhenReadyRise(),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(rightShootToSilly),
