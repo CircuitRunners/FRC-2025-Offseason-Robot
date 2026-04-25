@@ -13,6 +13,8 @@ public class IntakeRollers extends MotorSubsystem<MotorIOTalonFX> {
     public static final Setpoint INTAKE = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kIntakeVoltage);
 	public static final Setpoint EXHAUST = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kExhaustVoltage);
 
+    public static final Setpoint SLOWTAKE = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kSlowtakeVoltage);
+
     public static final Setpoint PULSEIN = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kPulseInVoltage);
     public static final Setpoint PULSEOUT = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kPulseOutVoltage);
 

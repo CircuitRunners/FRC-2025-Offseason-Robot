@@ -299,7 +299,7 @@ public class Superstructure extends SubsystemBase {
                 conveyor.feedForwardOrPulseOnLowCurrent(),
                 //conveyor.setpointCommand(Conveyor.FEED_FORWARD),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
-                Commands.waitUntil(() -> isConveyorCurrentLowForRise()).withTimeout(1.0).andThen(intakeRollers.setpointCommand(IntakeRollers.INTAKE)).andThen(intakeRise()),
+                Commands.waitUntil(() -> isConveyorCurrentLowForRise()).withTimeout(1.0).andThen(intakeRollers.setpointCommand(IntakeRollers.SLOWTAKE)).andThen(intakeRise()),
                 Commands.waitUntil(() -> false)))
       )).finallyDo(() -> {
           conveyor.applySetpoint(Conveyor.IDLE);
@@ -410,12 +410,12 @@ public class Superstructure extends SubsystemBase {
 
     public Command intakeRise() {
       return Commands.sequence(
-        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.8), IntakeDeployConstants.kDefaultAcceleration),
+        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.6), IntakeDeployConstants.kDefaultAcceleration),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY, Units.Amps.of(110)),
-        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.2), IntakeDeployConstants.kDefaultAcceleration),
+        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.4), IntakeDeployConstants.kDefaultAcceleration),
         intakeUpDown().repeatedly()
       ).finallyDo(() -> {
         intakeDeploy.setMotionMagicConstraints(IntakeDeployConstants.kDefaultCruiseVelocity, IntakeDeployConstants.kDefaultAcceleration);

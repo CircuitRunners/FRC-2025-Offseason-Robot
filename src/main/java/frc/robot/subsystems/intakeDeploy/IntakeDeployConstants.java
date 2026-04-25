@@ -27,7 +27,7 @@ public class IntakeDeployConstants {
 
     public static final Angle kUpShakePosition = Units.Degrees.of(30);
 
-    public static final Angle kRiseUpPosition = Units.Degrees.of(67);
+    public static final Angle kRiseUpPosition = Units.Degrees.of(55);
     public static final Angle kFallDownPosition = Units.Degrees.of(10);
 
 	public static final Angle kExhaustPosition = kDeployPosition;

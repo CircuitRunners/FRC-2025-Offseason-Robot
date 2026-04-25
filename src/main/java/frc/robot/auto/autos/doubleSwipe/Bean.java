@@ -59,7 +59,7 @@ public class Bean extends AutoModeBase {
                                 secondSOTM.getRawTrajectory(),
                                 drive,
                                 superstructure),
-                        Commands.waitSeconds(0.3).andThen(superstructure.shootWhenReadyRise())),
+                        Commands.waitSeconds(0.5).andThen(superstructure.shootWhenReadyRise())),
                 Commands.deadline(
                         goBack.cmd(),
                         Commands.sequence(

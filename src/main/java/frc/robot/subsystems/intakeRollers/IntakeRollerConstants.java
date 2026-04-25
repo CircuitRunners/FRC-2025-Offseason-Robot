@@ -24,10 +24,12 @@ public class IntakeRollerConstants {
     public static final Voltage kIntakeVoltage = Volts.of(5.0);
     public static final Voltage kExhaustVoltage = Volts.of(-6.0);
 
+    public static final Voltage kSlowtakeVoltage = Volts.of(3.0);
+
     public static final Voltage kPulseInVoltage = Volts.of(6.0);
     public static final Voltage kPulseOutVoltage = Volts.of(-6.0);
 
-    public static final double pulseOutTime = 0.15;
+    public static final double pulseOutTime = 0.10;
 	public static final double pulseInTime = 0.30;
 
     public static TalonFXConfiguration getFXConfig() {

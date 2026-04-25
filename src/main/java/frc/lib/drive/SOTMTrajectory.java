@@ -41,7 +41,7 @@ public class SOTMTrajectory extends Command {
   public void execute() {
     Pose2d targetPose;
     SwerveSample sample = trajectory.sampleAt(timer.get(), RobotConstants.isRedAlliance).orElseThrow();
-    if (timer.get() > 0.3) {
+    if (timer.get() > 0.5) {
       targetPose = new Pose2d(sample.getPose().getTranslation(), superstructure.headingSetpoint);
     }
     else {

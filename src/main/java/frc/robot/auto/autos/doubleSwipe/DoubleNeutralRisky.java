@@ -35,7 +35,7 @@ public class DoubleNeutralRisky extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                superstructure.timeoutShootWhenReady(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
@@ -43,7 +43,7 @@ public class DoubleNeutralRisky extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                superstructure.timeoutShootWhenReady(),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),
