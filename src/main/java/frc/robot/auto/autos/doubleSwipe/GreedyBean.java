@@ -15,7 +15,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 public class GreedyBean extends AutoModeBase {
 
     public GreedyBean(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
-        super(drive, superstructure, factory, "silly left");
+        super(drive, superstructure, factory, "Greedy Bean");
 
         AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake", mirrorY);
 

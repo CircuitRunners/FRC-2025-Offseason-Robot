@@ -415,7 +415,7 @@ public class Superstructure extends SubsystemBase {
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.SHAKE, Units.Amps.of(110)),
         intakeDeploy.setpointCommandWithWait(IntakeDeploy.DEPLOY, Units.Amps.of(110)),
-        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.1), IntakeDeployConstants.kDefaultAcceleration),
+        intakeDeploy.setMotionMagicConstraintsCommand(Units.RotationsPerSecond.of(0.2), IntakeDeployConstants.kDefaultAcceleration),
         intakeUpDown().repeatedly()
       ).finallyDo(() -> {
         intakeDeploy.setMotionMagicConstraints(IntakeDeployConstants.kDefaultCruiseVelocity, IntakeDeployConstants.kDefaultAcceleration);
@@ -647,8 +647,8 @@ public class Superstructure extends SubsystemBase {
 
     public Command goToShootCommand() {
         boolean isLeft;
-        if (drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(AutoConstants.leftShoot.getTranslation())
-          < drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(AutoConstants.rightShoot.getTranslation())) {
+        if (drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(FieldLayout.handleAllianceFlip(AutoConstants.leftShoot.getTranslation(), RobotConstants.isRedAlliance))
+          < drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(FieldLayout.handleAllianceFlip(AutoConstants.rightShoot.getTranslation(), RobotConstants.isRedAlliance))) {
             isLeft = true;
         } else {
             isLeft = false;

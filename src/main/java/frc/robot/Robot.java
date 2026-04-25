@@ -40,7 +40,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     try {
-			Threads.setCurrentThreadPriority(true, 5);
+			Threads.setCurrentThreadPriority(true, 6);
 			CommandScheduler.getInstance().run();
 			Threads.setCurrentThreadPriority(false, 0);
 		} catch (Exception e) {

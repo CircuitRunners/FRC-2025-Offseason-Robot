@@ -12,6 +12,7 @@ import frc.robot.auto.autos.doubleSwipe.DoubleNeutral;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutralRisky;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutralSilly;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutralStraight;
+import frc.robot.auto.autos.doubleSwipe.GreedyBean;
 import frc.robot.auto.autos.singleSwipe.Neutral;
 import frc.robot.auto.autos.singleSwipe.Popcorn;
 import frc.robot.auto.autos.superSilly.DoubleSilly;
@@ -53,10 +54,8 @@ public class AutoModeSelector {
 
 		mAutoChooser.addRoutine("[LEFT] BEAN", () -> new Bean(drive, superstructure, factory, false).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] BEAN", () -> new Bean(drive, superstructure, factory, true).getRoutine());
-
-
-
-		//mAutoChooser.addRoutine("Popcorn Penguins Steal", () -> new Popcorn(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] BEAN Greedy", () -> new GreedyBean(drive, superstructure, factory, false).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] BEAN Greedy", () -> new GreedyBean(drive, superstructure, factory, true).getRoutine());
     }
 
 	public Command getSelectedCommand() {
