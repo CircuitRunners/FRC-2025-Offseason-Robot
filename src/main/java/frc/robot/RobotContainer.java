@@ -128,6 +128,9 @@ public class RobotContainer {
         SmartDashboard.putData("Shooter Idle/Toggle",
         new InstantCommand(() -> disableAutoSpinup = !disableAutoSpinup));
 
+        SmartDashboard.putData("Outreach/Toggle Manual Mode",
+        new InstantCommand(() -> superstructure.toggleOutreachManualMode()));
+
         SmartDashboard.putData("Vision/Set Current Pose To Vision", resetToVisionPose());
 
         HubShiftUtil.setAllianceWinOverride(() -> autoWinOverride);
@@ -281,6 +284,14 @@ public class RobotContainer {
 
         SmartDashboard.putBoolean("Shooter Idle/State", disableAutoSpinup);
         SmartDashboard.putBoolean("Auto Reset Pose In Auto/Enabled", AutoHelpers.shouldResetPoseInAuto());
+        SmartDashboard.putString(
+            "Outreach/Mode", superstructure.getOutreachUsesManualSettings() ? "MANUAL" : "DISTANCE");
+        SmartDashboard.putNumber("Outreach/Distance Meters", superstructure.getOutreachShotDistanceMeters());
+        SmartDashboard.putNumber("Outreach/Manual Hood Degrees", superstructure.getOutreachManualHoodAngleDegrees());
+        SmartDashboard.putNumber("Outreach/Manual Shooter RPM", superstructure.getOutreachManualShooterRpm());
+        SmartDashboard.putNumber("Outreach/Manual Feed Scale", superstructure.getOutreachManualFeedScale());
+        SmartDashboard.putNumber("Outreach/Selected Hood Degrees", superstructure.getSelectedOutreachHoodAngleDegrees());
+        SmartDashboard.putNumber("Outreach/Selected Shooter RPM", superstructure.getSelectedOutreachShooterRpm());
 
         Double selectedShootAllFuelTime = autoShootAllFuelTime.getSelected();
         AutoConstants.shootAllFuelTime = selectedShootAllFuelTime != null ? selectedShootAllFuelTime : 3.0;

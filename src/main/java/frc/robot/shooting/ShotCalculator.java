@@ -297,6 +297,18 @@ public class ShotCalculator {
             robotTranslation, getDriveAngleWithLauncherOffset(new Pose2d(robotTranslation, new Rotation2d()), target));
     }
 
+    public static double clampLaunchDistance(double distanceMeters) {
+        return MathUtil.clamp(distanceMeters, minDistance, maxDistance);
+    }
+
+    public static double getShooterRpmForDistance(double distanceMeters) {
+        return getShooterSetpointForShot(clampLaunchDistance(distanceMeters));
+    }
+
+    public static double getHoodAngleDegreesForDistance(double distanceMeters) {
+        return getHoodSetpointForShot(clampLaunchDistance(distanceMeters));
+    }
+
         // interpolates distance to target for shooter setpoint along regression
         private static double getShooterSetpointForShot(double range) {
             return RegressionMaps.kFlywheelAutoAimMap.get(range);

@@ -8,6 +8,7 @@ import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -32,7 +33,9 @@ import frc.robot.auto.AutoConstants;
 import frc.robot.controlboard.ControlBoardConstants;
 import frc.robot.shooting.ShotCalculator;
 import frc.robot.subsystems.conveyor.Conveyor;
+import frc.robot.subsystems.conveyor.ConveyorConstants;
 import frc.robot.subsystems.kicker.Kicker;
+import frc.robot.subsystems.kicker.KickerConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.hood.Hood;
@@ -71,7 +74,7 @@ public class Superstructure extends SubsystemBase {
     private boolean intakeDeployed = false;
     private boolean intakeBraked = false;
     public boolean shootOnTheMove = true;
-    public boolean headingLockToggle = true;
+    public boolean headingLockToggle = false;
     public boolean nearTrench = false;
     public boolean ignoreHubState = false;
     TrajectoryConfig config = new TrajectoryConfig(DriveConstants.kMaxSpeed, DriveConstants.kMaxAcceleration);
@@ -87,6 +90,18 @@ public class Superstructure extends SubsystemBase {
 
 
     public AngularVelocity shooterIncrement = Units.RPM.of(12.5);
+    private static final double kOutreachAdjustPeriodSeconds = 0.1;
+    private static final double kOutreachDistanceStepMeters = 0.1;
+    private static final double kOutreachFeedStep = 0.05;
+    private static final Angle kOutreachHoodStep = Units.Degrees.of(0.25);
+    private static final AngularVelocity kOutreachShooterStep = Units.RPM.of(12.5);
+
+    private boolean outreachUsesManualSettings = false;
+    private double outreachShotDistanceMeters = ShotCalculator.towerPresetDistance;
+    private Angle outreachManualHoodAngle = Units.Degrees.of(23.0);
+    private AngularVelocity outreachManualShooterSpeed = Units.RPM.of(2125.0);
+    private double outreachManualFeedScale = 1.0;
+    private boolean useCurrentHeadingForShot = false;
 
     @Override
     public void periodic() {
@@ -119,6 +134,10 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void updateHeadingSetpoint() {
+      if (useCurrentHeadingForShot) {
+        headingSetpoint = drive.getRotation();
+        return;
+      }
       boolean passing = !FieldLayout.distanceFromAllianceWall(Units.Meters.of(drive.getPose().getX()), RobotConstants.isRedAlliance).lte(FieldLayout.kAllianceZoneX.minus(Units.Inches.of(14)));
       if (!passing) {
         headingSetpoint = shootOnTheMove ? ShotCalculator.getInstance(drive).getParameters().heading() : ShotCalculator.getStationaryAimedPose(drive.getPose().getTranslation()).getRotation();
@@ -345,6 +364,40 @@ public class Superstructure extends SubsystemBase {
       }), Set.of(conveyor, kicker, shooter, hood, intakeRollers));
     }
 
+    public Command shootWhenReadyOutreach() {
+      return Commands.defer(() -> Commands.sequence(
+          Commands.runOnce(() -> {
+            maintainHeadingEpsilon = 0.00;
+            useCurrentHeadingForShot = true;
+          }),
+          Commands.parallel(
+              shooter.followSetpointCommand(this::getSelectedOutreachShooterSetpoint),
+              hood.followSetpointCommand(this::getSelectedOutreachHoodSetpoint),
+              Commands.sequence(
+              Commands.runOnce(() -> {
+                  setStateInternal((state == State.INTAKING)
+                          ? State.SHOOTINTAKE
+                          : State.SHOOTING);
+              }),
+              waitUntilSafeToShoot(),
+              Commands.runOnce(() -> setShootingGainProfile(true)),
+              Commands.parallel(
+                conveyor.followSetpointCommand(this::getSelectedOutreachConveyorSetpoint),
+                kicker.followSetpointCommand(this::getSelectedOutreachKickerSetpoint),
+                intakeRollers.Pulse(),
+                Commands.waitUntil(() -> false)))
+      )).finallyDo(() -> {
+          conveyor.applySetpoint(Conveyor.IDLE);
+          kicker.applySetpoint(Kicker.FEED_BACKWARDS);
+          shooter.applySetpoint(Shooter.IDLE);
+          hood.applySetpoint(Hood.ZERO);
+          maintainHeadingEpsilon = 0.25;
+          useCurrentHeadingForShot = false;
+          setShootingGainProfile(false);
+          setStateInternal((state == State.SHOOTINTAKE) ? State.INTAKING : State.DEPLOYED);
+      }), Set.of(conveyor, kicker, shooter, hood, intakeRollers));
+    }
+
     public Command shootAndIntake() {
       return Commands.sequence(
           Commands.runOnce(() -> maintainHeadingEpsilon = 0.00),
@@ -562,6 +615,38 @@ public class Superstructure extends SubsystemBase {
     public Command toggleSOTM() {
       return Commands.runOnce(() -> shootOnTheMove = !shootOnTheMove);
     }
+
+    public Command toggleOutreachManualMode() {
+      return Commands.runOnce(() -> outreachUsesManualSettings = !outreachUsesManualSettings);
+    }
+
+    public Command adjustOutreachDistanceCommand(boolean increase) {
+      return Commands.sequence(
+              Commands.runOnce(() -> adjustOutreachDistance(increase)),
+              Commands.waitSeconds(kOutreachAdjustPeriodSeconds))
+          .repeatedly();
+    }
+
+    public Command adjustOutreachManualHoodCommand(boolean increase) {
+      return Commands.sequence(
+              Commands.runOnce(() -> adjustOutreachManualHood(increase)),
+              Commands.waitSeconds(kOutreachAdjustPeriodSeconds))
+          .repeatedly();
+    }
+
+    public Command adjustOutreachManualShooterCommand(boolean increase) {
+      return Commands.sequence(
+              Commands.runOnce(() -> adjustOutreachManualShooter(increase)),
+              Commands.waitSeconds(kOutreachAdjustPeriodSeconds))
+          .repeatedly();
+    }
+
+    public Command adjustOutreachManualFeedCommand(boolean increase) {
+      return Commands.sequence(
+              Commands.runOnce(() -> adjustOutreachManualFeed(increase)),
+              Commands.waitSeconds(kOutreachAdjustPeriodSeconds))
+          .repeatedly();
+    }
   
     public State getState() {
       return state;
@@ -597,6 +682,34 @@ public class Superstructure extends SubsystemBase {
 
     public boolean getSuperstructureDone() {
       return superstructureDone;
+    }
+
+    public boolean getOutreachUsesManualSettings() {
+      return outreachUsesManualSettings;
+    }
+
+    public double getOutreachShotDistanceMeters() {
+      return outreachShotDistanceMeters;
+    }
+
+    public double getOutreachManualHoodAngleDegrees() {
+      return outreachManualHoodAngle.in(Units.Degrees);
+    }
+
+    public double getOutreachManualShooterRpm() {
+      return outreachManualShooterSpeed.in(Units.RPM);
+    }
+
+    public double getOutreachManualFeedScale() {
+      return outreachManualFeedScale;
+    }
+
+    public double getSelectedOutreachHoodAngleDegrees() {
+      return getSelectedOutreachHoodAngle().in(Units.Degrees);
+    }
+
+    public double getSelectedOutreachShooterRpm() {
+      return getSelectedOutreachShooterSpeed().in(Units.RPM);
     }
 
     public Command commandToNeutral(Drive drive, boolean isLeft) {
@@ -655,6 +768,73 @@ public class Superstructure extends SubsystemBase {
         }
         return 
             commandToShoot(isLeft);
+    }
+
+    private void adjustOutreachDistance(boolean increase) {
+      double direction = increase ? 1.0 : -1.0;
+      outreachShotDistanceMeters =
+          ShotCalculator.clampLaunchDistance(
+              outreachShotDistanceMeters + (direction * kOutreachDistanceStepMeters));
+    }
+
+    private void adjustOutreachManualHood(boolean increase) {
+      double direction = increase ? 1.0 : -1.0;
+      outreachManualHoodAngle =
+          Units.Degrees.of(
+              MathUtil.clamp(
+                  outreachManualHoodAngle.in(Units.Degrees)
+                      + (direction * kOutreachHoodStep.in(Units.Degrees)),
+                  HoodConstants.kMinAngle.in(Units.Degrees),
+                  HoodConstants.kMaxAngle.in(Units.Degrees)));
+    }
+
+    private void adjustOutreachManualShooter(boolean increase) {
+      double direction = increase ? 1.0 : -1.0;
+      outreachManualShooterSpeed =
+          Units.RPM.of(
+              Math.max(
+                  0.0,
+                  outreachManualShooterSpeed.in(Units.RPM)
+                      + (direction * kOutreachShooterStep.in(Units.RPM))));
+    }
+
+    private void adjustOutreachManualFeed(boolean increase) {
+      double direction = increase ? 1.0 : -1.0;
+      outreachManualFeedScale =
+          MathUtil.clamp(outreachManualFeedScale + (direction * kOutreachFeedStep), 0.0, 1.0);
+    }
+
+    private AngularVelocity getSelectedOutreachShooterSpeed() {
+      return outreachUsesManualSettings
+          ? outreachManualShooterSpeed
+          : Units.RPM.of(ShotCalculator.getShooterRpmForDistance(outreachShotDistanceMeters));
+    }
+
+    private Angle getSelectedOutreachHoodAngle() {
+      return outreachUsesManualSettings
+          ? outreachManualHoodAngle
+          : Units.Degrees.of(ShotCalculator.getHoodAngleDegreesForDistance(outreachShotDistanceMeters));
+    }
+
+    private Setpoint getSelectedOutreachShooterSetpoint() {
+      return Setpoint.withVelocitySetpoint(getSelectedOutreachShooterSpeed());
+    }
+
+    private Setpoint getSelectedOutreachHoodSetpoint() {
+      return Setpoint.withPositionSetpoint(getSelectedOutreachHoodAngle());
+    }
+
+    private Setpoint getSelectedOutreachConveyorSetpoint() {
+      double feedScale = outreachUsesManualSettings ? outreachManualFeedScale : 1.0;
+      return Setpoint.withVoltageSetpoint(
+          Units.Volts.of(ConveyorConstants.kFeedForwardVoltage.in(Units.Volts) * feedScale));
+    }
+
+    private Setpoint getSelectedOutreachKickerSetpoint() {
+      double feedScale = outreachUsesManualSettings ? outreachManualFeedScale : 1.0;
+      return Setpoint.withVelocitySetpoint(
+          Units.RotationsPerSecond.of(
+              KickerConstants.kFeedForwardVelocity.in(Units.RotationsPerSecond) * feedScale));
     }
 
 }

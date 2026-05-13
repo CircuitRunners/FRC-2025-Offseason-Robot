@@ -69,6 +69,14 @@ public class ControlBoard {
 	//private OverrideBehavior overrideBehavior = OverrideBehavior.CORAL_SCORE_L4;
 
 	private Trigger rightBumper = driver.rightBumper();
+	private final Trigger outreachDistanceDecreaseButton = driver.povDown();
+	private final Trigger outreachDistanceIncreaseButton = driver.povUp();
+	private final Trigger outreachHoodDecreaseButton = driver.povLeft();
+	private final Trigger outreachHoodIncreaseButton = driver.povRight();
+	private final Trigger outreachShooterDecreaseButton = driver.a();
+	private final Trigger outreachShooterIncreaseButton = driver.y();
+	private final Trigger outreachFeedDecreaseButton = driver.back();
+	private final Trigger outreachFeedIncreaseButton = driver.b();
 
 	private Trigger hubActiveOrPassing =
         new Trigger(() -> HubShiftUtil.getShiftedShiftInfo().active() || ShotCalculator.getInstance(drive).getParameters().passing());
@@ -116,12 +124,9 @@ public class ControlBoard {
 
 		// INTAKING ###############################################################################
 
-		driver.rightBumper().whileTrue(s.shakeIntake()).onFalse(
-		intakeDeploy.setpointCommand(IntakeDeploy.DEPLOY));
-
 		driver.rightTrigger().whileTrue(s.spit()).onFalse(s.setState(Superstructure.State.DEPLOYED));
 
- 		driver.leftBumper().onTrue(s.tuck());
+		driver.leftBumper().onTrue(s.tuck());
 
  		driver.leftTrigger(0.1).and(driver.x().negate())
  				.whileTrue(
@@ -134,50 +139,28 @@ public class ControlBoard {
 
 		// SHOOTING ##############################################################################
 
-		driver.leftTrigger(0.1).and(driver.x().or(driver.y())).whileTrue(s.shootAndIntake());
-
- 		driver.b()
-		.and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean())
-		.and(driver.leftTrigger(0.1).negate())
-		.and(inLaunchingTolerance).debounce(0.1, DebounceType.kFalling)
-		.whileTrue(s.shootWhenReadyRise());
-
-		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2125).in(Units.RotationsPerSecond)), Units.Degrees.of(23.0)));
-
-		driver.a().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(1650).in(Units.RotationsPerSecond)), Units.Degrees.of(20)));
-
-		driver.leftStick().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.minus(Units.RPM.of(12.5))));
-
-		driver.rightStick().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.plus(Units.RPM.of(12.5))));
-
 		driver.x()
-		.and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean())
 		.and(driver.leftTrigger(0.1).negate())
-		.and(inLaunchingTolerance).debounce(0.1, DebounceType.kFalling)
-		.whileTrue(s.shootWhenReadyPulse());
+		.whileTrue(s.shootWhenReadyOutreach());
+
+		outreachDistanceDecreaseButton.whileTrue(s.adjustOutreachDistanceCommand(false));
+		outreachDistanceIncreaseButton.whileTrue(s.adjustOutreachDistanceCommand(true));
+		outreachHoodDecreaseButton.whileTrue(s.adjustOutreachManualHoodCommand(false));
+		outreachHoodIncreaseButton.whileTrue(s.adjustOutreachManualHoodCommand(true));
+		outreachShooterDecreaseButton.whileTrue(s.adjustOutreachManualShooterCommand(false));
+		outreachShooterIncreaseButton.whileTrue(s.adjustOutreachManualShooterCommand(true));
+		outreachFeedDecreaseButton.whileTrue(s.adjustOutreachManualFeedCommand(false));
+		outreachFeedIncreaseButton.whileTrue(s.adjustOutreachManualFeedCommand(true));
 
 		// TOGGLES ####################################################################################
 
-		driver.povDown().whileTrue(s.driveBrake().withName("Brake"));
-
-		driver.povRight().onTrue((Commands.runOnce(() -> s.headingLockToggle = !s.headingLockToggle)).andThen(
-			Commands.sequence(
-				rumbleCommand(Units.Seconds.of(0.1)),
-				Commands.waitSeconds(0.05),
-				rumbleCommand(Units.Seconds.of(0.1)).onlyIf(() -> s.headingLockToggle == false)
-			).ignoringDisable(true)
-		));
-
-		driver.povLeft().whileTrue(
-			Commands.defer(
-				() -> (superstructure.goToShootCommand())
-				,
-				Set.of(drive)
-			)
-		);
-		
-
-		driver.back().whileTrue(s.turnToHubAuto());
+		// driver.povRight().onTrue((Commands.runOnce(() -> s.headingLockToggle = !s.headingLockToggle)).andThen(
+		// 	Commands.sequence(
+		// 		rumbleCommand(Units.Seconds.of(0.1)),
+		// 		Commands.waitSeconds(0.05),
+		// 		rumbleCommand(Units.Seconds.of(0.1)).onlyIf(() -> s.headingLockToggle == false)
+		// 	).ignoringDisable(true)
+		// ));
  	}
 
 	// public Command shootingSetOverrideBehavior(Trigger button) {

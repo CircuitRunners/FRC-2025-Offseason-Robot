@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.lib.util.FieldLayout;
 import frc.lib.util.MathHelpers;
+import frc.lib.util.TunableNumber;
 import frc.lib.util.Util;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
@@ -70,6 +71,8 @@ public class DriveMaintainingHeading extends Command{
     public final DoubleSupplier mEpsilonSupplier;
     private Optional<Rotation2d> mHeadingSetpoint = Optional.empty();
     private double mJoystickLastTouched = -1;
+    private final TunableNumber outreachDriveSpeedScalar =
+            new TunableNumber("Outreach Drive Speed Scalar", 0.3, true);
     
     private final SwerveRequest.FieldCentric driveNoHeading = 
         new SwerveRequest.FieldCentric()
@@ -94,9 +97,18 @@ public class DriveMaintainingHeading extends Command{
 
     @Override
     public void execute() {
-        double throttle = mThrottleSupplier.getAsDouble() * DriveConstants.kMaxSpeed.in(Units.MetersPerSecond);
-        double strafe = mStrafeSupplier.getAsDouble() * DriveConstants.kMaxSpeed.in(Units.MetersPerSecond);
-        double turnFieldFrame = mTurnSupplier.getAsDouble();
+        double speedScalar = MathUtil.clamp(outreachDriveSpeedScalar.get(), 0.0, 1.0);
+        double translationScalar = speedScalar;
+        double turnScalar = 0.5 + (0.5 * speedScalar);
+        double throttle =
+                mThrottleSupplier.getAsDouble()
+                        * DriveConstants.kMaxSpeed.in(Units.MetersPerSecond)
+                        * translationScalar;
+        double strafe =
+                mStrafeSupplier.getAsDouble()
+                        * DriveConstants.kMaxSpeed.in(Units.MetersPerSecond)
+                        * translationScalar;
+        double turnFieldFrame = mTurnSupplier.getAsDouble() * turnScalar;
         double epsilon = mEpsilonSupplier.getAsDouble();
         double throttleFieldFrame = RobotConstants.isRedAlliance ? throttle : -throttle;
         double strafeFieldFrame = RobotConstants.isRedAlliance ? strafe : -strafe;
