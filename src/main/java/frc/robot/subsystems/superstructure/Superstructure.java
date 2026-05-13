@@ -71,7 +71,7 @@ public class Superstructure extends SubsystemBase {
     private boolean isPathFollowing = false;
     private boolean superstructureDone = false;
     private boolean driveReady = false;
-    private boolean intakeDeployed = false;
+    private boolean intakeDeployed = true;
     private boolean intakeBraked = false;
     public boolean shootOnTheMove = true;
     public boolean headingLockToggle = false;
@@ -96,10 +96,10 @@ public class Superstructure extends SubsystemBase {
     private static final Angle kOutreachHoodStep = Units.Degrees.of(0.25);
     private static final AngularVelocity kOutreachShooterStep = Units.RPM.of(12.5);
 
-    private boolean outreachUsesManualSettings = false;
+    public boolean outreachUsesManualSettings = false;
     private double outreachShotDistanceMeters = ShotCalculator.towerPresetDistance;
-    private Angle outreachManualHoodAngle = Units.Degrees.of(23.0);
-    private AngularVelocity outreachManualShooterSpeed = Units.RPM.of(2125.0);
+    public Angle outreachManualHoodAngle = Units.Degrees.of(23.0);
+    public AngularVelocity outreachManualShooterSpeed = Units.RPM.of(2125.0);
     private double outreachManualFeedScale = 1.0;
     private boolean useCurrentHeadingForShot = false;
 
@@ -503,7 +503,6 @@ public class Superstructure extends SubsystemBase {
             conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
             kicker.setpointCommand(Kicker.FEED_BACKWARDS)),
           Commands.sequence(
-              deployIntake(),
               intakeRollers.setpointCommand(IntakeRollers.INTAKE),
               conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
             kicker.setpointCommand(Kicker.FEED_BACKWARDS)),
@@ -601,7 +600,7 @@ public class Superstructure extends SubsystemBase {
 
     private void setShootingGainProfile(boolean shooting) {
       //shooter.setShootingGains(shooting);
-      kicker.setShootingGains(shooting);
+      // kicker.setShootingGains(shooting);
     }
   
     public Command setState(State state) {
@@ -825,13 +824,13 @@ public class Superstructure extends SubsystemBase {
     }
 
     private Setpoint getSelectedOutreachConveyorSetpoint() {
-      double feedScale = outreachUsesManualSettings ? outreachManualFeedScale : 1.0;
+      double feedScale = outreachManualFeedScale;
       return Setpoint.withVoltageSetpoint(
           Units.Volts.of(ConveyorConstants.kFeedForwardVoltage.in(Units.Volts) * feedScale));
     }
 
     private Setpoint getSelectedOutreachKickerSetpoint() {
-      double feedScale = outreachUsesManualSettings ? outreachManualFeedScale : 1.0;
+      double feedScale = outreachManualFeedScale;
       return Setpoint.withVelocitySetpoint(
           Units.RotationsPerSecond.of(
               KickerConstants.kFeedForwardVelocity.in(Units.RotationsPerSecond) * feedScale));

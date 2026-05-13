@@ -46,6 +46,7 @@ import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoModeSelector;
+import frc.lib.io.MotorIO.Setpoint;
 @Logged
 public class RobotContainer {
     private final Drive drive = new Drive();
@@ -164,20 +165,12 @@ public class RobotContainer {
         shooter.setDefaultCommand(
         new ContinuousConditionalCommand(
             shooter.setpointCommand(Shooter.IDLE),
-            shooter.followSetpointCommand(
-                () -> {
-                  var parameters = ShotCalculator.getInstance(drive).getParameters();
-                  var shift = HubShiftUtil.getShiftedShiftInfo();
-                  if (!parameters.passing()
-                      && (shift.active()
-                          || shift.remainingTime() < 5.0
-                          || superstructure.ignoreHubState)) {
-                    return superstructure.shooterSetpoint;
-                  } else {
-                    return ShotCalculator.passingIdleSpeed;
-                  }
-                }),
+            shooter.followSetpointCommand(() -> Setpoint.withVelocitySetpoint(superstructure.outreachManualShooterSpeed)),
             () -> disableAutoSpinup));
+
+        hood.setDefaultCommand(
+            hood.followSetpointCommand(() -> Setpoint.withPositionSetpoint(superstructure.outreachManualHoodAngle))
+        );
         // shooter.setDefaultCommand(
         //     shooter.followSetpointCommand(() -> {
         //         var parameters = ShotCalculator.getInstance(drive).getParameters();
@@ -195,17 +188,17 @@ public class RobotContainer {
         // );
         //hood.setDefaultCommand(Commands.defer(() -> hood.trackTargetCommand(superstructure.hoodSetpoint), Set.of(hood)));
 
-    //     for (SubsystemBase s : new SubsystemBase[] {
+        for (SubsystemBase s : new SubsystemBase[] {
 	// 		// intakeDeploy,
 	// 		// intakeRollers,
 	// 		// conveyor,
 	// 		// superstructure,
     //      // kicker,
-    //         shooter,
-    //         hood
-	// 	}) {
-	// 		SmartDashboard.putData(s);
-	// 	}
+            shooter,
+            hood
+		}) {
+			SmartDashboard.putData(s);
+		}
     }
 
     private String getAutoOverrideState() {

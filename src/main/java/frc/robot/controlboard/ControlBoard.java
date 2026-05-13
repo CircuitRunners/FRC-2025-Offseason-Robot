@@ -126,7 +126,7 @@ public class ControlBoard {
 
 		driver.rightTrigger().whileTrue(s.spit()).onFalse(s.setState(Superstructure.State.DEPLOYED));
 
-		driver.leftBumper().onTrue(s.tuck());
+		// driver.leftBumper().onTrue(s.tuck());
 
  		driver.leftTrigger(0.1).and(driver.x().negate())
  				.whileTrue(

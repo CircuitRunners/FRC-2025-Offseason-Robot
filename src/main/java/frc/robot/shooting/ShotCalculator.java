@@ -298,7 +298,7 @@ public class ShotCalculator {
     }
 
     public static double clampLaunchDistance(double distanceMeters) {
-        return MathUtil.clamp(distanceMeters, minDistance, maxDistance);
+        return MathUtil.clamp(distanceMeters, minDistance, passingMaxDistance);
     }
 
     public static double getShooterRpmForDistance(double distanceMeters) {
