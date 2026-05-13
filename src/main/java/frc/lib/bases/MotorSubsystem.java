@@ -37,7 +37,7 @@ public class MotorSubsystem<IO extends MotorIO> extends SubsystemBase {
 	@Override
 	public void periodic() {
 		io.updateInputs();
-		Robot.batteryLogger.reportCurrentUsage(name, getSupplyCurrent().in(Units.Amps));
+		// Robot.batteryLogger.reportCurrentUsage(name, getSupplyCurrent().in(Units.Amps));
 		//outputTelemetry();
 	}
 

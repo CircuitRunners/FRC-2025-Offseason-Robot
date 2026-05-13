@@ -140,11 +140,11 @@ public class ControlBoard {
 		.and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean())
 		.and(driver.leftTrigger(0.1).negate())
 		.and(inLaunchingTolerance).debounce(0.1, DebounceType.kFalling)
-		.whileTrue(s.shootWhenReadyPulse());
+		.whileTrue(s.shootWhenReadyRise());
 
-		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2100).in(Units.RotationsPerSecond)), Units.Degrees.of(23.0)));
+		driver.y().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(2125).in(Units.RotationsPerSecond)), Units.Degrees.of(23.0)));
 
-		driver.a().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(1625).in(Units.RotationsPerSecond)), Units.Degrees.of(20)));
+		driver.a().whileTrue(s.shootWhenReadyPreset(Units.RotationsPerSecond.of(Units.RPM.of(1650).in(Units.RotationsPerSecond)), Units.Degrees.of(20)));
 
 		driver.leftStick().onTrue(Commands.runOnce(() -> s.shooterIncrement = s.shooterIncrement.minus(Units.RPM.of(12.5))));
 
@@ -154,7 +154,7 @@ public class ControlBoard {
 		.and(() -> s.ignoreHubState || hubActiveOrPassing.getAsBoolean())
 		.and(driver.leftTrigger(0.1).negate())
 		.and(inLaunchingTolerance).debounce(0.1, DebounceType.kFalling)
-		.whileTrue(s.shootWhenReadyRise());
+		.whileTrue(s.shootWhenReadyPulse());
 
 		// TOGGLES ####################################################################################
 

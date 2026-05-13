@@ -24,7 +24,7 @@ public class Popcorn extends AutoModeBase {
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise().withTimeout(1.0),
+                superstructure.timeoutShootWhenReady().withTimeout(1.0),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 bumpStartToEnd.cmd(),
                 Commands.deadline(
@@ -39,7 +39,7 @@ public class Popcorn extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise());
+                superstructure.timeoutShootWhenReady());
     }
 }
 

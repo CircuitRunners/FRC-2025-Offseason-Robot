@@ -22,9 +22,8 @@ public class FullDisruptionOpp extends AutoModeBase {
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        disruption.cmd(),
+                        disruption.cmd().alongWith(Commands.runOnce(() ->superstructure.brakeIntakeRollers(true))),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
@@ -43,7 +42,7 @@ public class FullDisruptionOpp extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                superstructure.timeoutShootWhenReady(),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(rightShootToSilly),

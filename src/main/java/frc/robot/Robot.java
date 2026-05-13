@@ -35,6 +35,8 @@ public class Robot extends TimedRobot {
     mRobotContainer = new RobotContainer();
     Epilogue.bind(this);
     DriverStation.silenceJoystickConnectionWarning(true);
+    // batteryLogger.setBatteryVoltage(batteryInputs.batteryVoltage);
+    // batteryLogger.setRioCurrent(batteryInputs.rioCurrent);
   }
 
   @Override
@@ -47,10 +49,7 @@ public class Robot extends TimedRobot {
 			SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
 		}
 
-    batteryLogger.setBatteryVoltage(batteryInputs.batteryVoltage);
-    batteryLogger.setRioCurrent(batteryInputs.rioCurrent);
-
-    batteryLogger.periodic();
+    // batteryLogger.periodic();
 
     // Update RobotContainer dashboard outputs
     mRobotContainer.updateDashboardOutputs();
@@ -62,7 +61,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    RobotController.setBrownoutVoltage(Units.Volts.of(6.0));
+    RobotController.setBrownoutVoltage(Units.Volts.of(5.8));
   }
 
   @Override
@@ -93,10 +92,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    Threads.setCurrentThreadPriority(true, 5);
     mAutonomousCommand = mRobotContainer.getAutoModeSelector().getSelectedCommand();
-
-
-		autoTimer.start();
+		// autoTimer.start();
 
 		if (mAutonomousCommand != null) {
 			CommandScheduler.getInstance().schedule(mAutonomousCommand);
@@ -110,7 +108,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousExit() {
-    autoTimer.reset();
+    // autoTimer.reset();
+    mRobotContainer.setDriveDefault();
   }
 
   @Override
@@ -118,6 +117,7 @@ public class Robot extends TimedRobot {
     if (mAutonomousCommand != null) {
       mAutonomousCommand.cancel();
     }
+    mRobotContainer.setDriveDefault();
   }
 
   @Override
@@ -141,7 +141,7 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {}
 
   public static class BatteryIOInputs {
-    public double batteryVoltage = 12.5;
+    public double batteryVoltage = 12.6;
     public double rioCurrent = 0.0;
   }
 }

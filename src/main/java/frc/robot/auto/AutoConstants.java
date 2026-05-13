@@ -15,8 +15,8 @@ public class AutoConstants {
     public static final double kPThetaController = 5.0;
     public static final double kPXYController = 5.0;
 	public static final Distance kAutoLinearEpsilon = Units.Centimeters.of(4.0);
-	public static final Distance kAutoLessAccurateLinearEpsilon = Units.Inches.of(12.0);
-	public static final Angle kAutoAngleEpsilon = Units.Degrees.of(1.0);
+	public static final Distance kAutoLessAccurateLinearEpsilon = Units.Inches.of(6.0);
+	public static final Angle kAutoAngleEpsilon = Units.Degrees.of(3.0);
 	public static final Time kDelayTime = Units.Milliseconds.of(80);
 	public static final Time kDefaultTrajectoryTimeout = Units.Seconds.of(1.0);
 	public static final Time kAccuracyMinGuardTime = Units.Seconds.of(0.20);

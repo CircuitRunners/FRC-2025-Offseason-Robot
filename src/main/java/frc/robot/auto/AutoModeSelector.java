@@ -5,6 +5,7 @@ import choreo.auto.AutoFactory;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.auto.autos.centerPreload.CenterPreload;
+import frc.robot.auto.autos.centerPreload.CenterPreloadDepot;
 import frc.robot.auto.autos.disruption.FullDisruptionOpp;
 import frc.robot.auto.autos.disruption.FullDisruptionSame;
 import frc.robot.auto.autos.doubleSwipe.Bean;
@@ -50,6 +51,7 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[LEFT] Same Disruption", () -> new FullDisruptionSame(drive, superstructure, factory, false).getRoutine());
 
 		mAutoChooser.addRoutine("[CENTER] Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
+		mAutoChooser.addRoutine("[CENTER] Depot", () -> new CenterPreloadDepot(drive, superstructure, factory).getRoutine());
 
 
 		mAutoChooser.addRoutine("[LEFT] BEAN", () -> new Bean(drive, superstructure, factory, false).getRoutine());

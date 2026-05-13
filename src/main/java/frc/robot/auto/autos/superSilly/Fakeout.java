@@ -35,7 +35,7 @@ public class Fakeout extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                superstructure.timeoutShootWhenReady(),
                 Commands.deadline(
                         cmdWithAccuracy(rightShootToSilly),
                         Commands.sequence(
@@ -43,7 +43,7 @@ public class Fakeout extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                superstructure.timeoutShootWhenReady(),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(rightShootToSilly),

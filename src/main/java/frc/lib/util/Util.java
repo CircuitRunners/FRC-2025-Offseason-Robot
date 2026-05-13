@@ -242,7 +242,7 @@ public class Util {
 						new Pose2d(state.poseMeters.getTranslation(), poseRotation),
 						Units.Seconds.of(state.timeSeconds)));
 			}
-			SmartDashboard.putNumber("Auto Align Traj/Number Of Trajectory States", poseList.size());
+			// SmartDashboard.putNumber("Auto Align Traj/Number Of Trajectory States", poseList.size());
 		}
 	}
 }

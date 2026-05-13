@@ -64,6 +64,8 @@ public class Drive extends SubsystemBase {
         lastReadState = drivetrain.getState();
         drivetrain.registerTelemetry(telemetry::telemeterize);
         configurePathPlanner();
+        SmartDashboard.putData("Drive", this);
+        SmartDashboard.putData("Elastic Field 2D", elasticPose);
     }
 
     /**
@@ -87,13 +89,11 @@ public class Drive extends SubsystemBase {
      */
     public void outputTelemetry() {
         telemetry.telemeterize(lastReadState);
-        SmartDashboard.putData("Drive", this);
         elasticPose.setRobotPose(getPose());
-        SmartDashboard.putData("Elastic Field 2D", elasticPose);
         // energy draw
-        for (SwerveModule<TalonFX, TalonFX, CANcoder> module : getDrivetrain().getModules()) {
-            Robot.batteryLogger.reportCurrentUsage("Drivebase", module.getDriveMotor().getSupplyCurrent().getValueAsDouble() + module.getSteerMotor().getSupplyCurrent().getValueAsDouble());
-        }
+        // for (SwerveModule<TalonFX, TalonFX, CANcoder> module : getDrivetrain().getModules()) {
+        //     Robot.batteryLogger.reportCurrentUsage("Drivebase", module.getDriveMotor().getSupplyCurrent().getValueAsDouble() + module.getSteerMotor().getSupplyCurrent().getValueAsDouble());
+        // }
     }
 
      /**

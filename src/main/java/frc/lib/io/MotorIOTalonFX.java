@@ -103,6 +103,11 @@ public class MotorIOTalonFX extends MotorIO {
 	}
 
 	@Override
+	protected void setVoltageFOCSetpoint(Voltage voltage) {
+		setControl(requestGetter.getVoltageFOCRequest(voltage));
+	}
+
+	@Override
 	protected void setDutyCycleSetpoint(Dimensionless percent) {
 		setControl(requestGetter.getDutyCycleRequest(percent));
 	}
@@ -287,6 +292,10 @@ public class MotorIOTalonFX extends MotorIO {
 
 	public static class ControlRequestGetter {
 		public ControlRequest getVoltageRequest(Voltage voltage) {
+			return new VoltageOut(voltage.in(Units.Volts)).withEnableFOC(false);
+		}
+
+		public ControlRequest getVoltageFOCRequest(Voltage voltage) {
 			return new VoltageOut(voltage.in(Units.Volts)).withEnableFOC(true);
 		}
 

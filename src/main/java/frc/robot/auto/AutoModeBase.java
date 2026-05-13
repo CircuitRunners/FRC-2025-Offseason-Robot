@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import frc.lib.util.Stopwatch;
+import frc.robot.RobotConstants;
 import frc.robot.auto.AutoConstants.AutoType;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.superstructure.Superstructure;
@@ -143,9 +144,9 @@ public class AutoModeBase {
 		Pose2d currentPose = drive.getPose();
 		Pose2d finalPose = trajectory.getFinalPose().get();
 
-		SmartDashboard.putNumber(
-				"Choreo/Distance Away Inches",
-				currentPose.getTranslation().getDistance(finalPose.getTranslation()) * 39.37);
+		// SmartDashboard.putNumber(
+		// 		"Choreo/Distance Away Inches",
+		// 		currentPose.getTranslation().getDistance(finalPose.getTranslation()) * 39.37);
 
 		return currentPose.getTranslation().getDistance(finalPose.getTranslation()) < epsilonDist.in(Units.Meters);
 	}
@@ -154,8 +155,8 @@ public class AutoModeBase {
 		boolean translationCompleted = translationIsFinished(trajectory, epsilonDist);
 		boolean rotationCompleted = rotationIsFinished(trajectory);
 
-		SmartDashboard.putBoolean("Choreo/Translation Completed", translationCompleted);
-		SmartDashboard.putBoolean("Choreo/Rotation Completed", rotationCompleted);
+		// SmartDashboard.putBoolean("Choreo/Translation Completed", translationCompleted);
+		// SmartDashboard.putBoolean("Choreo/Rotation Completed", rotationCompleted);
 
 		if (translationCompleted && rotationCompleted) {
 			stopwatch.startIfNotRunning();
@@ -167,14 +168,14 @@ public class AutoModeBase {
 			stopwatch.reset();
 		}
 
-		SmartDashboard.putNumber("Choreo/Stopwatch Time", stopwatch.getTimeAsDouble());
+		// SmartDashboard.putNumber("Choreo/Stopwatch Time", stopwatch.getTimeAsDouble());
 		return false;
 	}
 
 	/** Creates a trigger that will run the auto command with an optional delay when auto starts
 	 * @param sequence The sequence of commands to run during auto
 	 */
-	public void prepRoutine(Command... sequence) {
+	public static void prepRoutine(Command... sequence) {
 		routine.active()
 				.onTrue(Commands.sequence(superstructure.getAutoWaitCommand(), Commands.sequence(sequence))
 						.withName("Auto Routine Sequential Command Group"));

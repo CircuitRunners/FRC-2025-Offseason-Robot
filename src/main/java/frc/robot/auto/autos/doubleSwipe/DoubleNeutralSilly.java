@@ -22,9 +22,8 @@ public class DoubleNeutralSilly extends AutoModeBase {
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        leftTrenchToNeutralIntake.cmd(),
+                        leftTrenchToNeutralIntake.cmd().alongWith(Commands.runOnce(() ->superstructure.brakeIntakeRollers(true))),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
@@ -34,16 +33,18 @@ public class DoubleNeutralSilly extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         ,
                 drive.stopDrivetrain(),
-                superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                Commands.deadline(
+                superstructure.timeoutShootWhenReady(),
+                superstructure.turnToHubAuto().repeatedly()),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
-                superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                Commands.deadline(
+                superstructure.timeoutShootWhenReady(),
+                superstructure.turnToHubAuto().repeatedly()),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),

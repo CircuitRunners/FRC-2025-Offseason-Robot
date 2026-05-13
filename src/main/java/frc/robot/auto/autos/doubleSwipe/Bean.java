@@ -31,9 +31,8 @@ public class Bean extends AutoModeBase {
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        leftTrenchToNeutralIntake.cmd(),
+                        leftTrenchToNeutralIntake.cmd().alongWith(Commands.runOnce(() ->superstructure.brakeIntakeRollers(true))),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
@@ -47,7 +46,7 @@ public class Bean extends AutoModeBase {
                                 firstSOTM.getRawTrajectory(),
                                 drive,
                                 superstructure),
-                        superstructure.shootWhenReadyRise()),
+                        superstructure.shootWhenReadyPulse()),
                 Commands.deadline(
                         silly.cmd(),
                         Commands.sequence(
@@ -59,7 +58,7 @@ public class Bean extends AutoModeBase {
                                 secondSOTM.getRawTrajectory(),
                                 drive,
                                 superstructure),
-                        Commands.waitSeconds(0.5).andThen(superstructure.shootWhenReadyRise())),
+                        Commands.waitSeconds(0.5).andThen(superstructure.shootWhenReadyPulse())),
                 Commands.deadline(
                         goBack.cmd(),
                         Commands.sequence(

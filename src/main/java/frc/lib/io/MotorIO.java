@@ -65,11 +65,18 @@ public abstract class MotorIO implements Sendable {
 	protected abstract void setCoastSetpoint();
 
 	/**
-	 * Sets the motor to run at at given voltage. Should not be called directly, only applied through Setpoints.
+	 * Sets the motor to run at at given voltage with FOC disabled. Should not be called directly, only applied through Setpoints.
 	 *
 	 * @param voltage Voltage to run at.
 	 */
 	protected abstract void setVoltageSetpoint(Voltage voltage);
+
+	/**
+	 * Sets the motor to run at at given voltage with FOC enabled. Should not be called directly, only applied through Setpoints.
+	 *
+	 * @param voltage Voltage to run at.
+	 */
+	protected abstract void setVoltageFOCSetpoint(Voltage voltage);
 
 	/**
 	 * Sets the motor to use motion magic control to go to a given position. Should not be called directly, only applied through Setpoints.
@@ -484,6 +491,14 @@ public abstract class MotorIO implements Sendable {
 		public static Setpoint withVoltageSetpoint(Voltage voltage) {
 			UnaryOperator<MotorIO> applier = (MotorIO io) -> {
 				io.setVoltageSetpoint(voltage);
+				return io;
+			};
+			return new Setpoint(applier, Mode.VOLTAGE, voltage.baseUnitMagnitude());
+		}
+
+		public static Setpoint withVoltageFOCSetpoint(Voltage voltage) {
+			UnaryOperator<MotorIO> applier = (MotorIO io) -> {
+				io.setVoltageFOCSetpoint(voltage);
 				return io;
 			};
 			return new Setpoint(applier, Mode.VOLTAGE, voltage.baseUnitMagnitude());

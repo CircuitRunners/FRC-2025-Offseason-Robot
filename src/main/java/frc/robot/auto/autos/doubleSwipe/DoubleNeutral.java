@@ -24,9 +24,8 @@ public class DoubleNeutral extends AutoModeBase {
 
         prepRoutine(
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
-                Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
-                        leftTrenchToNeutralIntake.cmd(),
+                        leftTrenchToNeutralIntake.cmd().alongWith(Commands.runOnce(() ->superstructure.brakeIntakeRollers(true))),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
@@ -37,7 +36,7 @@ public class DoubleNeutral extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise(),
+                superstructure.timeoutShootWhenReady(),
                 Commands.deadline(
                         leftShootToNeutralIntake.cmd(),
                         Commands.sequence(

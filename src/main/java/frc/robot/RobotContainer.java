@@ -42,6 +42,8 @@ import frc.robot.subsystems.vision.apriltag.Vision;
 import frc.robot.subsystems.vision.apriltag.VisionConstants;
 import frc.robot.subsystems.vision.apriltag.VisionIOPhotonVision;
 import frc.robot.subsystems.vision.apriltag.VisionIOPhotonVisionSim;
+import frc.robot.auto.AutoHelpers;
+import frc.robot.auto.AutoModeBase;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoModeSelector;
 @Logged
@@ -109,6 +111,7 @@ public class RobotContainer {
         mAutoModeSelector = new AutoModeSelector(drive, superstructure, RobotConstants.mAutoFactory);
 		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
         SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser()); 
+        AutoHelpers.publishDashboardControls();
 
         SmartDashboard.putData("Auto Overrides/Force Win",
             new InstantCommand(() -> autoWinOverride = Optional.of(true)));
@@ -125,15 +128,17 @@ public class RobotContainer {
         SmartDashboard.putData("Shooter Idle/Toggle",
         new InstantCommand(() -> disableAutoSpinup = !disableAutoSpinup));
 
+        SmartDashboard.putData("Vision/Set Current Pose To Vision", resetToVisionPose());
+
         HubShiftUtil.setAllianceWinOverride(() -> autoWinOverride);
         autoDelay.setDefaultOption("NO DELAY", false);
         autoDelay.addOption("YES DELAY", true);
 
         SmartDashboard.putData("Auto Delay", autoDelay);
 
-        autoShootAllFuelTime.setDefaultOption("4.0s", 3.0);
-        autoShootAllFuelTime.addOption("3.0s", 4.0);
-        autoShootAllFuelTime.addOption("3.5s", 3.5);
+        autoShootAllFuelTime.setDefaultOption("5.0s", 5.0);
+        autoShootAllFuelTime.addOption("4.0s", 4.0);
+        autoShootAllFuelTime.addOption("3.0s", 3.0);
 
         SmartDashboard.putData("Auto Shoot All Fuel Time", autoShootAllFuelTime);
 
@@ -187,17 +192,17 @@ public class RobotContainer {
         // );
         //hood.setDefaultCommand(Commands.defer(() -> hood.trackTargetCommand(superstructure.hoodSetpoint), Set.of(hood)));
 
-        for (SubsystemBase s : new SubsystemBase[] {
-			// intakeDeploy,
-			// intakeRollers,
-			// conveyor,
-			// superstructure,
-            // kicker,
-            shooter,
-            hood
-		}) {
-			SmartDashboard.putData(s);
-		}
+    //     for (SubsystemBase s : new SubsystemBase[] {
+	// 		// intakeDeploy,
+	// 		// intakeRollers,
+	// 		// conveyor,
+	// 		// superstructure,
+    //      // kicker,
+    //         shooter,
+    //         hood
+	// 	}) {
+	// 		SmartDashboard.putData(s);
+	// 	}
     }
 
     private String getAutoOverrideState() {
@@ -208,9 +213,9 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        drive.setDefaultCommand(
-            driveCommand
-        );
+        // drive.setDefaultCommand(
+        //     driveCommand
+        // );
 
         
         // drive.getDrivetrain().setDefaultCommand(
@@ -275,11 +280,13 @@ public class RobotContainer {
         SmartDashboard.putBoolean("Hub State/Current Ignore State", superstructure.ignoreHubState);
 
         SmartDashboard.putBoolean("Shooter Idle/State", disableAutoSpinup);
+        SmartDashboard.putBoolean("Auto Reset Pose In Auto/Enabled", AutoHelpers.shouldResetPoseInAuto());
 
         Double selectedShootAllFuelTime = autoShootAllFuelTime.getSelected();
         AutoConstants.shootAllFuelTime = selectedShootAllFuelTime != null ? selectedShootAllFuelTime : 3.0;
         SmartDashboard.putNumber("Auto Shoot All Fuel Time/Selected", AutoConstants.shootAllFuelTime);
 
+        SmartDashboard.putBoolean("Vision/Has Accepted Pose", vision.hasAcceptedVisionPose());
         LogUtil.recordPose2d("Vision pose", vision.getLatestVisionPose());
     }
     public void zeroIntakeDisabled() {
@@ -292,10 +299,20 @@ public class RobotContainer {
         return Commands.print("No autonomous command configured");
     }
 
-    private final DriveMaintainingHeading driveCommand = 
+    public final DriveMaintainingHeading driveCommand = 
         new DriveMaintainingHeading(drive, superstructure, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX(), () -> superstructure.maintainHeadingEpsilon);
     
+    public void setDriveDefault() {
+        drive.setDefaultCommand(
+            driveCommand
+        );
+    }
+
     public Command resetToVisionPose() {
-        return Commands.runOnce(() -> drive.getDrivetrain().resetPose(vision.getLatestVisionPose()));
+        return Commands.either(
+            Commands.runOnce(() -> drive.resetPose(vision.getLatestVisionPose()), drive),
+            Commands.none(),
+            vision::hasAcceptedVisionPose)
+            .ignoringDisable(true);
     }
 }

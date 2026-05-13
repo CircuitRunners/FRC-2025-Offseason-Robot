@@ -217,20 +217,20 @@ public class PIDToPosesCommand extends Command {
 										.getRadians()))
 								< epsilonAngle.in(Units.Radians));
 
-		SmartDashboard.putBoolean("Auto Align PID/Completed", complete);
-		SmartDashboard.putBoolean(
-				"Auto Align PID/Translation Completed",
-				currentPose.getTranslation().getDistance(finalPose.get(finalPose.size()-1).getTranslation()) < epsilonDist.in(Units.Meters));
-		SmartDashboard.putBoolean(
-				"Auto Align PID/Rotation Completed",
-				MathUtil.angleModulus(Math.abs(currentPose
-								.getRotation()
-								.minus(finalPose.get(finalPose.size()-1).getRotation())
-								.getRadians()))
-						< epsilonAngle.in(Units.Radians));
-		SmartDashboard.putNumber(
-				"Auto Align PID/Distance Away Inches",
-				currentPose.getTranslation().getDistance(finalPose.get(finalPose.size()-1).getTranslation()) * 39.37);
+		// SmartDashboard.putBoolean("Auto Align PID/Completed", complete);
+		// SmartDashboard.putBoolean(
+		// 		"Auto Align PID/Translation Completed",
+		// 		currentPose.getTranslation().getDistance(finalPose.get(finalPose.size()-1).getTranslation()) < epsilonDist.in(Units.Meters));
+		// SmartDashboard.putBoolean(
+		// 		"Auto Align PID/Rotation Completed",
+		// 		MathUtil.angleModulus(Math.abs(currentPose
+		// 						.getRotation()
+		// 						.minus(finalPose.get(finalPose.size()-1).getRotation())
+		// 						.getRadians()))
+		// 				< epsilonAngle.in(Units.Radians));
+		// SmartDashboard.putNumber(
+		// 		"Auto Align PID/Distance Away Inches",
+		// 		currentPose.getTranslation().getDistance(finalPose.get(finalPose.size()-1).getTranslation()) * 39.37);
 
 		return complete;
 	}

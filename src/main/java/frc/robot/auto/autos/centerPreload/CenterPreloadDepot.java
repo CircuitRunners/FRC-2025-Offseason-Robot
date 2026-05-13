@@ -1,8 +1,7 @@
 package frc.robot.auto.autos.centerPreload;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.lib.drive.PIDToPoseCommand;
-import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
 import choreo.auto.AutoFactory;
@@ -17,8 +16,10 @@ public class CenterPreloadDepot extends AutoModeBase {
         AutoTrajectory centerToDepot = trajectory("centerToDepot");
         AutoTrajectory depotToCenter = trajectory("depotToCenter");
 
+        Pose2d startPose = centerToDepot.getInitialPose().get();
+
         prepRoutine(
-                AutoHelpers.resetPoseIfWithoutEstimate(AutoConstants.centerPreloadStart, drive),
+                AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(true)),
                 Commands.deadline(
                         centerToDepot.cmd(),
@@ -26,9 +27,15 @@ public class CenterPreloadDepot extends AutoModeBase {
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
-                depotToCenter.cmd(),
+                drive.stopDrivetrain(),
+                Commands.waitSeconds(0.5),
+                Commands.parallel(
+                                cmdWithLessAccuracy(depotToCenter),
+                                superstructure.runIntakeIfDeployed().withTimeout(1.0))
+                        ,
+                drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
-                superstructure.timeoutShootWhenReadyRise()
+                superstructure.shootWhenReadyPulse()
                 );
     }
 }

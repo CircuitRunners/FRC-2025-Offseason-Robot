@@ -16,6 +16,7 @@ public class Neutral extends AutoModeBase {
 
         AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShootClose", mirrorY);
         AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntakeClose", mirrorY);
+        AutoTrajectory leftShootToSilly = trajectory("leftShootToSilly", mirrorY);
 
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
@@ -33,7 +34,15 @@ public class Neutral extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         ,
                 drive.stopDrivetrain(),
-                superstructure.shootWhenReadyPulse());
+                superstructure.timeoutShootWhenReady(),
+                Commands.deadline(
+                        cmdWithAccuracy(leftShootToSilly),
+                        Commands.sequence(
+                                superstructure.deployIntake(),
+                                superstructure.runIntakeIfDeployed())),
+                drive.stopDrivetrain(),
+                superstructure.turnToHubAuto().withTimeout(1.0),
+                superstructure.timeoutShootWhenReady());
     }
 }
 

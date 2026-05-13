@@ -180,7 +180,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command turnToHubAuto() {
       return Commands.defer(() ->
-      new PIDToPoseCommand(drive, this, new Pose2d(drive.getPose().getTranslation(), ShotCalculator.getInstance(drive).getParameters().heading()), Units.Inches.of(6.0), Units.Degrees.of(7)), Set.of(drive));
+      new PIDToPoseCommand(drive, this, new Pose2d(drive.getPose().getTranslation(), ShotCalculator.getInstance(drive).getParameters().heading()), Units.Inches.of(6.0), Units.Degrees.of(5)), Set.of(drive));
     }
 
     public Command idleIntake() {
@@ -261,8 +261,8 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
               Commands.runOnce(() -> setShootingGainProfile(true)),
-              conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
-              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
+              // conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+              // kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
               Commands.parallel(
                 conveyor.feedForwardOrPulseOnLowCurrent(),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),
@@ -327,8 +327,8 @@ public class Superstructure extends SubsystemBase {
               }),
               waitUntilSafeToShoot(),
               Commands.runOnce(() -> setShootingGainProfile(true)),
-              conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
-              kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
+              // conveyor.setpointCommand(Conveyor.FEED_BACKWARDS),
+              // kicker.setpointCommandWithWait(Kicker.VELOCITY_FORWARD).withTimeout(0.2),
               Commands.parallel(
                 conveyor.feedForwardOrPulseOnLowCurrent(),
                 kicker.setpointCommand(Kicker.VELOCITY_FORWARD),

@@ -10,6 +10,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -69,8 +70,6 @@ public class DriveMaintainingHeading extends Command{
     public final DoubleSupplier mEpsilonSupplier;
     private Optional<Rotation2d> mHeadingSetpoint = Optional.empty();
     private double mJoystickLastTouched = -1;
-    private Optional<Rotation2d> mOscillationHeadingCenter = Optional.empty();
-    private double mOscillationStartTimestamp = 0.0;
     
     private final SwerveRequest.FieldCentric driveNoHeading = 
         new SwerveRequest.FieldCentric()
@@ -85,12 +84,12 @@ public class DriveMaintainingHeading extends Command{
         new SwerveRequest.FieldCentricFacingAngle()
         .withDeadband(DriveConstants.kMaxSpeed.times(DriveConstants.kDriveJoystickDeadband))
         .withDriveRequestType(SwerveModule.DriveRequestType.Velocity);
+    private final SwerveRequest.Idle idleRequest = new SwerveRequest.Idle();
 
 
     @Override
     public void initialize() {
         mHeadingSetpoint = Optional.empty();
-        mOscillationHeadingCenter = Optional.empty();
     }
 
     @Override
@@ -101,12 +100,25 @@ public class DriveMaintainingHeading extends Command{
         double epsilon = mEpsilonSupplier.getAsDouble();
         double throttleFieldFrame = RobotConstants.isRedAlliance ? throttle : -throttle;
         double strafeFieldFrame = RobotConstants.isRedAlliance ? strafe : -strafe;
+        double translationDeadband =
+                DriveConstants.kMaxSpeed.times(DriveConstants.kDriveJoystickDeadband)
+                        .in(Units.MetersPerSecond);
+        boolean hasTranslationInput =
+                Math.abs(throttleFieldFrame) > translationDeadband
+                        || Math.abs(strafeFieldFrame) > translationDeadband;
+        boolean hasTurnInput = Math.abs(turnFieldFrame) > DriveConstants.kSteerJoystickDeadband;
 
-        if (Math.abs(turnFieldFrame) > DriveConstants.kSteerJoystickDeadband) {
+        if (!DriverStation.isTeleopEnabled()) {
+            mDrivetrain.getDrivetrain().setControl(idleRequest);
+            mHeadingSetpoint = Optional.empty();
+            return;
+        }
+
+        if (hasTurnInput) {
             mJoystickLastTouched = Timer.getFPGATimestamp();
         }
 
-        if (Math.abs(turnFieldFrame) > DriveConstants.kSteerJoystickDeadband
+        if (hasTurnInput
                 || (MathHelpers.epsilonEquals(mJoystickLastTouched, Timer.getFPGATimestamp(), epsilon)
                         && Math.abs(
                                         mDrivetrain.getRobotRelativeChassisSpeeds()
@@ -121,7 +133,6 @@ public class DriveMaintainingHeading extends Command{
                                     turnFieldFrame
                                             * DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond))));
             mHeadingSetpoint = Optional.empty();
-            mOscillationHeadingCenter = Optional.empty();
         } else {
             if (mHeadingSetpoint.isEmpty()) {
                 mHeadingSetpoint =
@@ -180,18 +191,21 @@ public class DriveMaintainingHeading extends Command{
 
                 mHeadingSetpoint = 
                         Optional.of(mDrivetrain.getPose().getRotation());
+              }
+             
+             else {
+                if (!hasTranslationInput) {
+                    mDrivetrain.getDrivetrain().setControl(idleRequest);
+                } else {
+                    mDrivetrain.getDrivetrain().setControl(
+                            driveNoHeading
+                                .withVelocityX(throttleFieldFrame)
+                                .withVelocityY(strafeFieldFrame)
+                                .withRotationalRate(
+                                        turnFieldFrame
+                                                * DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond)));
+                }
              }
-            
-            else {
-                mOscillationHeadingCenter = Optional.empty();
-                mDrivetrain.getDrivetrain().setControl(
-                        driveNoHeading
-                            .withVelocityX(throttleFieldFrame)
-                            .withVelocityY(strafeFieldFrame)
-                            .withRotationalRate(
-                                    turnFieldFrame
-                                            * DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond)));
-            }
         }
     }
 

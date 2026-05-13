@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.logging.LogUtil;
 import frc.robot.subsystems.vision.apriltag.VisionIO.PoseObservation;
 import frc.robot.subsystems.vision.apriltag.VisionIO.PoseObservationType;
 
@@ -135,7 +136,7 @@ public class Vision extends SubsystemBase {
           while (allRobotPosesAccepted.size() > 50) {
               allRobotPosesAccepted.remove(0);
           }
-          // robotPosesAccepted.add(observation.pose());
+          robotPosesAccepted.add(observation.pose());
         }
 
         // Skip if rejected
@@ -262,6 +263,10 @@ public class Vision extends SubsystemBase {
       result &= cameraInput.connected;
     }
     return result;
+  }
+
+  public boolean hasAcceptedVisionPose() {
+    return !allRobotPosesAccepted.isEmpty();
   }
 
   public Pose2d getLatestVisionPose() {

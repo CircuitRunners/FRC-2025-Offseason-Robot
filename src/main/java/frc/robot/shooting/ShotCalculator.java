@@ -158,7 +158,7 @@ public class ShotCalculator {
                 passing ? getPassingTarget() : FieldLayout.blueHubCenter, RobotConstants.isRedAlliance);
         Pose2d launcherPosition = estimatedPose.transformBy(ShooterConstants.robotToShooter);
         double launcherToTargetDistance = target.getDistance(launcherPosition.getTranslation());
-        SmartDashboard.putNumber("Shooter to Target", launcherToTargetDistance);
+        // SmartDashboard.putNumber("Shooter to Target", launcherToTargetDistance);
 
         // Calculate field relative launcher velocity
         var robotVelocity = drive.getFieldRelativeChassisSpeeds();

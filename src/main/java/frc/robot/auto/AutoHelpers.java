@@ -5,6 +5,8 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.RobotState;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.shooting.ShotCalculator;
@@ -13,13 +15,32 @@ import frc.robot.subsystems.drive.DriveConstants;
 import frc.robot.subsystems.superstructure.Superstructure;
 
 public class AutoHelpers {
+
+    private static final SendableChooser<Boolean> resetPoseInAutoChooser = new SendableChooser<>();
+
+    static {
+        resetPoseInAutoChooser.setDefaultOption("Enabled", true);
+        resetPoseInAutoChooser.addOption("Disabled", false);
+    }
+
+    public static void publishDashboardControls() {
+        SmartDashboard.putData("Auto Reset Pose In Auto", resetPoseInAutoChooser);
+    }
+
+    public static boolean shouldResetPoseInAuto() {
+        Boolean selected = resetPoseInAutoChooser.getSelected();
+        return selected == null || selected;
+    }
 	
     /** Resets the current drivetrain pose to a given one
      * @param pose the pose to reset to
      * @return the command to reset the pose
      */
     public static Command resetPoseIfWithoutEstimate(Pose2d pose, Drive drive) {
-		return Commands.runOnce(() -> drive.getDrivetrain().resetPose(pose));
+		return Commands.either(
+            Commands.runOnce(() -> drive.resetPose(pose), drive),
+            Commands.none(),
+            AutoHelpers::shouldResetPoseInAuto);
 	}
 
 

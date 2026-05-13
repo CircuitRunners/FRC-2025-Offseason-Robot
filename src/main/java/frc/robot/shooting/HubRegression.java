@@ -36,7 +36,7 @@ public class HubRegression {
                         // @y --> shooter velocity (in rpm)
                         { 1.43, 1625}, // hub
                         { 1.7, 1650}, // corner hub
-                        { 2.15, 1775}, // maybe 1725 or 1700
+                        { 2.15, 1760}, // 1775 overshoot maybe
                         { 2.7, 1865}, // maybe 1825
                         { 3.1, 1975}, // tower // might be higher
                         { 3.7, 2125}, // trench
