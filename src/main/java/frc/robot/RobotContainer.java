@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.*;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+import frc.lib.io.MotorIOTalonFX;
 import frc.lib.logging.LogUtil;
 import frc.lib.util.ContinuousConditionalCommand;
 import frc.lib.util.HubShiftUtil;
@@ -73,6 +75,10 @@ public class RobotContainer {
 
     private Optional<Boolean> autoWinOverride = Optional.empty();
     private boolean disableAutoSpinup = false;
+    private final Orchestra superstructureOrchestra = new Orchestra();
+    private String orchestraLastStatus = "Not configured";
+    private static final String orchestraSongDashboardKey = "Orchestra/Song File";
+    private static final String defaultOrchestraSongFile = "song.chrp";
     // private final Trigger lostAutoOverride = 
     // private final Trigger wonAutoOverride = 
 
@@ -141,6 +147,7 @@ public class RobotContainer {
         autoShootAllFuelTime.addOption("3.0s", 3.0);
 
         SmartDashboard.putData("Auto Shoot All Fuel Time", autoShootAllFuelTime);
+        configureSuperstructureOrchestra();
 
         
         // HubShiftUtil.setAllianceWinOverride(
@@ -210,6 +217,75 @@ public class RobotContainer {
             return "No Override";
         }
         return autoWinOverride.get() ? "FORCED WIN" : "FORCED LOSS";
+    }
+
+    private void configureSuperstructureOrchestra() {
+        registerSuperstructureOrchestraInstruments(
+                shooter.getIO(),
+                hood.getIO(),
+                intakeDeploy.getIO(),
+                intakeRollers.getIO(),
+                kicker.getIO(),
+                conveyor.getIO());
+
+        SmartDashboard.putString(orchestraSongDashboardKey, defaultOrchestraSongFile);
+        SmartDashboard.putData(
+                "Orchestra/Play Song",
+                Commands.runOnce(this::loadAndPlayOrchestraFromDashboard).ignoringDisable(true));
+        SmartDashboard.putData(
+                "Orchestra/Pause",
+                Commands.runOnce(this::pauseOrchestra).ignoringDisable(true));
+        SmartDashboard.putData(
+                "Orchestra/Stop",
+                Commands.runOnce(this::stopOrchestra).ignoringDisable(true));
+        orchestraLastStatus = "Ready (" + countSuperstructureOrchestraMotors() + " motors registered)";
+    }
+
+    private int countSuperstructureOrchestraMotors() {
+        return shooter.getIO().getAllMotors().length
+                + hood.getIO().getAllMotors().length
+                + intakeDeploy.getIO().getAllMotors().length
+                + intakeRollers.getIO().getAllMotors().length
+                + kicker.getIO().getAllMotors().length
+                + conveyor.getIO().getAllMotors().length;
+    }
+
+    private void registerSuperstructureOrchestraInstruments(MotorIOTalonFX... motorIOs) {
+        for (MotorIOTalonFX motorIO : motorIOs) {
+            for (var motor : motorIO.getAllMotors()) {
+                var status = superstructureOrchestra.addInstrument(motor);
+                if (!status.isOK()) {
+                    orchestraLastStatus = "Add instrument issue: " + status;
+                }
+            }
+        }
+    }
+
+    private void loadAndPlayOrchestraFromDashboard() {
+        String songFile = SmartDashboard.getString(orchestraSongDashboardKey, defaultOrchestraSongFile).trim();
+        if (songFile.isEmpty()) {
+            orchestraLastStatus = "No song file configured";
+            return;
+        }
+
+        var loadStatus = superstructureOrchestra.loadMusic(songFile);
+        if (!loadStatus.isOK()) {
+            orchestraLastStatus = "Load failed: " + loadStatus;
+            return;
+        }
+
+        var playStatus = superstructureOrchestra.play();
+        orchestraLastStatus = playStatus.isOK() ? "Playing " + songFile : "Play failed: " + playStatus;
+    }
+
+    private void pauseOrchestra() {
+        var pauseStatus = superstructureOrchestra.pause();
+        orchestraLastStatus = pauseStatus.isOK() ? "Paused" : "Pause failed: " + pauseStatus;
+    }
+
+    private void stopOrchestra() {
+        var stopStatus = superstructureOrchestra.stop();
+        orchestraLastStatus = stopStatus.isOK() ? "Stopped" : "Stop failed: " + stopStatus;
     }
 
     private void configureBindings() {
@@ -287,6 +363,9 @@ public class RobotContainer {
         SmartDashboard.putNumber("Auto Shoot All Fuel Time/Selected", AutoConstants.shootAllFuelTime);
 
         SmartDashboard.putBoolean("Vision/Has Accepted Pose", vision.hasAcceptedVisionPose());
+        SmartDashboard.putBoolean("Orchestra/Is Playing", superstructureOrchestra.isPlaying());
+        SmartDashboard.putNumber("Orchestra/Time Seconds", superstructureOrchestra.getCurrentTime());
+        SmartDashboard.putString("Orchestra/Status", orchestraLastStatus);
         LogUtil.recordPose2d("Vision pose", vision.getLatestVisionPose());
     }
     public void zeroIntakeDisabled() {

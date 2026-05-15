@@ -34,6 +34,15 @@ public class MotorSubsystem<IO extends MotorIO> extends SubsystemBase {
 		this.name = name;
 	}
 
+	/**
+	 * Gets the underlying MotorIO object for advanced integrations (e.g. Orchestra).
+	 *
+	 * @return The MotorIO backing this subsystem.
+	 */
+	public IO getIO() {
+		return io;
+	}
+
 	@Override
 	public void periodic() {
 		io.updateInputs();

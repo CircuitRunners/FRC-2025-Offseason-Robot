@@ -249,6 +249,18 @@ public class MotorIOTalonFX extends MotorIO {
 	}
 
 	/**
+	 * Gets the main and follower TalonFX controllers for Orchestra registration.
+	 *
+	 * @return Array containing the main motor first, followed by any followers.
+	 */
+	public TalonFX[] getAllMotors() {
+		TalonFX[] allMotors = new TalonFX[1 + followers.length];
+		allMotors[0] = main;
+		System.arraycopy(followers, 0, allMotors, 1, followers.length);
+		return allMotors;
+	}
+
+	/**
 	 * Creates a MotorIOTalonFX from a provided configuration.
 	 *
 	 * @param config Configuration to create MotorIOTalonFX from.
