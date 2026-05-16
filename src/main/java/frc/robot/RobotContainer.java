@@ -129,8 +129,7 @@ public class RobotContainer {
         SmartDashboard.putData("Shooter Idle/Toggle",
         new InstantCommand(() -> disableAutoSpinup = !disableAutoSpinup));
 
-        SmartDashboard.putData("Outreach/Toggle Manual Mode",
-        new InstantCommand(() -> superstructure.toggleOutreachManualMode()));
+        SmartDashboard.putData("Outreach/Toggle Manual Mode", superstructure.toggleOutreachManualMode().ignoringDisable(true));
 
         SmartDashboard.putData("Vision/Set Current Pose To Vision", resetToVisionPose());
 
