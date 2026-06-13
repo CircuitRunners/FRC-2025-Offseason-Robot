@@ -1,8 +1,12 @@
 package frc.lib.bases;
 
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Seconds;
+
+import edu.wpi.first.math.filter.Debouncer;
 import edu.wpi.first.units.BaseUnits;
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -15,6 +19,7 @@ import frc.lib.util.Util;
  */
 public class FlywheelMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<IO> {
 	protected final AngularVelocity epsilonThreshold;
+	protected final Debouncer debouncer;
 
 	/**
 	 * Creates a FlywheelMotorSubsystem with a MotorIO, name for telemetry, and threshold for differences in measurement.
@@ -23,9 +28,11 @@ public class FlywheelMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<I
 	 * @param name Name for telemetry.
 	 * @param epsilonThreshold Acceptable error range for velocity.
 	 */
-	public FlywheelMotorSubsystem(IO io, String name, AngularVelocity epsilonThreshold) {
+	public FlywheelMotorSubsystem(
+			IO io, String name, AngularVelocity epsilonThreshold, Time debounceTime) {
 		super(io, name);
 		this.epsilonThreshold = epsilonThreshold;
+		debouncer = new Debouncer(debounceTime.in(Seconds));
 	}
 
 	public void periodic() {
@@ -43,6 +50,19 @@ public class FlywheelMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<I
 				velocity.baseUnitMagnitude(), getVelocity().baseUnitMagnitude(), epsilonThreshold.baseUnitMagnitude());
 	}
 
+	public boolean nearVelocity(AngularVelocity velocity, AngularVelocity epsilonToApply) {
+		return Util.epsilonEquals(
+				velocity.baseUnitMagnitude(), getVelocity().baseUnitMagnitude(), epsilonToApply.baseUnitMagnitude());
+	}
+
+	public boolean nearSetpointVelocity(Setpoint setpoint) {
+		return nearVelocity(AngularVelocity.ofBaseUnits(setpoint.baseUnits, RPM));
+	}
+
+	public boolean nearSetpointVelocity(Setpoint setpoint, AngularVelocity epsilon) {
+		return nearVelocity(AngularVelocity.ofBaseUnits(setpoint.baseUnits, RPM), epsilon);
+	}
+
 	/**
 	 * Gets whether or not the subsystem is within an acceptable threshold of it's velocity setpoint.
 	 *
@@ -51,6 +71,19 @@ public class FlywheelMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<I
 	public boolean spunUp() {
 		return nearVelocity(BaseUnits.AngleUnit.per(BaseUnits.TimeUnit).of(io.getSetpoint().baseUnits))
 				&& io.getSetpoint().mode.isVelocityControl();
+	}
+
+	public boolean spunUp(AngularVelocity epsilon) {
+		return nearVelocity(BaseUnits.AngleUnit.per(BaseUnits.TimeUnit).of(io.getSetpoint().baseUnits), epsilon)
+				&& io.getSetpoint().mode.isVelocityControl();
+	}
+
+	public boolean spunUpDebounced() {
+		return debouncer.calculate(spunUp());
+	}
+
+	public boolean spunUpDebounced(AngularVelocity epsilon) {
+		return debouncer.calculate(spunUp(epsilon));
 	}
 
 	/**
@@ -97,9 +130,15 @@ public class FlywheelMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<I
 	 * @param mechanismVelocity Velocity to evaluate proximity to.
 	 * @return A wait command.
 	 */
-	public Command waitForVelocityCommand(AngularVelocity mechanismVelocity) {
+	public Command waitForVelocityCommand(AngularVelocity flywheelVelocity) {
 		return Commands.waitUntil(() -> {
-			return nearVelocity(mechanismVelocity);
+			return nearVelocity(flywheelVelocity);
+		});
+	}
+
+	public Command waitForVelocityCommand(AngularVelocity flywheelVelocity, AngularVelocity epsilon) {
+		return Commands.waitUntil(() -> {
+			return nearVelocity(flywheelVelocity, epsilon);
 		});
 	}
 

@@ -1,5 +1,7 @@
 package frc.robot.subsystems.kicker;
 
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Time;
 import frc.lib.bases.FlywheelMotorSubsystem;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIO.Setpoint;
@@ -25,7 +27,8 @@ public class Kicker extends FlywheelMotorSubsystem<MotorIOTalonFX> {
         super(
             KickerConstants.getMotorIO(),
             "Kicker",
-            KickerConstants.kEpsilonThreshold);
+            KickerConstants.kEpsilonThreshold,
+            Units.Seconds.of(0.0));
     }
 
     public void setShootingGains(boolean isShooting) {

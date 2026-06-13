@@ -25,7 +25,8 @@ public class Shooter extends FlywheelMotorSubsystem<MotorIOTalonFX> {
     public Shooter() {
         super(ShooterConstants.getMotorIO(),
             "Shooter", 
-            ShooterConstants.kEpsilonThreshold
+            ShooterConstants.kEpsilonThreshold,
+            ShooterConstants.VELOCITY_THRESHOLD_DEBOUNCE_TIME
         );
     }
 

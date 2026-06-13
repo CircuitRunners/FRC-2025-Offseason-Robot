@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Time;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIOTalonFX.MotorIOTalonFXConfig;
 import frc.lib.sim.RollerSim.RollerSimConstants;
@@ -38,11 +39,12 @@ public class ShooterConstants {
 			0.04,
 			0.0);
 
-	public static final AngularVelocity kIdleSpinup = Units.RotationsPerSecond.of((Units.RPM.of(1500).in(Units.RotationsPerSecond)));
+	public static final AngularVelocity kIdleSpinup = Units.RPM.of(1500);
 
-    public static final AngularVelocity kJuggleVelocity = Units.RotationsPerSecond.of(6.0);
+    public static final AngularVelocity kJuggleVelocity = Units.RPM.of(360.0);
 
-    public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(1.0);
+    public static final AngularVelocity kEpsilonThreshold = Units.RPM.of(6.0);
+	public static final Time VELOCITY_THRESHOLD_DEBOUNCE_TIME = Units.Seconds.of(0.0);
 
 	public static void applyVelocityGains(TalonFXConfiguration config, VelocityGains gains) {
 		config.Slot1.kP = gains.kP();
@@ -82,7 +84,7 @@ public class ShooterConstants {
     public static MotorIOTalonFXConfig getIOConfig() {
 		MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
 		config.mainConfig = getFXConfig();
-		config.time = Units.Second;
+		config.time = Units.Minutes;
 		config.unit = Units.Rotations;
 		config.mainID = Ports.SHOOTER.id;
 		config.mainBus = Ports.SHOOTER.bus;
