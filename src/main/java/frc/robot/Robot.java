@@ -21,6 +21,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.util.Stopwatch;
 import frc.robot.energy.BatteryLogger;
+import frc.robot.subsystems.drive.Drive;
+import frc.sim.FuelPhysicsSim;
+
 @Logged
 public class Robot extends TimedRobot {
   private final RobotContainer mRobotContainer;
@@ -29,6 +32,8 @@ public class Robot extends TimedRobot {
 
   public static final BatteryLogger batteryLogger = new BatteryLogger();
   private final BatteryIOInputs batteryInputs = new BatteryIOInputs();
+  private static final Drive drive = new Drive();
+  private final FuelPhysicsSim ballSim = new FuelPhysicsSim("Sim/Fuel");
 
   private long disabledLoopCount = 0;
   public Robot() {
@@ -138,7 +143,18 @@ public class Robot extends TimedRobot {
   public void testExit() {}
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationInit() {
+    ballSim.enable();
+    ballSim.placeFieldBalls();
+
+    ballSim.configureRobot(RobotConstants.robotSimWidth, RobotConstants.robotSimLength, RobotConstants.robotSimBumperHeight,
+    () -> drive.getPose(), () -> drive.getRobotRelativeChassisSpeeds());
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    ballSim.tick();
+  }
 
   public static class BatteryIOInputs {
     public double batteryVoltage = 12.6;
