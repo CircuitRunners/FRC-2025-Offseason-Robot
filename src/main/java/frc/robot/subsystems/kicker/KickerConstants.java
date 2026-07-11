@@ -42,10 +42,10 @@ public class KickerConstants {
     public static final Voltage kFeedBackwardVoltage = Volts.of(-2.0);
 	public static final Voltage kJuggleVoltage = Volts.of(-2);
 
-	public static final AngularVelocity kFeedForwardVelocity = Units.RotationsPerSecond.of(Units.RPM.of(4200).in(Units.RotationsPerSecond));
-	public static final AngularVelocity kFeedBackwardVelocity = Units.RotationsPerSecond.of(Units.RPM.of(-1000).in(Units.RotationsPerSecond));
+	public static final AngularVelocity kFeedForwardVelocity = Units.RPM.of(4200);
+	public static final AngularVelocity kFeedBackwardVelocity = Units.RPM.of(-1000);
 
-	public static final AngularVelocity kEpsilonThreshold = Units.RotationsPerSecond.of(5.0);
+	public static final AngularVelocity kEpsilonThreshold = Units.RPM.of(300.0);
 
 	public static void applyVelocityGains(TalonFXConfiguration config, VelocityGains gains) {
 		config.Slot1.kP = gains.kP();
@@ -84,7 +84,7 @@ public class KickerConstants {
     public static MotorIOTalonFXConfig getIOConfig() {
 		MotorIOTalonFXConfig config = new MotorIOTalonFXConfig();
 		config.mainConfig = getFXConfig();
-		config.time = Units.Second;
+		config.time = Units.Minutes;
 		config.unit = Units.Rotations;
 		config.mainID = Ports.KICKER.id;
 		config.mainBus = Ports.KICKER.bus;

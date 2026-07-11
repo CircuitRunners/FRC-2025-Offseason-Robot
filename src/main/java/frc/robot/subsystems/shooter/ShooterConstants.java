@@ -43,7 +43,7 @@ public class ShooterConstants {
 
     public static final AngularVelocity kJuggleVelocity = Units.RPM.of(360.0);
 
-    public static final AngularVelocity kEpsilonThreshold = Units.RPM.of(6.0);
+    public static final AngularVelocity kEpsilonThreshold = Units.RPM.of(60.0);
 	public static final Time VELOCITY_THRESHOLD_DEBOUNCE_TIME = Units.Seconds.of(0.0);
 
 	public static void applyVelocityGains(TalonFXConfiguration config, VelocityGains gains) {

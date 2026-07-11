@@ -84,7 +84,7 @@ public class ShotCalculator {
     public static final double trenchPresetDistance = 3.03;
     public static final double outpostPresetDistance = 4.84;
 
-    public static final Setpoint passingIdleSpeed = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(1000).in(Units.RotationsPerSecond)));
+    public static final Setpoint passingIdleSpeed = Setpoint.withVelocitySetpoint(Units.RPM.of(1000));
     
 
 

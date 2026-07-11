@@ -96,13 +96,13 @@ public class Superstructure extends SubsystemBase {
     }
 
     public void updateShooterSetpoint() {
-      //shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(Units.RPM.of(new TunableNumber("Shooter Vel", 1625.0, true).get()).in(Units.RotationsPerSecond)));
+      //shooterSetpoint = Setpoint.withVelocitySetpoint(Units.RPM.of(new TunableNumber("Shooter Vel", 1625.0, true).get()));
         shooterSetpoint = 
             Setpoint.withVelocitySetpoint(
-              Units.RotationsPerSecond.of((Units.RPM.of(
+              Units.RPM.of(
               ShotCalculator.getInstance(drive)
               .getParameters()
-              .flywheelSpeed()).plus(shooterIncrement)).in(Units.RotationsPerSecond)));
+              .flywheelSpeed()).plus(shooterIncrement));
     }
 
     public void updateHoodSetpoint() {
