@@ -33,18 +33,16 @@ public class DoubleNeutralSilly extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         ,
                 drive.stopDrivetrain(),
-                Commands.deadline(
+                superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),
-                superstructure.turnToHubAuto().repeatedly()),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
-                Commands.deadline(
+                superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.timeoutShootWhenReady(),
-                superstructure.turnToHubAuto().repeatedly()),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),

@@ -15,8 +15,8 @@ public class Shooter extends FlywheelMotorSubsystem<MotorIOTalonFX> {
     private GainProfile gainProfile = GainProfile.NOT_SHOOTING;
 
     public static final Setpoint IDLE = Setpoint.withCoastSetpoint();
-    public static final Setpoint STOP = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(0));
-    public static final Setpoint KITBOT = Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(10.0));
+    public static final Setpoint STOP = Setpoint.withVelocitySetpoint(Units.RPM.of(0));
+    public static final Setpoint KITBOT = Setpoint.withVelocitySetpoint(Units.RPM.of(600.0));
     
     public static final Setpoint SPINUP = Setpoint.withVelocitySetpoint(ShooterConstants.kIdleSpinup);
 
