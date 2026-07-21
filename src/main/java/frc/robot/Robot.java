@@ -15,10 +15,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.logging.LogUtil.GcStatsCollector;
+import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Stopwatch;
 import frc.robot.energy.BatteryLogger;
 @Logged
@@ -29,6 +32,7 @@ public class Robot extends TimedRobot {
 
   public static final BatteryLogger batteryLogger = new BatteryLogger();
   private final BatteryIOInputs batteryInputs = new BatteryIOInputs();
+  private final GcStatsCollector m_gcStatsCollector = new GcStatsCollector();
 
   private long disabledLoopCount = 0;
   public Robot() {
@@ -42,11 +46,22 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     try {
-			Threads.setCurrentThreadPriority(true, 5);
+			Threads.setCurrentThreadPriority(true, 10);
+
+			double commandSchedulerStart = Timer.getTimestamp();
+			//Shooting.mInstance.periodic();
+			SmartDashboard.putNumber("Current Timestamp Seconds", Timer.getFPGATimestamp());
 			CommandScheduler.getInstance().run();
+			double commandSchedulerEnd = Timer.getTimestamp();
+			LoggedTracer.record("Commands");
+			m_gcStatsCollector.update();
+			SmartDashboard.putNumber(
+					"Logged Robot/Loop Cycle Time Milliseconds",
+					(commandSchedulerEnd - commandSchedulerStart) * 1000.0);
 			Threads.setCurrentThreadPriority(false, 0);
 		} catch (Exception e) {
-			SmartDashboard.putString("Logged Robot/Latest Error", e.getMessage());
+			SmartDashboard.putString("Error/Last Loop Error/Last Error Message", e.getMessage());
+			SmartDashboard.putNumber("Error/Last Loop Error/Last Error Timestamp", Timer.getFPGATimestamp());
 		}
 
     // batteryLogger.periodic();
