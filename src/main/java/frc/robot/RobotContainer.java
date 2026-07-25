@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.lib.logging.LogUtil;
 import frc.lib.util.ContinuousConditionalCommand;
 import frc.lib.util.HubShiftUtil;
+import frc.lib.util.TunableNumber;
 import frc.lib.drive.DriveMaintainingHeading;
 import frc.robot.controlboard.ControlBoard;
 import frc.robot.controlboard.ControlBoardConstants;
@@ -48,7 +49,7 @@ import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoModeSelector;
 @Logged
 public class RobotContainer {
-    private final Drive drive = new Drive();
+    public final Drive drive = new Drive();
     private final Hood hood = new Hood();
     private final Vision vision = new Vision(
         drive.getDrivetrain().getVisionConsumer(),
@@ -65,7 +66,7 @@ public class RobotContainer {
     private final IntakeRollers intakeRollers = new IntakeRollers();
     private final Kicker kicker = new Kicker();
     private final Conveyor conveyor = new Conveyor();
-    private final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor);
+    public final Superstructure superstructure = new Superstructure(drive, vision, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor);
     
 
     private final ControlBoard controlBoard = ControlBoard.getInstance(drive, shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor, superstructure);
@@ -80,13 +81,8 @@ public class RobotContainer {
         return shotCalculator;
     }
 
-    public static SendableChooser<Boolean> autoDelay = new SendableChooser<>();
+    public static TunableNumber autoDelay = new TunableNumber("Auto Delay", 0.0, true);
     public static SendableChooser<Double> autoShootAllFuelTime = new SendableChooser<>();
-    private AutoModeSelector mAutoModeSelector;
-    private static String mPreviousAutoName;
-    public AutoModeSelector getAutoModeSelector() {
-        return mAutoModeSelector;
-    }
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -108,9 +104,6 @@ public class RobotContainer {
         CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.warmupCmd());
         CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
-        mAutoModeSelector = new AutoModeSelector(drive, superstructure, RobotConstants.mAutoFactory);
-		mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
-        SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser()); 
         AutoHelpers.publishDashboardControls();
 
         SmartDashboard.putData("Auto Overrides/Force Win",
@@ -131,10 +124,6 @@ public class RobotContainer {
         SmartDashboard.putData("Vision/Set Current Pose To Vision", resetToVisionPose());
 
         HubShiftUtil.setAllianceWinOverride(() -> autoWinOverride);
-        autoDelay.setDefaultOption("NO DELAY", false);
-        autoDelay.addOption("YES DELAY", true);
-
-        SmartDashboard.putData("Auto Delay", autoDelay);
 
         autoShootAllFuelTime.setDefaultOption("5.0s", 5.0);
         autoShootAllFuelTime.addOption("4.0s", 4.0);
@@ -192,17 +181,17 @@ public class RobotContainer {
         // );
         //hood.setDefaultCommand(Commands.defer(() -> hood.trackTargetCommand(superstructure.hoodSetpoint), Set.of(hood)));
 
-    //     for (SubsystemBase s : new SubsystemBase[] {
+        for (SubsystemBase s : new SubsystemBase[] {
 	// 		// intakeDeploy,
 	// 		// intakeRollers,
 	// 		// conveyor,
 	// 		// superstructure,
     //      // kicker,
-    //         shooter,
-    //         hood
-	// 	}) {
-	// 		SmartDashboard.putData(s);
-	// 	}
+            shooter,
+            hood
+		}) {
+			SmartDashboard.putData(s);
+		}
     }
 
     private String getAutoOverrideState() {
@@ -315,4 +304,8 @@ public class RobotContainer {
             vision::hasAcceptedVisionPose)
             .ignoringDisable(true);
     }
+
+    // public AutoModeSelector getAutoModeSelector() {
+    //     return mAutoModeSelector;
+    // }
 }

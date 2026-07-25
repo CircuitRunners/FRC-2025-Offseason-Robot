@@ -34,18 +34,18 @@ public class HubRegression {
 
                         // @x --> distance from target (in meters)
                         // @y --> shooter velocity (in rpm)
-                        { 1.43, 1625}, // hub
-                        { 1.7, 1650}, // corner hub
-                        { 2.15, 1760}, // 1775 overshoot maybe
-                        { 2.7, 1865}, // maybe 1825
-                        { 3.1, 1975}, // tower // might be higher
-                        { 3.7, 2125}, // trench
-                        { 4.0, 2175},
+                        { 1.43, 1615}, // hub
+                        { 1.7, 1640}, // corner hub
+                        { 2.15, 1750}, // 1775 overshoot maybe
+                        { 2.7, 1855}, // maybe 1825
+                        { 3.1, 1965}, // tower // might be higher
+                        { 3.7, 2115}, // trench
+                        { 4.0, 2165},
                         //{ 3.85, 2100}, // depot
-                        { 4.4, 2200}, //
-                        { 4.7, 2265},
-                        { 5.0, 2315}, //
-                        { 5.3, 2415} // corner 
+                        { 4.4, 2190}, //
+                        { 4.7, 2255},
+                        { 5.0, 2305}, //
+                        { 5.3, 2405} // corner 
         };
 
         public static double[][] kTimeOfFlightMap = {

@@ -85,8 +85,7 @@ public class Superstructure extends SubsystemBase {
     public Setpoint shooterSetpoint = Shooter.STOP;
     public Rotation2d headingSetpoint = new Rotation2d();
 
-
-    public AngularVelocity shooterIncrement = Units.RPM.of(12.5);
+    public AngularVelocity shooterIncrement = Units.RPM.of(0.0);
 
     @Override
     public void periodic() {
@@ -490,7 +489,7 @@ public class Superstructure extends SubsystemBase {
 
     public Command getAutoWaitCommand() {
       return Commands.defer(() ->
-        Commands.waitSeconds(RobotContainer.autoDelay.getSelected() ? AutoConstants.delayTime : 0.0),
+        Commands.waitSeconds(RobotContainer.autoDelay.get()),
         Set.of(this)
       );
     }
@@ -547,7 +546,7 @@ public class Superstructure extends SubsystemBase {
     }
 
     private void setShootingGainProfile(boolean shooting) {
-      //shooter.setShootingGains(shooting);
+      shooter.setShootingGains(shooting);
       kicker.setShootingGains(shooting);
     }
   

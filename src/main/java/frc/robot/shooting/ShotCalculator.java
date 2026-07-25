@@ -175,7 +175,7 @@ public class ShotCalculator {
         Pose2d lookaheadPose = launcherPosition;
         double lookaheadLauncherToTargetDistance = launcherToTargetDistance;
 
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < 5; i++) {
             timeOfFlight =
                 passing
                     ? getPassingTimeOfFlightForShot(lookaheadLauncherToTargetDistance)

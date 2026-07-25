@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.util.Stopwatch;
+import frc.robot.auto.AutoModeSelector;
 import frc.robot.energy.BatteryLogger;
 @Logged
 public class Robot extends TimedRobot {
@@ -30,10 +31,17 @@ public class Robot extends TimedRobot {
   public static final BatteryLogger batteryLogger = new BatteryLogger();
   private final BatteryIOInputs batteryInputs = new BatteryIOInputs();
 
+  private AutoModeSelector mAutoModeSelector;
+  private static String mPreviousAutoName;
+
+
   private long disabledLoopCount = 0;
   public Robot() {
     mRobotContainer = new RobotContainer();
     Epilogue.bind(this);
+    mAutoModeSelector = new AutoModeSelector(mRobotContainer.drive, mRobotContainer.superstructure, RobotConstants.mAutoFactory);
+    mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
+    SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser()); 
     DriverStation.silenceJoystickConnectionWarning(true);
     // batteryLogger.setBatteryVoltage(batteryInputs.batteryVoltage);
     // batteryLogger.setRioCurrent(batteryInputs.rioCurrent);
@@ -42,7 +50,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     try {
-			Threads.setCurrentThreadPriority(true, 5);
+			Threads.setCurrentThreadPriority(true, 12);
 			CommandScheduler.getInstance().run();
 			Threads.setCurrentThreadPriority(false, 0);
 		} catch (Exception e) {
@@ -92,8 +100,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    Threads.setCurrentThreadPriority(true, 5);
-    mAutonomousCommand = mRobotContainer.getAutoModeSelector().getSelectedCommand();
+    mAutonomousCommand = mAutoModeSelector.getSelectedCommand();
 		// autoTimer.start();
 
 		if (mAutonomousCommand != null) {

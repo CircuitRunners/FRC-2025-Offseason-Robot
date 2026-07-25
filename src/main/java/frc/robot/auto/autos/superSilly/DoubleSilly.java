@@ -30,7 +30,9 @@ public class DoubleSilly extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
+                Commands.parallel(
                 superstructure.timeoutShootWhenReady(),
+                Commands.waitSeconds(1.0).andThen(superstructure.turnToHubAuto().withTimeout(1.0))),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),
                         Commands.sequence(
@@ -38,7 +40,9 @@ public class DoubleSilly extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
+                Commands.parallel(
                 superstructure.timeoutShootWhenReady(),
+                Commands.waitSeconds(1.0).andThen(superstructure.turnToHubAuto().withTimeout(1.0))),
                 superstructure.deployIntake(),
                 Commands.deadline(
                         cmdWithAccuracy(leftShootToSilly),

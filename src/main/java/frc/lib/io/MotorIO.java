@@ -258,7 +258,7 @@ public abstract class MotorIO implements Sendable {
 		builder.addBooleanProperty("Enabled", () -> getEnabled(), null);
 		builder.addStringProperty("Setpoint Type:", () -> getSetpoint().mode.toString(), null);
 		builder.addDoubleProperty("Setpoint Value as Double:", () -> getSetpointDoubleInUnits(), null);
-		// inputs.initSendable(builder);
+		inputs.initSendable(builder);
 		// if (followerInputs.length > 0) {
 		// 	builder.addDoubleArrayProperty(
 		// 			"Followers/Velocity " + unitType.name() + " per " + time.name() + ":",

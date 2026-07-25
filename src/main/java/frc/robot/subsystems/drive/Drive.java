@@ -88,7 +88,7 @@ public class Drive extends SubsystemBase {
      * Outputs telemetry and pose data to SmartDashboard.
      */
     public void outputTelemetry() {
-        telemetry.telemeterize(lastReadState);
+        // telemetry.telemeterize(lastReadState);
         elasticPose.setRobotPose(getPose());
         // energy draw
         // for (SwerveModule<TalonFX, TalonFX, CANcoder> module : getDrivetrain().getModules()) {

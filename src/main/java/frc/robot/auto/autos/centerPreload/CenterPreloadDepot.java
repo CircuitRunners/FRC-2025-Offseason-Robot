@@ -28,12 +28,12 @@ public class CenterPreloadDepot extends AutoModeBase {
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),
                                 superstructure.runIntakeIfDeployed())),
                 drive.stopDrivetrain(),
-                Commands.waitSeconds(0.5),
+                Commands.waitSeconds(0.5).alongWith(superstructure.runIntakeIfDeployed().withTimeout(0.5)),
                 Commands.parallel(
                                 cmdWithLessAccuracy(depotToCenter),
-                                superstructure.runIntakeIfDeployed().withTimeout(1.0))
-                        ,
+                                superstructure.runIntakeIfDeployed().withTimeout(1.0)),
                 drive.stopDrivetrain(),
+                Commands.waitSeconds(1),
                 superstructure.turnToHubAuto().withTimeout(1.0),
                 superstructure.shootWhenReadyPulse()
                 );

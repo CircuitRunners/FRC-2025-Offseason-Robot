@@ -13,6 +13,7 @@ import frc.robot.auto.autos.doubleSwipe.DoubleNeutral;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutralRisky;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutralSilly;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutralStraight;
+import frc.robot.auto.autos.doubleSwipe.Follower;
 import frc.robot.auto.autos.doubleSwipe.GreedyBean;
 import frc.robot.auto.autos.singleSwipe.Neutral;
 import frc.robot.auto.autos.singleSwipe.Popcorn;
@@ -54,10 +55,15 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[CENTER] Depot", () -> new CenterPreloadDepot(drive, superstructure, factory).getRoutine());
 
 
-		mAutoChooser.addRoutine("[LEFT] BEAN", () -> new Bean(drive, superstructure, factory, false).getRoutine());
-		mAutoChooser.addRoutine("[RIGHT] BEAN", () -> new Bean(drive, superstructure, factory, true).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] BEAN", () -> new Bean(drive, superstructure, factory, false, false).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] BEAN", () -> new Bean(drive, superstructure, factory, true, false).getRoutine());
 		mAutoChooser.addRoutine("[LEFT] BEAN Greedy", () -> new GreedyBean(drive, superstructure, factory, false).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] BEAN Greedy", () -> new GreedyBean(drive, superstructure, factory, true).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] BEAN Follower", () -> new Bean(drive, superstructure, factory, false, true).getRoutine());
+		mAutoChooser.addRoutine("[LEFT] BEAN Follower", () -> new Bean(drive, superstructure, factory, true, true).getRoutine());
+
+		mAutoChooser.addRoutine("[LEFT] Follower", () -> new Follower(drive, superstructure, factory, false).getRoutine());
+		mAutoChooser.addRoutine("[RIGHT] Follower", () -> new Follower(drive, superstructure, factory, true).getRoutine());
     }
 
 	public Command getSelectedCommand() {

@@ -32,7 +32,7 @@ public class ShooterConstants {
 			0.0);
 
 	public static final VelocityGains kShootingVelocityGains = new VelocityGains(
-			12.0, // make 6767 for emergency bang bang
+			12.0,
 			0.0,
 			0.0,
 			5.25,

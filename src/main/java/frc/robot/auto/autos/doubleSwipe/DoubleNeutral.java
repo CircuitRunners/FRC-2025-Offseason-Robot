@@ -36,7 +36,9 @@ public class DoubleNeutral extends AutoModeBase {
                         ,
                 drive.stopDrivetrain(),
                 superstructure.turnToHubAuto().withTimeout(1.0),
+                Commands.parallel(
                 superstructure.timeoutShootWhenReady(),
+                Commands.waitSeconds(1.0).andThen(superstructure.turnToHubAuto().withTimeout(1.0))),
                 Commands.deadline(
                         leftShootToNeutralIntake.cmd(),
                         Commands.sequence(
@@ -47,7 +49,9 @@ public class DoubleNeutral extends AutoModeBase {
                                 superstructure.runIntakeIfDeployed().withTimeout(1.0))
                         ,
                 drive.stopDrivetrain(),
-                superstructure.shootWhenReadyPulse());
+                Commands.parallel(
+                superstructure.timeoutShootWhenReady(),
+                Commands.waitSeconds(1.0).andThen(superstructure.turnToHubAuto().withTimeout(1.0))));
     }
 }
 
