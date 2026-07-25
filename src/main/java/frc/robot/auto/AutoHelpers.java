@@ -16,31 +16,28 @@ import frc.robot.subsystems.superstructure.Superstructure;
 
 public class AutoHelpers {
 
-    private static final SendableChooser<Boolean> resetPoseInAutoChooser = new SendableChooser<>();
+    // private static final SendableChooser<Boolean> resetPoseInAutoChooser = new SendableChooser<>();
 
-    static {
-        resetPoseInAutoChooser.setDefaultOption("Enabled", true);
-        resetPoseInAutoChooser.addOption("Disabled", false);
-    }
+    // static {
+    //     resetPoseInAutoChooser.setDefaultOption("Enabled", true);
+    //     resetPoseInAutoChooser.addOption("Disabled", false);
+    // }
 
-    public static void publishDashboardControls() {
-        SmartDashboard.putData("Auto Reset Pose In Auto", resetPoseInAutoChooser);
-    }
 
-    public static boolean shouldResetPoseInAuto() {
-        Boolean selected = resetPoseInAutoChooser.getSelected();
-        return selected == null || selected;
-    }
+    // public static boolean shouldResetPoseInAuto() {
+    //     Boolean selected = resetPoseInAutoChooser.getSelected();
+    //     return selected == null || selected;
+    // }
 	
     /** Resets the current drivetrain pose to a given one
      * @param pose the pose to reset to
      * @return the command to reset the pose
      */
     public static Command resetPoseIfWithoutEstimate(Pose2d pose, Drive drive) {
-		return Commands.either(
-            Commands.runOnce(() -> drive.resetPose(pose), drive),
-            Commands.none(),
-            AutoHelpers::shouldResetPoseInAuto);
+		return //Commands.either(
+            Commands.runOnce(() -> drive.resetPose(pose), drive);
+            // Commands.none(),
+            // AutoHelpers::shouldResetPoseInAuto);
 	}
 
 

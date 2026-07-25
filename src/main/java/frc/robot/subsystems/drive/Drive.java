@@ -63,7 +63,7 @@ public class Drive extends SubsystemBase {
     public Drive() {
         lastReadState = drivetrain.getState();
         drivetrain.registerTelemetry(telemetry::telemeterize);
-        configurePathPlanner();
+        // configurePathPlanner();
         SmartDashboard.putData("Drive", this);
         SmartDashboard.putData("Elastic Field 2D", elasticPose);
     }

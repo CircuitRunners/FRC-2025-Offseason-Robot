@@ -47,7 +47,7 @@ import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
 import frc.robot.auto.AutoConstants;
 import frc.robot.auto.AutoModeSelector;
-@Logged
+
 public class RobotContainer {
     public final Drive drive = new Drive();
     private final Hood hood = new Hood();
@@ -102,9 +102,7 @@ public class RobotContainer {
 				drive);
 
         CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.warmupCmd());
-        CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
-
-        AutoHelpers.publishDashboardControls();
+        // CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
 
         SmartDashboard.putData("Auto Overrides/Force Win",
             new InstantCommand(() -> autoWinOverride = Optional.of(true)));
@@ -216,13 +214,6 @@ public class RobotContainer {
         //     )
         // );
 
-        // drive.getDrivetrain().setDefaultCommand(
-        //     drive.getDrivetrain().applyRequest(() ->
-        //     driveRequest.withVelocityX(-ControlBoardConstants.mOperatorController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-        //             .withVelocityY(-ControlBoardConstants.mOperatorController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-        //             .withRotationalRate(-ControlBoardConstants.mOperatorController.getRightX() * MaxAngularRate).withDeadband(MaxSpeed * 0.15).withRotationalDeadband(MaxAngularRate*0.15) // Drive counterclockwise with negative X (left)
-        //     )
-        // );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -269,14 +260,13 @@ public class RobotContainer {
         SmartDashboard.putBoolean("Hub State/Current Ignore State", superstructure.ignoreHubState);
 
         SmartDashboard.putBoolean("Shooter Idle/State", disableAutoSpinup);
-        SmartDashboard.putBoolean("Auto Reset Pose In Auto/Enabled", AutoHelpers.shouldResetPoseInAuto());
 
         Double selectedShootAllFuelTime = autoShootAllFuelTime.getSelected();
         AutoConstants.shootAllFuelTime = selectedShootAllFuelTime != null ? selectedShootAllFuelTime : 3.0;
         SmartDashboard.putNumber("Auto Shoot All Fuel Time/Selected", AutoConstants.shootAllFuelTime);
 
         SmartDashboard.putBoolean("Vision/Has Accepted Pose", vision.hasAcceptedVisionPose());
-        LogUtil.recordPose2d("Vision pose", vision.getLatestVisionPose());
+        // LogUtil.recordPose2d("Vision pose", vision.getLatestVisionPose());
     }
     public void zeroIntakeDisabled() {
         if (intakeDeploy.getPosition().gte(IntakeDeployConstants.kStowPosition)) {

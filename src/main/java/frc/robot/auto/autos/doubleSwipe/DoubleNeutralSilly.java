@@ -3,6 +3,9 @@ package frc.robot.auto.autos.doubleSwipe;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.auto.AutoHelpers;
 import frc.robot.auto.AutoModeBase;
@@ -21,9 +24,11 @@ public class DoubleNeutralSilly extends AutoModeBase {
         Pose2d startPose = leftTrenchToNeutralIntake.getInitialPose().get();
 
         prepRoutine(
+                Commands.runOnce(() -> DataLogManager.log("The auto started")),
                 AutoHelpers.resetPoseIfWithoutEstimate(startPose, drive),
                 Commands.deadline(
-                        leftTrenchToNeutralIntake.cmd().alongWith(Commands.runOnce(() ->superstructure.brakeIntakeRollers(true))),
+                        leftTrenchToNeutralIntake.cmd().alongWith(Commands.runOnce(() ->superstructure.brakeIntakeRollers(true))
+                        ),
                         Commands.sequence(
                                 superstructure.deployIntake(),
                                 Commands.runOnce(() -> superstructure.brakeIntakeRollers(false)),

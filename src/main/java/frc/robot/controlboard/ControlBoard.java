@@ -7,6 +7,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -123,6 +124,8 @@ public class ControlBoard {
 
  		driver.leftBumper().onTrue(s.tuck());
 
+		driver.leftTrigger().onTrue(Commands.runOnce(() -> DataLogManager.log("The trigger was touched")));
+
  		driver.leftTrigger(0.1).and(driver.x().negate())
  				.whileTrue(
  						s.runIntakeIfDeployed());
@@ -168,13 +171,13 @@ public class ControlBoard {
 			).ignoringDisable(true)
 		));
 
-		driver.povLeft().whileTrue(
-			Commands.defer(
-				() -> (superstructure.goToShootCommand())
-				,
-				Set.of(drive)
-			)
-		);
+		// driver.povLeft().whileTrue(
+		// 	Commands.defer(
+		// 		() -> (superstructure.goToShootCommand())
+		// 		,
+		// 		Set.of(drive)
+		// 	)
+		// );
 		
 
 		driver.back().whileTrue(s.turnToHubAuto());

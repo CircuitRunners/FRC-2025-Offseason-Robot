@@ -120,8 +120,8 @@ public class FlywheelMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<I
 
 	@Override
 	public void initSendable(SendableBuilder builder) {
-		super.initSendable(builder);
-		io.initSendable(builder);
+		// super.initSendable(builder);
+		// io.initSendable(builder);
 	}
 
 	/**

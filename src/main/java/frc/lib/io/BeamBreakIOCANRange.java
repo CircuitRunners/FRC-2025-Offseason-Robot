@@ -64,7 +64,7 @@ public class BeamBreakIOCANRange extends BeamBreakIO {
 
 	@Override
 	public void initSendable(SendableBuilder builder) {
-		super.initSendable(builder);
+		// super.initSendable(builder);
 		// builder.addDoubleProperty("Signal Strength", () -> lastSignalStrength, null);
 	}
 }

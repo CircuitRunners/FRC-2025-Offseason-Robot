@@ -38,14 +38,14 @@ public class MotorSubsystem<IO extends MotorIO> extends SubsystemBase {
 	public void periodic() {
 		io.updateInputs();
 		// Robot.batteryLogger.reportCurrentUsage(name, getSupplyCurrent().in(Units.Amps));
-		//outputTelemetry();
+		outputTelemetry();
 	}
 
 	/**
 	 * Outputs subsystem readings and to SmartDashboard.
 	 */
 	public void outputTelemetry() {
-		LoggedTracer.record(name);
+		// LoggedTracer.record(name);
 	}
 
 	/**
@@ -55,8 +55,8 @@ public class MotorSubsystem<IO extends MotorIO> extends SubsystemBase {
 	 */
 	@Override
 	public void initSendable(SendableBuilder builder) {
-		super.initSendable(builder);
-		io.initSendable(builder);
+		// super.initSendable(builder);
+		// io.initSendable(builder);
 	}
 
 	/**

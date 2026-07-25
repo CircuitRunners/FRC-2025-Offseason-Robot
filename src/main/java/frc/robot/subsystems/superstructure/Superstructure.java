@@ -43,7 +43,6 @@ import frc.robot.subsystems.intakeRollers.IntakeRollers;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.vision.apriltag.Vision;
 
-@Logged
 public class Superstructure extends SubsystemBase {
     private final Drive drive;
     private final Vision vision;
@@ -598,62 +597,62 @@ public class Superstructure extends SubsystemBase {
       return superstructureDone;
     }
 
-    public Command commandToNeutral(Drive drive, boolean isLeft) {
-      PathPlannerPath pathToNeutral = null;
-        try {
-          if (isLeft)
-            pathToNeutral = PathPlannerPath.fromChoreoTrajectory("leftPathToNeutral");
-          else{
-            pathToNeutral = PathPlannerPath.fromChoreoTrajectory("rightPathToNeutral");
-          }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    // public Command commandToNeutral(Drive drive, boolean isLeft) {
+    //   PathPlannerPath pathToNeutral = null;
+    //     try {
+    //       if (isLeft)
+    //         pathToNeutral = PathPlannerPath.fromChoreoTrajectory("leftPathToNeutral");
+    //       else{
+    //         pathToNeutral = PathPlannerPath.fromChoreoTrajectory("rightPathToNeutral");
+    //       }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
 
-        PathConstraints constraints = new PathConstraints(
-                3.6, 7.0,
-                DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
+    //     PathConstraints constraints = new PathConstraints(
+    //             3.6, 7.0,
+    //             DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
 
-        Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
-            pathToNeutral,
-            constraints);
+    //     Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
+    //         pathToNeutral,
+    //         constraints);
 
-        return pathfindingCommand;
-    }
+    //     return pathfindingCommand;
+    // }
 
-    public Command commandToShoot(boolean isLeft) {
-        PathPlannerPath pathToShoot = null;
-        try {
-          if (isLeft)
-            pathToShoot = PathPlannerPath.fromChoreoTrajectory("leftPathToShoot");
-          else{
-            pathToShoot = PathPlannerPath.fromChoreoTrajectory("rightPathToShoot");
-          }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    // public Command commandToShoot(boolean isLeft) {
+    //     PathPlannerPath pathToShoot = null;
+    //     try {
+    //       if (isLeft)
+    //         pathToShoot = PathPlannerPath.fromChoreoTrajectory("leftPathToShoot");
+    //       else{
+    //         pathToShoot = PathPlannerPath.fromChoreoTrajectory("rightPathToShoot");
+    //       }
+    //     } catch (Exception e) {
+    //         e.printStackTrace();
+    //     }
 
-        PathConstraints constraints = new PathConstraints(
-                3.6, 7.0,
-                DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
+    //     PathConstraints constraints = new PathConstraints(
+    //             3.0, 6.0,
+    //             DriveConstants.kMaxAngularRate.in(Units.RadiansPerSecond), DriveConstants.kMaxAngularAcceleration.in(Units.RadiansPerSecondPerSecond));
 
-        Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
-            pathToShoot,
-            constraints);
+    //     Command pathfindingCommand = AutoBuilder.pathfindThenFollowPath(
+    //         pathToShoot,
+    //         constraints);
 
-        return pathfindingCommand;
-    }
+    //     return pathfindingCommand;
+    // }
 
-    public Command goToShootCommand() {
-        boolean isLeft;
-        if (drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(FieldLayout.handleAllianceFlip(AutoConstants.leftShoot.getTranslation(), RobotConstants.isRedAlliance))
-          < drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(FieldLayout.handleAllianceFlip(AutoConstants.rightShoot.getTranslation(), RobotConstants.isRedAlliance))) {
-            isLeft = true;
-        } else {
-            isLeft = false;
-        }
-        return 
-            commandToShoot(isLeft);
-    }
+    // public Command goToShootCommand() {
+    //     boolean isLeft;
+    //     if (drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(FieldLayout.handleAllianceFlip(AutoConstants.leftShoot.getTranslation(), RobotConstants.isRedAlliance))
+    //       < drive.getLookaheadPose(Units.Seconds.of(0.1)).getTranslation().getDistance(FieldLayout.handleAllianceFlip(AutoConstants.rightShoot.getTranslation(), RobotConstants.isRedAlliance))) {
+    //         isLeft = true;
+    //     } else {
+    //         isLeft = false;
+    //     }
+    //     return 
+    //         commandToShoot(isLeft);
+    // }
 
 }

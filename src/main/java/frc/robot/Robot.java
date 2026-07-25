@@ -6,10 +6,13 @@ package frc.robot;
 
 import java.util.Optional;
 
-import edu.wpi.first.epilogue.Epilogue;
+import com.ctre.phoenix6.SignalLogger;
+
+// import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.RobotController;
@@ -25,7 +28,8 @@ import frc.lib.logging.LoggedTracer;
 import frc.lib.util.Stopwatch;
 import frc.robot.auto.AutoModeSelector;
 import frc.robot.energy.BatteryLogger;
-@Logged
+import frc.robot.subsystems.superstructure.Superstructure;
+
 public class Robot extends TimedRobot {
   private final RobotContainer mRobotContainer;
   private Command mAutonomousCommand;
@@ -42,11 +46,13 @@ public class Robot extends TimedRobot {
   private long disabledLoopCount = 0;
   public Robot() {
     mRobotContainer = new RobotContainer();
-    Epilogue.bind(this);
+    // Epilogue.bind(this);
     mAutoModeSelector = new AutoModeSelector(mRobotContainer.drive, mRobotContainer.superstructure, RobotConstants.mAutoFactory);
     mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
     SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser()); 
     DriverStation.silenceJoystickConnectionWarning(true);
+    SignalLogger.enableAutoLogging(false);
+    SignalLogger.stop();
     // batteryLogger.setBatteryVoltage(batteryInputs.batteryVoltage);
     // batteryLogger.setRioCurrent(batteryInputs.rioCurrent);
   }
@@ -54,10 +60,11 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     try {
-			Threads.setCurrentThreadPriority(true, 10);
+			Threads.setCurrentThreadPriority(true, 99);
 
 			double commandSchedulerStart = Timer.getTimestamp();
-			//Shooting.mInstance.periodic();
+      LoggedTracer.reset();
+      //Shooting.mInstance.periodic();
 			SmartDashboard.putNumber("Current Timestamp Seconds", Timer.getFPGATimestamp());
 			CommandScheduler.getInstance().run();
 			double commandSchedulerEnd = Timer.getTimestamp();
@@ -85,6 +92,8 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     RobotController.setBrownoutVoltage(Units.Volts.of(5.8));
+    SignalLogger.enableAutoLogging(false);
+    SignalLogger.stop();
   }
 
   @Override
@@ -115,6 +124,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    DataLogManager.log("Auto Started");
     mAutonomousCommand = mAutoModeSelector.getSelectedCommand();
 		// autoTimer.start();
 
@@ -136,6 +146,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    DataLogManager.log("Teleop Started");
     if (mAutonomousCommand != null) {
       mAutonomousCommand.cancel();
     }
