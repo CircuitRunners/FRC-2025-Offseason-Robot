@@ -103,6 +103,7 @@ public class RobotContainer {
 
         CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.warmupCmd());
         // CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
+        drive.driveWarmupCmd();
 
         SmartDashboard.putData("Auto Overrides/Force Win",
             new InstantCommand(() -> autoWinOverride = Optional.of(true)));

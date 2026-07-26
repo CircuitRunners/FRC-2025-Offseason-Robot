@@ -60,7 +60,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     try {
-			Threads.setCurrentThreadPriority(true, 99);
+			Threads.setCurrentThreadPriority(true, 20);
 
 			double commandSchedulerStart = Timer.getTimestamp();
       LoggedTracer.reset();
@@ -94,6 +94,9 @@ public class Robot extends TimedRobot {
     RobotController.setBrownoutVoltage(Units.Volts.of(5.8));
     SignalLogger.enableAutoLogging(false);
     SignalLogger.stop();
+    DataLogManager.start();
+
+    
   }
 
   @Override

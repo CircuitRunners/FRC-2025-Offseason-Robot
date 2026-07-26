@@ -3,6 +3,7 @@ package frc.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import java.util.Date;
+import java.util.Set;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
@@ -207,6 +208,27 @@ public class Drive extends SubsystemBase {
      */
     public Command stopDrivetrain() {
       return Commands.runOnce(() -> getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds())));
+    }
+
+    public void driveWarmupCmd() {
+        var dt = getDrivetrain();
+
+        // Phoenix control path: shared by auto and teleop
+        dt.setControl(new SwerveRequest.Idle());
+        dt.setControl(new SwerveRequest.FieldCentric());
+        dt.setControl(new SwerveRequest.ApplyFieldSpeeds());
+
+        // Command framework composition path
+        Command probe = Commands.sequence(
+        Commands.runOnce(() -> {}),
+        Commands.waitSeconds(0.0),
+        Commands.defer(Commands::none, Set.of()),
+        Commands.either(Commands.none(), Commands.none(), () -> true));
+        probe.initialize();
+        for (int i = 0; i < 4; i++) {
+            probe.execute();
+        }
+        probe.end(true);
     }
 
     private void configurePathPlanner() {
