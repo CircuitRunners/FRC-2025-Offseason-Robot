@@ -25,6 +25,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -214,9 +215,9 @@ public class Drive extends SubsystemBase {
         var dt = getDrivetrain();
 
         // Phoenix control path: shared by auto and teleop
-        dt.setControl(new SwerveRequest.Idle());
-        dt.setControl(new SwerveRequest.FieldCentric());
         dt.setControl(new SwerveRequest.ApplyFieldSpeeds());
+        Timer.delay(0.05);
+        dt.setControl(new SwerveRequest.Idle());
 
         // Command framework composition path
         Command probe = Commands.sequence(
