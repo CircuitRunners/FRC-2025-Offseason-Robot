@@ -102,7 +102,7 @@ public class RobotContainer {
 				drive);
 
         CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.warmupCmd());
-        // CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
+        //CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
         superstructure.warmupCmd();
 
         SmartDashboard.putData("Auto Overrides/Force Win",
@@ -201,9 +201,9 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // drive.setDefaultCommand(
-        //     driveCommand
-        // );
+        drive.setDefaultCommand(
+            driveCommand
+        );
 
         
         // drive.getDrivetrain().setDefaultCommand(
@@ -283,9 +283,9 @@ public class RobotContainer {
         new DriveMaintainingHeading(drive, superstructure, () -> ControlBoardConstants.mDriverController.getLeftY(), () -> ControlBoardConstants.mDriverController.getLeftX(), () -> -ControlBoardConstants.mDriverController.getRightX(), () -> superstructure.maintainHeadingEpsilon);
     
     public void setDriveDefault() {
-        drive.setDefaultCommand(
-            driveCommand
-        );
+        //drive.setDefaultCommand(
+            //driveCommand
+        //);
     }
 
     public Command resetToVisionPose() {

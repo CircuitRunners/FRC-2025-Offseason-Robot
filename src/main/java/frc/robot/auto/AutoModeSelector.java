@@ -9,12 +9,14 @@ import frc.robot.auto.autos.centerPreload.CenterPreloadDepot;
 import frc.robot.auto.autos.disruption.FullDisruptionOpp;
 import frc.robot.auto.autos.disruption.FullDisruptionSame;
 import frc.robot.auto.autos.doubleSwipe.Bean;
+import frc.robot.auto.autos.doubleSwipe.DelayTestAuto;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutral;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutralRisky;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutralSilly;
 import frc.robot.auto.autos.doubleSwipe.DoubleNeutralStraight;
 import frc.robot.auto.autos.doubleSwipe.Follower;
 import frc.robot.auto.autos.doubleSwipe.GreedyBean;
+import frc.robot.auto.autos.doubleSwipe.PIDTestAuto;
 import frc.robot.auto.autos.singleSwipe.Neutral;
 import frc.robot.auto.autos.singleSwipe.Popcorn;
 import frc.robot.auto.autos.superSilly.DoubleSilly;
@@ -64,7 +66,11 @@ public class AutoModeSelector {
 
 		mAutoChooser.addRoutine("[LEFT] Follower", () -> new Follower(drive, superstructure, factory, false).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Follower", () -> new Follower(drive, superstructure, factory, true).getRoutine());
-    }
+    
+		// mAutoChooser.addRoutine("Delay Test Auto", () -> new DelayTestAuto(drive, superstructure, factory, false).getRoutine());
+		// mAutoChooser.addRoutine("PID Test Auto", () -> new PIDTestAuto(drive, superstructure, factory, false).getRoutine());
+
+	}
 
 	public Command getSelectedCommand() {
 		return mAutoChooser.selectedCommandScheduler();
