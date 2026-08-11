@@ -1,5 +1,6 @@
 package frc.robot.subsystems.superstructure;
 
+import java.util.List;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 
@@ -22,8 +23,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.bases.MotorSubsystem;
 import frc.lib.drive.PIDToPoseCommand;
 import frc.lib.io.MotorIO.Setpoint;
+import frc.lib.io.MotorIOTalonFX;
 import frc.lib.util.FieldLayout;
 import frc.robot.Robot;
 import frc.robot.RobotConstants;
@@ -91,6 +94,25 @@ public class Superstructure extends SubsystemBase {
         updateShooterSetpoint();
         updateHoodSetpoint();
         updateHeadingSetpoint();
+    }
+
+    public void warmupCmd() {
+        List<MotorSubsystem<MotorIOTalonFX>> mechanisms = List.of(shooter, hood, intakeDeploy, intakeRollers, kicker, conveyor);
+
+        for (MotorSubsystem<MotorIOTalonFX> m : mechanisms) {
+        Angle here = m.getPosition();  // position targets = where it already is
+
+        m.applySetpoint(Setpoint.withVoltageSetpoint(Units.Volts.of(0)));
+        m.applySetpoint(Setpoint.withVoltageFOCSetpoint(Units.Volts.of(0)));
+        m.applySetpoint(Setpoint.withDutyCycleSetpoint(Units.Percent.of(0)));
+        m.applySetpoint(Setpoint.withVelocitySetpoint(Units.RotationsPerSecond.of(0)));
+        m.applySetpoint(Setpoint.withMotionMagicSetpoint(here));
+        m.applySetpoint(Setpoint.withPositionSetpoint(here));
+
+        m.applySetpoint(Setpoint.withNeutralSetpoint());  // ALWAYS last — see below
+        }
+
+        drive.driveWarmupCmd();
     }
 
     public void updateShooterSetpoint() {
