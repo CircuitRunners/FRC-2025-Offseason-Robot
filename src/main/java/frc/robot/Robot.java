@@ -10,6 +10,7 @@ import com.ctre.phoenix6.SignalLogger;
 
 // import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
@@ -31,9 +32,12 @@ import frc.robot.energy.BatteryLogger;
 import frc.robot.subsystems.superstructure.Superstructure;
 
 public class Robot extends TimedRobot {
+
   private final RobotContainer mRobotContainer;
   private Command mAutonomousCommand;
   public static final Stopwatch autoTimer = new Stopwatch();
+  private boolean autoDelayTimerRunning = false;
+  private boolean autoDelayTimerPublished = false;
 
   public static final BatteryLogger batteryLogger = new BatteryLogger();
   private final BatteryIOInputs batteryInputs = new BatteryIOInputs();
@@ -127,9 +131,11 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    autoTimer.resetAndStart();
+    autoDelayTimerRunning = true;
+    autoDelayTimerPublished = false;
     DataLogManager.log("Auto Started");
     mAutonomousCommand = mAutoModeSelector.getSelectedCommand();
-		// autoTimer.start();
 
 		if (mAutonomousCommand != null) {
 			CommandScheduler.getInstance().schedule(mAutonomousCommand);
@@ -138,12 +144,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-
+    if (autoDelayTimerRunning
+        && !autoDelayTimerPublished
+        && moduleTargetsHaveVelocity(mRobotContainer.drive.getState().ModuleTargets)) {
+      SmartDashboard.putNumber("Auto Delay Time", autoTimer.getTimeAsDouble());
+      autoTimer.reset();
+      autoDelayTimerRunning = false;
+      autoDelayTimerPublished = true;
     }
+  }
 
   @Override
   public void autonomousExit() {
-    // autoTimer.reset();
+    autoDelayTimerRunning = false;
     mRobotContainer.setDriveDefault();
   }
 
@@ -175,6 +188,16 @@ public class Robot extends TimedRobot {
 
   @Override
   public void simulationPeriodic() {}
+
+  private static boolean moduleTargetsHaveVelocity(SwerveModuleState[] moduleTargets) {
+    for (SwerveModuleState moduleTarget : moduleTargets) {
+      if (Math.abs(moduleTarget.speedMetersPerSecond) > 0.0) {
+        return true;
+      }
+    }
+
+    return false;
+  }
 
   public static class BatteryIOInputs {
     public double batteryVoltage = 12.6;
