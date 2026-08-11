@@ -150,10 +150,10 @@ public class Vision extends SubsystemBase {
             (averageDist * averageDist) / observation.tagCount();
         double linearStdDev = linearStdDevBaseline * stdDevFactor;
         double angularStdDev = angularStdDevBaseline * stdDevFactor;
-        if (observation.type() == PoseObservationType.MEGATAG_2) {
-          linearStdDev *= linearStdDevMegatag2Factor;
-          angularStdDev *= angularStdDevMegatag2Factor;
-        }
+        // if (observation.type() == PoseObservationType.MEGATAG_2) {
+        //   linearStdDev *= linearStdDevMegatag2Factor;
+        //   angularStdDev *= angularStdDevMegatag2Factor;
+        // }
         if (cameraIndex < cameraStdDevFactors.length) {
           linearStdDev *= cameraStdDevFactors[cameraIndex];
           angularStdDev *= cameraStdDevFactors[cameraIndex];

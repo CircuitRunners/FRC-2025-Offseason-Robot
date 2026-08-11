@@ -58,7 +58,7 @@ public class VisionConstants {
 
   public static double[] cameraStdDevFactors =
       new double[] {
-        3.0,
+        1.0,
         1.0
       };
 
