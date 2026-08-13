@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.*;
 import java.util.Optional;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathfindingCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -91,6 +92,8 @@ public class RobotContainer {
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     
+    // private final SendableChooser<Command> PPautoChooser;
+    
     public RobotContainer() {
         controlBoard.configureBindings(drive, superstructure);
         configureBindings();
@@ -101,7 +104,13 @@ public class RobotContainer {
 				true,
 				drive);
 
+        // PPautoChooser = AutoBuilder.buildAutoChooser();
+
+
+        // SmartDashboard.putData("PP Auto Chooser", PPautoChooser);
+
         CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.warmupCmd());
+        
         //CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
         superstructure.warmupCmd();
 
@@ -129,6 +138,7 @@ public class RobotContainer {
         autoShootAllFuelTime.addOption("3.0s", 3.0);
 
         SmartDashboard.putData("Auto Shoot All Fuel Time", autoShootAllFuelTime);
+
 
         
         // HubShiftUtil.setAllianceWinOverride(
@@ -192,6 +202,10 @@ public class RobotContainer {
 			SmartDashboard.putData(s);
 		}
     }
+
+//     public Command getPPAutonomousCommand() {
+//     return PPautoChooser.getSelected();
+//   }
 
     private String getAutoOverrideState() {
         if (autoWinOverride.isEmpty()) {

@@ -44,7 +44,6 @@ public class Robot extends TimedRobot {
   private final GcStatsCollector m_gcStatsCollector = new GcStatsCollector();
 
   private AutoModeSelector mAutoModeSelector;
-  private static String mPreviousAutoName;
 
 
   private long disabledLoopCount = 0;
@@ -52,8 +51,6 @@ public class Robot extends TimedRobot {
     mRobotContainer = new RobotContainer();
     // Epilogue.bind(this);
     mAutoModeSelector = new AutoModeSelector(mRobotContainer.drive, mRobotContainer.superstructure, RobotConstants.mAutoFactory);
-    mPreviousAutoName = mAutoModeSelector.getSelectedCommand().getName();
-    SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser()); 
     DriverStation.silenceJoystickConnectionWarning(true);
     SignalLogger.enableAutoLogging(false);
     SignalLogger.stop();
@@ -96,6 +93,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     RobotController.setBrownoutVoltage(Units.Volts.of(5.8));
+    SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser()); 
     SignalLogger.enableAutoLogging(false);
     SignalLogger.stop();
     DataLogManager.start();

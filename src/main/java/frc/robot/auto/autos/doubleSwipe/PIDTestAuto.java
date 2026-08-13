@@ -18,7 +18,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 public class PIDTestAuto extends AutoModeBase {
 
     public PIDTestAuto(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
-        super(drive, superstructure, factory, "silly left");
+        super(drive, superstructure, factory, "PID Test");
 
         prepRoutine(
                 Commands.runOnce(() -> DataLogManager.log("The auto started")),

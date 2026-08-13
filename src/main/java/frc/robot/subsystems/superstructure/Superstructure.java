@@ -8,15 +8,19 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import choreo.auto.AutoFactory;
+import choreo.auto.AutoTrajectory;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotState;
 import edu.wpi.first.wpilibj.Timer;
@@ -539,6 +543,10 @@ public class Superstructure extends SubsystemBase {
     	);
 	}
 
+    public Command PIDXCommand(double xMeters) {
+      return new PIDToPoseCommand(drive, this, drive.getPose().plus(new Transform2d(xMeters,0,Rotation2d.kZero)));
+    }
+
     public static enum State {
       TUCK,
       SHOOTING,
@@ -617,6 +625,47 @@ public class Superstructure extends SubsystemBase {
 
     public boolean getSuperstructureDone() {
       return superstructureDone;
+    }
+
+    public Command routineDelayTest() {
+        Command leftIntakeToShoot = RobotConstants.mAutoFactory.trajectoryCmd("leftIntakeToShoot");
+        Command leftTrenchToNeutralIntake = RobotConstants.mAutoFactory.trajectoryCmd("leftTrenchToNeutralIntake");
+        
+        return Commands.sequence(
+                Commands.runOnce(() -> DataLogManager.log("The auto started")),
+                RobotConstants.mAutoFactory.resetOdometry("leftIntakeToShoot"),
+                Commands.deadline(
+                        leftTrenchToNeutralIntake.alongWith(Commands.runOnce(() -> brakeIntakeRollers(true))
+                        ),
+                        Commands.sequence(
+                                deployIntake(),
+                                Commands.runOnce(() -> brakeIntakeRollers(false)),
+                                runIntakeIfDeployed())),
+                Commands.parallel(
+                                leftIntakeToShoot,
+                                runIntakeIfDeployed().withTimeout(1.0))
+                        ,
+                drive.stopDrivetrain(),
+                turnToHubAuto().withTimeout(1.0),
+                Commands.parallel(
+                timeoutShootWhenReady(),
+                Commands.waitSeconds(1.0).andThen(turnToHubAuto().withTimeout(1.0))),
+                Commands.deadline(
+                        RobotConstants.mAutoFactory.trajectoryCmd("leftShootToSilly"),
+                        Commands.sequence(
+                                deployIntake(),
+                                runIntakeIfDeployed())),
+                drive.stopDrivetrain(),
+                turnToHubAuto().withTimeout(1.0),
+                Commands.parallel(
+                timeoutShootWhenReady(),
+                Commands.waitSeconds(1.0).andThen(turnToHubAuto().withTimeout(1.0))),
+                deployIntake(),
+                Commands.deadline(
+                        RobotConstants.mAutoFactory.trajectoryCmd("leftShootToSilly"),
+                        Commands.sequence(
+                                deployIntake(),
+                                runIntakeIfDeployed())));
     }
 
     // public Command commandToNeutral(Drive drive, boolean isLeft) {

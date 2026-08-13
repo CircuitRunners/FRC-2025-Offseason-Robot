@@ -15,7 +15,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 public class Bean extends AutoModeBase {
 
     public Bean(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY, boolean following) {
-        super(drive, superstructure, factory, "silly left");
+        super(drive, superstructure, factory, "Bean");
 
         AutoTrajectory leftTrenchToNeutralIntake = trajectory("sillyStart", mirrorY);
 

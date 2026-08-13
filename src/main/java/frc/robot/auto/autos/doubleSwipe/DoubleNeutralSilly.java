@@ -15,7 +15,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 public class DoubleNeutralSilly extends AutoModeBase {
 
     public DoubleNeutralSilly(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
-        super(drive, superstructure, factory, "silly left");
+        super(drive, superstructure, factory, "[LEFT] Silly");
 
         AutoTrajectory leftIntakeToShoot = trajectory("leftIntakeToShoot", mirrorY);
         AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake", mirrorY);

@@ -65,7 +65,7 @@ public class Drive extends SubsystemBase {
     public Drive() {
         lastReadState = drivetrain.getState();
         drivetrain.registerTelemetry(telemetry::telemeterize);
-        // configurePathPlanner();
+        configurePathPlanner();
         SmartDashboard.putData("Drive", this);
         SmartDashboard.putData("Elastic Field 2D", elasticPose);
     }
@@ -241,7 +241,7 @@ public class Drive extends SubsystemBase {
                 this::getRobotRelativeChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
                 (speeds, feedforwards) -> driveRobotCentric(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
                 new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                        new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                        new PIDConstants(3.5, 0.0, 0.0), // Translation PID constants
                         new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
                 ),
                 config, // The robot configuration

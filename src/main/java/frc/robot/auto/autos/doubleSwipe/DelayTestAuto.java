@@ -15,7 +15,7 @@ import frc.robot.subsystems.superstructure.Superstructure;
 public class DelayTestAuto extends AutoModeBase {
 
     public DelayTestAuto(Drive drive, Superstructure superstructure, AutoFactory factory, boolean mirrorY) {
-        super(drive, superstructure, factory, "silly left");
+        super(drive, superstructure, factory, "Delay Test");
 
         AutoTrajectory leftTrenchToNeutralIntake = trajectory("leftTrenchToNeutralIntake", mirrorY);
         
