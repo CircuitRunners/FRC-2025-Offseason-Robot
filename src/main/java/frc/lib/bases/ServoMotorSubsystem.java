@@ -61,26 +61,26 @@ public class ServoMotorSubsystem<IO extends MotorIO> extends MotorSubsystem<IO> 
 	@Override
 	public void periodic() {
 		super.periodic();
-		if (isHomingSubsystem) {
-			if (mNeedsToHome && setpointNearHome() && nearHomingLocation()) {
-				mHoming = true;
-				useSoftLimits(false);
-				mHomingDelay =
-						new DelayedBoolean(Timer.getFPGATimestamp(), homingConfig.kHomingTimeout.in(Units.Seconds));
-			}
-			if (mHoming) {
-				io.applySetpoint(Setpoint.withVoltageSetpoint(homingConfig.kHomingVoltage));
-				if (mHomingDelay.update(
-						Timer.getFPGATimestamp(),
-						Math.abs(getVelocity().baseUnitMagnitude()) < homingConfig.kSetHomedVelocity.baseUnitMagnitude()
-								&& DriverStation.isEnabled())) {
-					setCurrentPosition(homingConfig.kHomePosition);
-					applySetpoint(Setpoint.withMotionMagicSetpoint(homingConfig.kHomePosition));
-					useSoftLimits(true);
-					mNeedsToHome = false;
-				}
-			}
-		}
+		// if (isHomingSubsystem) {
+		// 	if (mNeedsToHome && setpointNearHome() && nearHomingLocation()) {
+		// 		mHoming = true;
+		// 		useSoftLimits(false);
+		// 		mHomingDelay =
+		// 				new DelayedBoolean(Timer.getFPGATimestamp(), homingConfig.kHomingTimeout.in(Units.Seconds));
+		// 	}
+		// 	if (mHoming) {
+		// 		io.applySetpoint(Setpoint.withVoltageSetpoint(homingConfig.kHomingVoltage));
+		// 		if (mHomingDelay.update(
+		// 				Timer.getFPGATimestamp(),
+		// 				Math.abs(getVelocity().baseUnitMagnitude()) < homingConfig.kSetHomedVelocity.baseUnitMagnitude()
+		// 						&& DriverStation.isEnabled())) {
+		// 			setCurrentPosition(homingConfig.kHomePosition);
+		// 			applySetpoint(Setpoint.withMotionMagicSetpoint(homingConfig.kHomePosition));
+		// 			useSoftLimits(true);
+		// 			mNeedsToHome = false;
+		// 		}
+		// 	}
+		// }
 	}
 
 	/**

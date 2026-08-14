@@ -639,8 +639,8 @@ public class Superstructure extends SubsystemBase {
                         ),
                         Commands.sequence(
                                 deployIntake(),
-                                Commands.runOnce(() -> brakeIntakeRollers(false)),
-                                runIntakeIfDeployed())),
+                                Commands.runOnce(() -> brakeIntakeRollers(false))),
+                                runIntakeIfDeployed()),
                 Commands.parallel(
                                 leftIntakeToShoot,
                                 runIntakeIfDeployed().withTimeout(1.0))

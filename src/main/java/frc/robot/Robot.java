@@ -4,22 +4,26 @@
 
 package frc.robot;
 
+import java.lang.reflect.Field;
 import java.util.Optional;
 
 import com.ctre.phoenix6.SignalLogger;
 
 // import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.hal.AllianceStationID;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.IterativeRobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Threads;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.simulation.DriverStationSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -30,6 +34,7 @@ import frc.lib.util.Stopwatch;
 import frc.robot.auto.AutoModeSelector;
 import frc.robot.energy.BatteryLogger;
 import frc.robot.subsystems.superstructure.Superstructure;
+import frc.robot.subsystems.vision.apriltag.VisionConstants;
 
 public class Robot extends TimedRobot {
 
@@ -44,6 +49,8 @@ public class Robot extends TimedRobot {
   private final GcStatsCollector m_gcStatsCollector = new GcStatsCollector();
 
   private AutoModeSelector mAutoModeSelector;
+
+  private double loopOverrunWarningTimeout = 0.1;
 
 
   private long disabledLoopCount = 0;
@@ -60,12 +67,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    try {
+    
+		LoggedTracer.reset();
+
+		try {
 			Threads.setCurrentThreadPriority(true, 20);
 
 			double commandSchedulerStart = Timer.getTimestamp();
-      LoggedTracer.reset();
-      //Shooting.mInstance.periodic();
+			//Shooting.mInstance.periodic();
 			SmartDashboard.putNumber("Current Timestamp Seconds", Timer.getFPGATimestamp());
 			CommandScheduler.getInstance().run();
 			double commandSchedulerEnd = Timer.getTimestamp();
@@ -96,9 +105,17 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto Chooser", mAutoModeSelector.getAutoChooser()); 
     SignalLogger.enableAutoLogging(false);
     SignalLogger.stop();
+    VisionConstants.aprilTagLayout.setOrigin(new Pose3d());
     DataLogManager.start();
-
-    
+try {
+      Field watchdogField = IterativeRobotBase.class.getDeclaredField("m_watchdog");
+      watchdogField.setAccessible(true);
+      Watchdog watchdog = (Watchdog) watchdogField.get(this);
+      watchdog.setTimeout(loopOverrunWarningTimeout);
+    } catch (Exception e) {
+      DriverStation.reportWarning("Failed to disable loop overrun warnings.", false);
+    }
+    CommandScheduler.getInstance().setPeriod(loopOverrunWarningTimeout);
   }
 
   @Override

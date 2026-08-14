@@ -45,7 +45,7 @@ public class MotorSubsystem<IO extends MotorIO> extends SubsystemBase {
 	 * Outputs subsystem readings and to SmartDashboard.
 	 */
 	public void outputTelemetry() {
-		// LoggedTracer.record(name);
+		LoggedTracer.record(name);
 	}
 
 	/**

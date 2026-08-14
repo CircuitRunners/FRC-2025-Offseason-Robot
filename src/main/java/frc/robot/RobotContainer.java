@@ -191,12 +191,12 @@ public class RobotContainer {
         //hood.setDefaultCommand(Commands.defer(() -> hood.trackTargetCommand(superstructure.hoodSetpoint), Set.of(hood)));
 
         for (SubsystemBase s : new SubsystemBase[] {
-	// 		// intakeDeploy,
-	// 		// intakeRollers,
-	// 		// conveyor,
-	// 		// superstructure,
-    //      // kicker,
+			intakeDeploy,
+			intakeRollers,
+			conveyor,
             shooter,
+			superstructure,
+            kicker,
             hood
 		}) {
 			SmartDashboard.putData(s);

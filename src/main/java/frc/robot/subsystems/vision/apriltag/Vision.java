@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.lib.logging.LogUtil;
 import frc.robot.subsystems.vision.apriltag.VisionIO.PoseObservation;
 import frc.robot.subsystems.vision.apriltag.VisionIO.PoseObservationType;
+import frc.lib.logging.LoggedTracer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -85,7 +86,7 @@ public class Vision extends SubsystemBase {
 
   @Override
   public void periodic() {
-    //LoggedTracer.record("Vision Loop Time");
+    LoggedTracer.record("Vision Loop Time");
     SmartDashboard.putBoolean("ThriftyCam Ignore/State", ignoreThrifty);
 
     for (int i = 0; i < io.length; i++) {

@@ -2,6 +2,7 @@ package frc.robot.auto;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.RobotContainer;
 import frc.robot.auto.autos.centerPreload.CenterPreload;
@@ -45,14 +46,6 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[RIGHT] Double Neutral Linear", () -> new DoubleNeutral(drive, superstructure, factory, true).getRoutine());
 		mAutoChooser.addRoutine("[LEFT] Double Neutral Linear", () -> new DoubleNeutral(drive, superstructure, factory, false).getRoutine());
 
-		mAutoChooser.addRoutine("[RIGHT] Fakeout", () -> new Fakeout(drive, superstructure, factory, true).getRoutine());
-		mAutoChooser.addRoutine("[LEFT] Fakeout", () -> new Fakeout(drive, superstructure, factory, false).getRoutine());
-
-		mAutoChooser.addRoutine("[RIGHT] Opposite Disruption", () -> new FullDisruptionOpp(drive, superstructure, factory, true).getRoutine());
-		mAutoChooser.addRoutine("[LEFT] Opposite Disruption", () -> new FullDisruptionOpp(drive, superstructure, factory, false).getRoutine());
-		mAutoChooser.addRoutine("[RIGHT] Same Disruption", () -> new FullDisruptionSame(drive, superstructure, factory, true).getRoutine());
-		mAutoChooser.addRoutine("[LEFT] Same Disruption", () -> new FullDisruptionSame(drive, superstructure, factory, false).getRoutine());
-
 		mAutoChooser.addRoutine("[CENTER] Center Preload", () -> new CenterPreload(drive, superstructure, factory).getRoutine());
 		mAutoChooser.addRoutine("[CENTER] Depot", () -> new CenterPreloadDepot(drive, superstructure, factory).getRoutine());
 
@@ -67,9 +60,10 @@ public class AutoModeSelector {
 		mAutoChooser.addRoutine("[LEFT] Follower", () -> new Follower(drive, superstructure, factory, false).getRoutine());
 		mAutoChooser.addRoutine("[RIGHT] Follower", () -> new Follower(drive, superstructure, factory, true).getRoutine());
     
-		// mAutoChooser.addRoutine("Delay Test Auto", () -> new DelayTestAuto(drive, superstructure, factory, false).getRoutine());
-		// mAutoChooser.addRoutine("PID Test Auto", () -> new PIDTestAuto(drive, superstructure, factory, false).getRoutine());
+		mAutoChooser.addRoutine("Delay Test Auto", () -> new DelayTestAuto(drive, superstructure, factory, false).getRoutine());
+		mAutoChooser.addRoutine("PID Test Auto", () -> new PIDTestAuto(drive, superstructure, factory, false).getRoutine());
 
+		SmartDashboard.putData(mAutoChooser);
 	}
 
 	public Command getSelectedCommand() {

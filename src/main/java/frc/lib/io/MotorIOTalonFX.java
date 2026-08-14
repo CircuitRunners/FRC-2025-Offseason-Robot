@@ -47,6 +47,7 @@ public class MotorIOTalonFX extends MotorIO {
 	private BlockingQueue<Runnable> queue = new LinkedBlockingQueue<>();
 	private ThreadPoolExecutor threadPoolExecutor =
 			new ThreadPoolExecutor(1, 1, 5, java.util.concurrent.TimeUnit.MILLISECONDS, queue);
+	private boolean configFailed = false;
 
 	public void applyConfig(TalonFX fx, TalonFXConfiguration config) {
 		threadPoolExecutor.submit(() -> {
@@ -54,6 +55,8 @@ public class MotorIOTalonFX extends MotorIO {
 				StatusCode result = fx.getConfigurator().apply(config);
 				if (result.isOK()) {
 					break;
+				} else {
+					configFailed = true;
 				}
 			}
 		});
@@ -271,7 +274,7 @@ public class MotorIOTalonFX extends MotorIO {
 			followers[i].setControl(new Follower(config.mainID, config.followerMotorAlignment[i]));
 		}
 
-		setFollowerConfig(followerConfig);
+		setFollowerConfig(config.followerConfig);
 	}
 
 	/**
