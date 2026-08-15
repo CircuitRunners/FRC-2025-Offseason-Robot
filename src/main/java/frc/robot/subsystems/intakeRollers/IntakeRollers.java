@@ -7,7 +7,9 @@ import frc.lib.bases.MotorSubsystem;
 import frc.lib.io.MotorIOTalonFX;
 import frc.lib.io.MotorIO.Setpoint;
 
-
+/**
+ * Subsystem representing the intake rollers of the robot.
+ */
 public class IntakeRollers extends MotorSubsystem<MotorIOTalonFX> {
     public static final Setpoint IDLE = Setpoint.withNeutralSetpoint();
     public static final Setpoint INTAKE = Setpoint.withVoltageSetpoint(IntakeRollerConstants.kIntakeVoltage);
@@ -23,10 +25,18 @@ public class IntakeRollers extends MotorSubsystem<MotorIOTalonFX> {
     private final Timer pulseTimer = new Timer();
     public boolean isPulsing = false;
 
+    /**
+     * Constructs a new {@code IntakeRollers} instance.
+     */
     public IntakeRollers() {
         super(IntakeRollerConstants.getMotorIO(), "Intake Rollers");
     }
 
+    /**
+     * Starts intake roller pulsing.
+     * 
+     * @param in pulse outward or inward
+     */
     private void startPulse(boolean in) {
         pulseIn = in;
         pulseTimer.restart();
@@ -34,6 +44,11 @@ public class IntakeRollers extends MotorSubsystem<MotorIOTalonFX> {
         isPulsing = true;
     }
 
+    /**
+     * Returns a command that pulses the intake rollers.
+     * 
+     * @return A command that pulses the intake rollers
+     */
     public Command Pulse() {
         return Commands.startEnd(() -> startPulse(true), () -> {
             this.applySetpoint(IDLE);
