@@ -110,6 +110,7 @@ public class RobotContainer {
         // SmartDashboard.putData("PP Auto Chooser", PPautoChooser);
 
         CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.warmupCmd());
+        CommandScheduler.getInstance().schedule(RobotConstants.mAutoFactory.newRoutine("warm").trajectory("leftIntakeToShoot").cmd().ignoringDisable(true).withTimeout(0.5).withName("Custom Choreo Warmup Command"));
         
         //CommandScheduler.getInstance().schedule(PathfindingCommand.warmupCommand());
         superstructure.warmupCmd();
