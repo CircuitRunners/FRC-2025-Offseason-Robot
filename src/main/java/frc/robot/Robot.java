@@ -161,7 +161,7 @@ try {
   public void autonomousPeriodic() {
     if (autoDelayTimerRunning
         && !autoDelayTimerPublished
-        && moduleTargetsHaveVelocity(mRobotContainer.drive.getState().ModuleTargets)) {
+        && moduleTargetsHaveVelocity(mRobotContainer.drive.getState().ModuleStates)) {
       SmartDashboard.putNumber("Auto Delay Time", autoTimer.getTimeAsDouble());
       autoTimer.reset();
       autoDelayTimerRunning = false;
@@ -204,9 +204,9 @@ try {
   @Override
   public void simulationPeriodic() {}
 
-  private static boolean moduleTargetsHaveVelocity(SwerveModuleState[] moduleTargets) {
-    for (SwerveModuleState moduleTarget : moduleTargets) {
-      if (Math.abs(moduleTarget.speedMetersPerSecond) > 0.0) {
+  private static boolean moduleTargetsHaveVelocity(SwerveModuleState[] moduleStates) {
+    for (SwerveModuleState moduleState : moduleStates) {
+      if (Math.abs(moduleState.speedMetersPerSecond) > 0.0) {
         return true;
       }
     }

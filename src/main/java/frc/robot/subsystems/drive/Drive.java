@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.Set;
 import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveModule;
@@ -22,6 +24,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -209,6 +212,22 @@ public class Drive extends SubsystemBase {
      */
     public Command stopDrivetrain() {
       return Commands.runOnce(() -> getDrivetrain().setControl(new SwerveRequest.ApplyRobotSpeeds().withSpeeds(new ChassisSpeeds())));
+    }
+
+    public void stopAtCurrentModuleAngles() {
+      SwerveModuleState[] moduleStates = getState().ModuleStates;
+      SwerveModuleState[] moduleTargets = new SwerveModuleState[moduleStates.length];
+
+      for (int i = 0; i < moduleStates.length; i++) {
+        moduleTargets[i] = new SwerveModuleState(0.0, moduleStates[i].angle);
+      }
+
+      drivetrain.setControl((parameters, modules) -> {
+        for (int i = 0; i < modules.length; i++) {
+          modules[i].apply(new SwerveModule.ModuleRequest().withState(moduleTargets[i]));
+        }
+        return StatusCode.OK;
+      });
     }
 
     public void driveWarmupCmd() {
